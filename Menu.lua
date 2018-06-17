@@ -7,15 +7,20 @@ function CreateMenu(MenuItems)
     menu:Add(Turbine.UI.MenuItem("Effects Menu", false))
     menu:Add(Turbine.UI.MenuItem("New Target"))
     menu:Add(Turbine.UI.MenuItem("Remove Target"))
+    menu:Add(Turbine.UI.MenuItem("Remove Other Targets"))
     
     menu:Get(2).Click = function(sender, args)
-        Turbine.Shell.WriteLine("Add one")
-        AddNewTargetFrame()
+        Turbine.Shell.WriteLine("New Target")
+        AddNewTarget()
     end
     menu:Get(3).Click = function(sender, args)
-        Turbine.Shell.WriteLine("Remove one")
-        RemoveTargetFrame(MenuItems.invokerID)
+        Turbine.Shell.WriteLine("Remove Target")
+        RemoveTarget(MenuItems.invokerID)
     end
+--    menu:Get(4).Click = function(sender, args)
+--        Turbine.Shell.WriteLine("Remove Other Targets")
+--        RemoveOtherTargets(MenuItems.invokerID)
+--    end
     
 end
 
