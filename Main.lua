@@ -19,13 +19,35 @@ import "Turbine.UI"
 import "Turbine.UI.Lotro"
 import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.TargetBox"
+import "Grimmerthan.DebuffVitals.Handlers"
 
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
 -- ------------------------------------------------------------------------
 function plugin.Unload()
     Turbine.Shell.WriteLine("Unloading TargetChanged handler")
-    RemoveCallback(Turbine.Gameplay.LocalPlayer.GetInstance(), "TargetChanged", TargetHandler)
+    RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
+    
+    for key,box in pairs(targets) do
+        if box.Target then 
+            RemoveCallback(box.Target, "MoraleChanged", MoraleChangedHandler);
+            RemoveCallback(box.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(box.Target, "MaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(box.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(box.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(box.Target, "PowerChanged", PowerChangedHandler);
+            RemoveCallback(box.Target, "BaseMaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(box.Target, "MaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(box.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
+            RemoveCallback(box.Target, "TemporaryPowerChanged", PowerChangedHandler);
+        end
+        if box.Effects then
+            RemoveCallback(box.Effects, "EffectAdded", EffectsChangedHandler);
+            RemoveCallback(box.Effects, "EffectRemoved", EffectsChangedHandler);
+            RemoveCallback(box.Effects, "EffectsCleared", EffectsChangedHandler);   
+        end
+    end    
+    
 end
 
 -- ------------------------------------------------------------------------
@@ -114,19 +136,6 @@ function RemoveOtherTargets(ID)
     Turbine.Shell.WriteLine("Exiting RemoveOtherTargets...")
 end
 ]]
--- ------------------------------------------------------------------------
--- Target Change Handler and Helpers
--- ------------------------------------------------------------------------
-function TargetChangeHandler(sender, args)
-    Turbine.Shell.WriteLine("Entering TargetChangeHandler...")
-    Turbine.Shell.WriteLine("Changed target")
-    for key,box in pairs(targets) do
-        Turbine.Shell.WriteLine("ID : "..tostring(key).." value : "..tostring(box))
-        TargetBox.UpdateTarget(box)
-    end
-    Turbine.Shell.WriteLine("Exiting TargetChangeHandler...")
-end
-
 
 -- ------------------------------------------------------------------------
 -- Doing Stuff!
@@ -145,8 +154,11 @@ CreateMenu(MenuItems)
 
 AddNewTarget()
 
---[[
+for k, v in pairs(Turbine.Gameplay.EffectList) do
+    Turbine.Shell.WriteLine(k)
+end
+
+
 for k, v in pairs(Turbine.Gameplay.Effect) do
     Turbine.Shell.WriteLine(k)
 end
-]]

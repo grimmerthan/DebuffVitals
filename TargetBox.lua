@@ -10,11 +10,11 @@ TargetBox.new = function(num)
     Turbine.Shell.WriteLine("Creating TargetBox")
 
     self.ID = num
-    self.CurrentTarget = {}
-    self.CurrentTarget.Effects = {}
+    self.Target = nil
     self.Morale = {}
     self.Power = {}
-    self.Effects = {}
+    self.EffectsBar = {}
+    self.Effects = nil
 
     -- ------------------------------------------------------------------------
     -- TargetFrame
@@ -87,12 +87,12 @@ TargetBox.new = function(num)
     self.Morale.Bar:SetParent (self.TargetFrame)
     self.Morale.Bar:SetBackColor ( Turbine.UI.Color.ForestGreen )
     self.Morale.Bar:SetSize (200, 20)
-    self.Morale.Bar:SetPosition (0,20)
+    self.Morale.Bar:SetPosition (0,21)
     self.Morale.Bar:SetMouseVisible (false)
 
     self.Morale.Title = Turbine.UI.Label()
     self.Morale.Title:SetParent (self.TargetFrame)
-    self.Morale.Title:SetPosition (45,20)
+    self.Morale.Title:SetPosition (45,21)
     self.Morale.Title:SetSize(155, 20)
     self.Morale.Title:SetMouseVisible (false)
     self.Morale.Title:SetText ("")
@@ -101,7 +101,7 @@ TargetBox.new = function(num)
 
     self.Morale.Percent = Turbine.UI.Label()
     self.Morale.Percent:SetParent (self.TargetFrame)
-    self.Morale.Percent:SetPosition (0,20)
+    self.Morale.Percent:SetPosition (0,21)
     self.Morale.Percent:SetSize(45, 20)
     self.Morale.Percent:SetMouseVisible (false)
     self.Morale.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
@@ -114,12 +114,12 @@ TargetBox.new = function(num)
     self.Power.Bar:SetParent (self.TargetFrame)
     self.Power.Bar:SetBackColor ( Turbine.UI.Color.RoyalBlue )
     self.Power.Bar:SetSize(200, 20)
-    self.Power.Bar:SetPosition (0,40)
+    self.Power.Bar:SetPosition (0,42)
     self.Power.Bar:SetMouseVisible (false)
 
     self.Power.Title = Turbine.UI.Label()
     self.Power.Title:SetParent (self.TargetFrame)
-    self.Power.Title:SetPosition (45,40)
+    self.Power.Title:SetPosition (45,42)
     self.Power.Title:SetSize(155, 20)
     self.Power.Title:SetMouseVisible (false)
     self.Power.Title:SetText ("")
@@ -128,7 +128,7 @@ TargetBox.new = function(num)
 
     self.Power.Percent = Turbine.UI.Label()
     self.Power.Percent:SetParent (self.TargetFrame)
-    self.Power.Percent:SetPosition (0,40)
+    self.Power.Percent:SetPosition (0,42)
     self.Power.Percent:SetSize(45, 20)
     self.Power.Percent:SetMouseVisible (false)
     self.Power.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
@@ -137,19 +137,21 @@ TargetBox.new = function(num)
     -- ------------------------------------------------------------------------
     -- Effect Display
     -- ------------------------------------------------------------------------
-    self.Effects.FireLore = Turbine.UI.Lotro.EffectDisplay()
-    self.Effects.FireLore:SetParent (self.TargetFrame)
-    self.Effects.FireLore:SetSize(200, 20)
-    self.Effects.FireLore:SetPosition (0,60)
-    self.Effects.FireLore:SetMouseVisible (false)
 
-    self.Effects.FrostLore = Turbine.UI.Lotro.EffectDisplay()
-    self.Effects.FrostLore:SetParent (self.TargetFrame)
-    self.Effects.FrostLore:SetSize(200, 20)
-    self.Effects.FrostLore:SetPosition (0,80)
-    self.Effects.FrostLore:SetMouseVisible (false)
-    
-   
+    self.EffectsBar.FireLore = Turbine.UI.Lotro.EffectDisplay()
+    self.EffectsBar.FireLore:SetParent (self.TargetFrame)
+--    self.EffectsBar.FireLore:SetSize(200, 20)
+    self.EffectsBar.FireLore:SetSize(20, 20)
+    self.EffectsBar.FireLore:SetPosition (0,60)
+    self.EffectsBar.FireLore:SetMouseVisible (false)
+
+    self.EffectsBar.FrostLore = Turbine.UI.Lotro.EffectDisplay()
+    self.EffectsBar.FrostLore:SetParent (self.TargetFrame)
+--    self.EffectsBar.FrostLore:SetSize(200, 20)
+    self.EffectsBar.FrostLore:SetSize(20, 20)
+    self.EffectsBar.FrostLore:SetPosition (0,80)
+    self.EffectsBar.FrostLore:SetMouseVisible (false)
+
     -- Hide with interface
     self.TargetFrame:SetWantsKeyEvents( true )
     function self.TargetFrame:KeyDown( args )
@@ -254,78 +256,73 @@ function TargetBox:UpdateTarget()
         self.Power.Title:SetText("")
         self.Power.Percent:SetText("")
         self.Morale.Bar:SetSize (200, 20)
-        self.Morale.Bar:SetPosition (0,20)
+        self.Morale.Bar:SetPosition (0,21)
         self.Power.Bar:SetSize(200, 20)
-        self.Power.Bar:SetPosition (0,40)
+        self.Power.Bar:SetPosition (0,42)
+        
+        if self.Target then
+            RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler);
+            RemoveCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(self.Target, "PowerChanged", PowerChangedHandler);
+            RemoveCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(self.Target, "MaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
+            RemoveCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler);   
+        end
 
-        self.CurrentTarget = LocalUser:GetTarget()
-        self.TargetSelection:SetEntity( self.CurrentTarget )
+        if self.Effects then
+            RemoveCallback(self.Effects, "EffectAdded", EffectsChangedHandler);
+            RemoveCallback(self.Effects, "EffectRemoved", EffectsChangedHandler);
+            RemoveCallback(self.Effects, "EffectsCleared", EffectsChangedHandler);   
+        end
+        
+        self.Target = nil
+        self.Effects = nil
+        self.Target = LocalUser:GetTarget()
+        self.TargetSelection:SetEntity( self.Target )
 
         local ThrowAwayGetTargetCall = LocalUser:GetTarget()
     
-        if self.CurrentTarget then
+        if self.Target then
             Turbine.Shell.WriteLine("  New target : "..tostring(self.TargetSelection:GetEntity()))
             Turbine.Shell.WriteLine("  New target's name : "..tostring(self.TargetSelection:GetEntity():GetName()))
             self.TitleBar:SetText(self.TargetSelection:GetEntity():GetName())
-            self.Effects = self.CurrentTarget:GetEffects()
     
-            if self.CurrentTarget.GetLevel ~= nil then
+            if self.Target.GetLevel ~= nil then
+                self.Effects = self.Target:GetEffects()            
+                
                 Turbine.Shell.WriteLine("  Changing on target - got level")
-                self.TitleBar:SetText("["..self.CurrentTarget:GetLevel().."] " ..self.CurrentTarget:GetName())
-               
-                self.CurrentTarget.MoraleChanged = function ()
-                    if not self.CurrentTarget then
-                        Turbine.Shell.WriteLine("Morale changing on target death....")
-                        return
-                    end
-                    Turbine.Shell.WriteLine("Morale changing....")
-                    local TargetMorale = self.CurrentTarget:GetMorale()
-                    local TargetMaxMorale = self.CurrentTarget:GetMaxMorale()
-                    local TargetTempMorale = self.CurrentTarget:GetTemporaryMorale()
-                    local TargetMaxTempMorale = self.CurrentTarget:GetMaxTemporaryMorale()
-                    self.Morale.Title:SetText(string.format("%d", TargetMorale).." / "..string.format("%d", TargetMaxMorale).." ")
+                self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
+                self.Target.self = self
+                self.Effects.self = self
+                
+                AddCallback(self.Target, "MoraleChanged", MoraleChangedHandler);
+                AddCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
+                AddCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler);
+                AddCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
+                AddCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
+                
+                MoraleChangedHandler(self.Target)
 
-                    if TargetMorale <= 1 then
-                        self.Morale.Percent:SetText(string.format("0.0%%"))
-                    else
-                        self.Morale.Percent:SetText(string.format("%.1f", 100 * TargetMorale / TargetMaxMorale).."%")
-                    end
+                AddCallback(self.Target, "PowerChanged", PowerChangedHandler);
+                AddCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler);
+                AddCallback(self.Target, "MaxPowerChanged", PowerChangedHandler);
+                AddCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
+                AddCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler);
 
-                    local BarSize = math.floor(TargetMorale/TargetMaxMorale * 200)
-                    self.Morale.Bar:SetSize(BarSize, 20)
-                    self.Morale.Bar:SetPosition(200 - BarSize, 20)
+                PowerChangedHandler(self.Target)
 
-                end
-                    
-                self.CurrentTarget.MaxMoraleChanged = self.CurrentTarget.MoraleChanged
-                self.CurrentTarget.MoraleChanged()
+                AddCallback(self.Effects, "EffectAdded", EffectsChangedHandler);
+                AddCallback(self.Effects, "EffectRemoved", EffectsChangedHandler);
+                AddCallback(self.Effects, "EffectsCleared", EffectsChangedHandler);               
 
-
-                self.CurrentTarget.PowerChanged = function ()
-                    Turbine.Shell.WriteLine("Power changing....")
-                    local TargetPower = self.CurrentTarget:GetPower()
-                    local TargetMaxPower = self.CurrentTarget:GetMaxPower()
-                    local TargetTempPower = self.CurrentTarget:GetTemporaryPower()
-                    local TargetMaxTempPower = self.CurrentTarget:GetMaxTemporaryPower()
-                    self.Power.Title:SetText(string.format("%d", TargetPower).." / "..string.format("%d", TargetMaxPower).." ")
-                    if TargetPower <= 1 then
-                        self.Power.Percent:SetText(string.format("0.0%%"))            
-                    else
-                        self.Power.Percent:SetText(string.format("%.1f", 100 * TargetPower / TargetMaxPower).."%")
-                    end
-
-                    local BarSize = math.floor(TargetPower/TargetMaxPower * 200)
-                    self.Power.Bar:SetSize(BarSize, 20)
-                    self.Power.Bar:SetPosition(200 - BarSize, 40)
-                                       
-                end
-        
-                self.CurrentTarget.MaxPowerChanged = self.CurrentTarget.PowerChanged
-                self.CurrentTarget.PowerChanged()
-                               
+                EffectsChangedHandler(self.Effects)
             else
                 Turbine.Shell.WriteLine("  Changing on target - not got level")
-                self.TitleBar:SetText(self.CurrentTarget:GetName())
+                self.TitleBar:SetText(self.Target:GetName())
             end
         end
     end
@@ -351,5 +348,4 @@ end
 function TargetBox:IsLocked()
     return self.Locked
 end
-
 
