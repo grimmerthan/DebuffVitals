@@ -79,28 +79,17 @@ function PowerChangedHandler(sender, args)
     Turbine.Shell.WriteLine("Exiting PowerChanged")
 end
 
-
 function EffectsChangedHandler(sender, args)
-    Turbine.Shell.WriteLine("Entering EffectsChanged")
+    Turbine.Shell.WriteLine("Entering EffectsChangedHandler")
+
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
         Turbine.Shell.WriteLine("Skip... no target....")
         return
     end
-
-    local count = CurrentFrame.Effects:GetCount()
-    Turbine.Shell.WriteLine("Effect count "..tostring(count))
-
-    for i = 1, count do  
-        Turbine.Shell.WriteLine(">>>>"..tostring(CurrentFrame.Effects:Get(i):GetName()).."<<<<")
-        if CurrentFrame.Effects:Get(i):GetName() == "Frost-lore" then
-            Turbine.Shell.WriteLine(">>>>>FROST-LORE<<<<<")
-            CurrentFrame.EffectsBar.FrostLore:SetEffect(CurrentFrame.Effects:Get(i))
-        elseif CurrentFrame.Effects:Get(i):GetName() == "Fire-lore" then
-            Turbine.Shell.WriteLine(">>>>>FIRE-LORE<<<<<")
-            CurrentFrame.EffectsBar.FireLore:SetEffect(CurrentFrame.Effects:Get(i))        
-        end
-    end
-    Turbine.Shell.WriteLine("Exiting EffectsChanged")
+   
+    sender.self:SetWantsUpdates(true)
+    
+    Turbine.Shell.WriteLine("Exiting EffectsChangedHandler")
 end

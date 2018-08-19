@@ -20,6 +20,7 @@ import "Turbine.UI.Lotro"
 import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.TargetBox"
 import "Grimmerthan.DebuffVitals.Handlers"
+import "Grimmerthan.DebuffVitals.EffectFrame"
 
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
@@ -95,7 +96,8 @@ end
 function AddNewTarget()
     Turbine.Shell.WriteLine("Entering AddNewTargetFrame...")
     Count = Count + 1
-    NewTarget = TargetBox.new(Count)
+--    NewTarget = TargetBox.new(Count)
+    NewTarget = TargetBox(Count)
     Turbine.Shell.WriteLine("NewTarget : "..tostring(NewTarget))
     targets[Count] = NewTarget
     TargetChangeHandler (NewTarget)
@@ -154,11 +156,14 @@ CreateMenu(MenuItems)
 
 AddNewTarget()
 
-for k, v in pairs(Turbine.Gameplay.EffectList) do
-    Turbine.Shell.WriteLine(k)
-end
+--[[
 
-
-for k, v in pairs(Turbine.Gameplay.Effect) do
-    Turbine.Shell.WriteLine(k)
+Turbine.Shell.WriteLine("Turbine.Gameplay.Effect...")
+for key, value in pairs (Turbine.Gameplay.Effect) do
+    Turbine.Shell.WriteLine(tostring(key))
 end
+Turbine.Shell.WriteLine("Turbine.Gameplay.EffectList...")
+for key, value in pairs (Turbine.Gameplay.EffectList) do
+    Turbine.Shell.WriteLine(tostring(key))
+end
+]]--

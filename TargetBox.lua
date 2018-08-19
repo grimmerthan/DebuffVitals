@@ -2,10 +2,13 @@
 -- Target Box
 -- ------------------------------------------------------------------------
 
-TargetBox = {}
+TargetBox = class (Turbine.UI.Window)
 
-TargetBox.new = function(num) 
-    local self = setmetatable({}, TargetBox)
+-- ------------------------------------------------------------------------
+-- TargetBox
+-- ------------------------------------------------------------------------
+function TargetBox:Constructor(num) 
+    Turbine.UI.Window.Constructor(self)
 
     Turbine.Shell.WriteLine("Creating TargetBox")
 
@@ -16,22 +19,19 @@ TargetBox.new = function(num)
     self.EffectsBar = {}
     self.Effects = nil
 
-    -- ------------------------------------------------------------------------
-    -- TargetFrame
-    -- ------------------------------------------------------------------------
-    self.TargetFrame = Turbine.UI.Window()
-    self.TargetFrame:SetSize(200,100)
-    self.TargetFrame:SetVisible(true) 
-    self.TargetFrame:SetMouseVisible ("false")
---    self.TargetFrame:SetBackColor(Turbine.UI.Color.White)
-    self.TargetFrame:SetPosition(Turbine.UI.Display:GetWidth()/5 + (Count % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (Count % 20) * 40)
+    self:SetSize(200,146)
+    self:SetVisible(true) 
+    self:SetMouseVisible (false)
+--    self:SetBackColor(Turbine.UI.Color.White)
+    self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (Count % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (Count % 20) * 40)
+    self:SetZOrder (0)
 
     -- ------------------------------------------------------------------------
     -- Target Title Bar
     -- ------------------------------------------------------------------------ 
     self.TitleBar = Turbine.UI.Label()
     self.TitleBar:SetVisible(true)
-    self.TitleBar:SetParent (self.TargetFrame)
+    self.TitleBar:SetParent (self)
     self.TitleBar:SetSize(180,20)
     self.TitleBar:SetPosition (0,0)
     self.TitleBar:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft )
@@ -44,8 +44,8 @@ TargetBox.new = function(num)
     -- ------------------------------------------------------------------------
     self.TargetSelection = Turbine.UI.Lotro.EntityControl()
     self.TargetSelection:SetVisible(true)
-    self.TargetSelection:SetParent (self.TargetFrame)
-    self.TargetSelection:SetSize(200,60)
+    self.TargetSelection:SetParent (self)
+    self.TargetSelection:SetSize(200,146)
     self.TargetSelection:SetPosition (0, 20)
     self.TargetSelection:SetZOrder (100)
     
@@ -53,14 +53,14 @@ TargetBox.new = function(num)
     -- Lock Control
     -- ------------------------------------------------------------------------
     self.LockBackground = Turbine.UI.Control()
-    self.LockBackground:SetParent (self.TargetFrame)
+    self.LockBackground:SetParent (self)
     self.LockBackground:SetBackColor ( Turbine.UI.Color.Black )
     self.LockBackground:SetSize(20, 20)
     self.LockBackground:SetPosition (180,0)
     
     self.Locked = false
     self.Lock = Turbine.UI.Control()
-    self.Lock:SetParent (self.TargetFrame)
+    self.Lock:SetParent (self)
     self.Lock:SetBackground( 0x410001D3 )
 
     self.Lock:SetSize(20, 20)
@@ -78,20 +78,19 @@ TargetBox.new = function(num)
         end
         Turbine.Shell.WriteLine("Lock for ID "..tostring(self.ID).." is "..tostring(self.Locked)) 
     end
-    
 
     -- ------------------------------------------------------------------------
     -- Morale 
     -- ------------------------------------------------------------------------
     self.Morale.Bar = Turbine.UI.Control()
-    self.Morale.Bar:SetParent (self.TargetFrame)
+    self.Morale.Bar:SetParent (self)
     self.Morale.Bar:SetBackColor ( Turbine.UI.Color.ForestGreen )
     self.Morale.Bar:SetSize (200, 20)
     self.Morale.Bar:SetPosition (0,21)
     self.Morale.Bar:SetMouseVisible (false)
 
     self.Morale.Title = Turbine.UI.Label()
-    self.Morale.Title:SetParent (self.TargetFrame)
+    self.Morale.Title:SetParent (self)
     self.Morale.Title:SetPosition (45,21)
     self.Morale.Title:SetSize(155, 20)
     self.Morale.Title:SetMouseVisible (false)
@@ -100,7 +99,7 @@ TargetBox.new = function(num)
     self.Morale.Title:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
 
     self.Morale.Percent = Turbine.UI.Label()
-    self.Morale.Percent:SetParent (self.TargetFrame)
+    self.Morale.Percent:SetParent (self)
     self.Morale.Percent:SetPosition (0,21)
     self.Morale.Percent:SetSize(45, 20)
     self.Morale.Percent:SetMouseVisible (false)
@@ -111,14 +110,14 @@ TargetBox.new = function(num)
     -- Power
     -- ------------------------------------------------------------------------
     self.Power.Bar = Turbine.UI.Control()
-    self.Power.Bar:SetParent (self.TargetFrame)
+    self.Power.Bar:SetParent (self)
     self.Power.Bar:SetBackColor ( Turbine.UI.Color.RoyalBlue )
     self.Power.Bar:SetSize(200, 20)
     self.Power.Bar:SetPosition (0,42)
     self.Power.Bar:SetMouseVisible (false)
 
     self.Power.Title = Turbine.UI.Label()
-    self.Power.Title:SetParent (self.TargetFrame)
+    self.Power.Title:SetParent (self)
     self.Power.Title:SetPosition (45,42)
     self.Power.Title:SetSize(155, 20)
     self.Power.Title:SetMouseVisible (false)
@@ -127,7 +126,7 @@ TargetBox.new = function(num)
     self.Power.Title:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
 
     self.Power.Percent = Turbine.UI.Label()
-    self.Power.Percent:SetParent (self.TargetFrame)
+    self.Power.Percent:SetParent (self)
     self.Power.Percent:SetPosition (0,42)
     self.Power.Percent:SetSize(45, 20)
     self.Power.Percent:SetMouseVisible (false)
@@ -137,27 +136,30 @@ TargetBox.new = function(num)
     -- ------------------------------------------------------------------------
     -- Effect Display
     -- ------------------------------------------------------------------------
+    self.SingleEffects = {}
+    self.SingleEffects.FireLore = EffectFrame(self, "Fire-lore")
+    self.SingleEffects.FireLore:SetPosition (0,63)
 
-    self.EffectsBar.FireLore = Turbine.UI.Lotro.EffectDisplay()
-    self.EffectsBar.FireLore:SetParent (self.TargetFrame)
---    self.EffectsBar.FireLore:SetSize(200, 20)
-    self.EffectsBar.FireLore:SetSize(20, 20)
-    self.EffectsBar.FireLore:SetPosition (0,60)
-    self.EffectsBar.FireLore:SetMouseVisible (false)
+    self.SingleEffects.FrostLore = EffectFrame(self, "Frost-lore")
+    self.SingleEffects.FrostLore:SetPosition (0,84)
+    
+    self.SingleEffects.RevealingMark = EffectFrame(self, "Revealing Mark")
+    self.SingleEffects.RevealingMark:SetPosition (0,105)
 
-    self.EffectsBar.FrostLore = Turbine.UI.Lotro.EffectDisplay()
-    self.EffectsBar.FrostLore:SetParent (self.TargetFrame)
---    self.EffectsBar.FrostLore:SetSize(200, 20)
-    self.EffectsBar.FrostLore:SetSize(20, 20)
-    self.EffectsBar.FrostLore:SetPosition (0,80)
-    self.EffectsBar.FrostLore:SetMouseVisible (false)
-
+    self.SingleEffects.TellingMark = EffectFrame(self, "Telling Mark")
+    self.SingleEffects.TellingMark:SetPosition (0,126)
+    
+    
+    
+    -- ------------------------------------------------------------------------
+    -- Mouse and key interactions
+    -- ------------------------------------------------------------------------
     -- Hide with interface
-    self.TargetFrame:SetWantsKeyEvents( true )
-    function self.TargetFrame:KeyDown( args )
+    self:SetWantsKeyEvents( true )
+    function self:KeyDown( args )
         a = args.Action
         if ( a == 268435635 ) then
-            self.TargetFrame:SetVisible( not self.TargetFrame:IsVisible() )
+            self:SetVisible( not self:IsVisible() )
         end
     end
 
@@ -177,18 +179,18 @@ TargetBox.new = function(num)
             if ( self.IsDragging ) then
                 self.IsDragging = false
                 
-                self.TargetFrame:SetLeft(self.TargetFrame:GetLeft() + (args.X - startX))
-                self.TargetFrame:SetTop(self.TargetFrame:GetTop() + (args.Y - startY))
+                self:SetLeft(self:GetLeft() + (args.X - startX))
+                self:SetTop(self:GetTop() + (args.Y - startY))
     
-                if self.TargetFrame:GetLeft() < 0 then
-                    self.TargetFrame:SetLeft(0)
-                elseif self.TargetFrame:GetLeft() + self.TargetFrame:GetWidth() > Turbine.UI.Display:GetWidth() then
-                    self.TargetFrame:SetLeft(Turbine.UI.Display:GetWidth()-self.TargetFrame:GetWidth())
+                if self:GetLeft() < 0 then
+                    self:SetLeft(0)
+                elseif self:GetLeft() + self:GetWidth() > Turbine.UI.Display:GetWidth() then
+                    self:SetLeft(Turbine.UI.Display:GetWidth()-self:GetWidth())
                 end
-                if self.TargetFrame:GetTop() < 0 then
-                    self.TargetFrame:SetTop(0)
-                elseif self.TargetFrame:GetTop() + self.TargetFrame:GetHeight() > Turbine.UI.Display:GetHeight() then
-                    self.TargetFrame:SetTop(Turbine.UI.Display:GetHeight()-self.TargetFrame:GetHeight())
+                if self:GetTop() < 0 then
+                    self:SetTop(0)
+                elseif self:GetTop() + self:GetHeight() > Turbine.UI.Display:GetHeight() then
+                    self:SetTop(Turbine.UI.Display:GetHeight()-self:GetHeight())
                 end
             end
         end
@@ -196,8 +198,8 @@ TargetBox.new = function(num)
 
     self.TargetSelection.MouseMove = function(sender, args)
         if self.IsDragging then
-            self.TargetFrame:SetLeft(self.TargetFrame:GetLeft() + (args.X - startX))
-            self.TargetFrame:SetTop(self.TargetFrame:GetTop() + (args.Y - startY))
+            self:SetLeft(self:GetLeft() + (args.X - startX))
+            self:SetTop(self:GetTop() + (args.Y - startY))
         end
     end
     
@@ -229,13 +231,11 @@ TargetBox.new = function(num)
     
     self.TitleBar.MouseMove = self.TargetSelection.MouseMove
 
-    return self
-
 end
 
 function TargetBox:DestroyFrame()
-    self.TargetFrame:SetVisible(false)
-    self.TargetFrame = nil
+    self:SetVisible(false)
+    self= nil
 end
 
 function TargetBox:UpdateTarget()
@@ -243,7 +243,8 @@ function TargetBox:UpdateTarget()
     if self.Locked then
         if self.TargetSelection:GetEntity() then
             Turbine.Shell.WriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity()))
-            Turbine.Shell.WriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity():GetName()))           
+            Turbine.Shell.WriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity():GetName()))
+            self:SetWantsUpdates(true)
         else
             Turbine.Shell.WriteLine("  No change - locked on NO TARGET")
         end
@@ -261,73 +262,158 @@ function TargetBox:UpdateTarget()
         self.Power.Bar:SetPosition (0,42)
         
         if self.Target then
-            RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler);
-            RemoveCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(self.Target, "PowerChanged", PowerChangedHandler);
-            RemoveCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler);
-            RemoveCallback(self.Target, "MaxPowerChanged", PowerChangedHandler);
-            RemoveCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
-            RemoveCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler);   
+            RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
+            RemoveCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler)
+            RemoveCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler)
+            RemoveCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler)
+            RemoveCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler)
+            RemoveCallback(self.Target, "PowerChanged", PowerChangedHandler)
+            RemoveCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler)
+            RemoveCallback(self.Target, "MaxPowerChanged", PowerChangedHandler)
+            RemoveCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler)
+            RemoveCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler)
+            self.Target = nil
         end
 
-        if self.Effects then
-            RemoveCallback(self.Effects, "EffectAdded", EffectsChangedHandler);
-            RemoveCallback(self.Effects, "EffectRemoved", EffectsChangedHandler);
-            RemoveCallback(self.Effects, "EffectsCleared", EffectsChangedHandler);   
-        end
+        self.SingleEffects.FireLore.effect:SetEffect()
+        self.SingleEffects.FireLore.timer:SetText("inactive")
+        self.SingleEffects.FireLore:SetWantsUpdates(false)
+
+        self.SingleEffects.FrostLore.effect:SetEffect()
+        self.SingleEffects.FrostLore.timer:SetText("inactive")
+        self.SingleEffects.FrostLore:SetWantsUpdates(false)
         
-        self.Target = nil
-        self.Effects = nil
+        self.SingleEffects.RevealingMark.effect:SetEffect()
+        self.SingleEffects.RevealingMark.timer:SetText("inactive")
+        self.SingleEffects.RevealingMark:SetWantsUpdates(false)
+
+        self.SingleEffects.TellingMark.effect:SetEffect()
+        self.SingleEffects.TellingMark.timer:SetText("inactive")
+        self.SingleEffects.TellingMark:SetWantsUpdates(false)
+
+        if self.Effects then
+            RemoveCallback(self.Effects, "EffectAdded", EffectsChangedHandler)
+            RemoveCallback(self.Effects, "EffectRemoved", EffectsChangedHandler)
+            RemoveCallback(self.Effects, "EffectsCleared", EffectsChangedHandler)
+            self.Effects = nil   
+        end
+
         self.Target = LocalUser:GetTarget()
         self.TargetSelection:SetEntity( self.Target )
 
         local ThrowAwayGetTargetCall = LocalUser:GetTarget()
     
         if self.Target then
-            Turbine.Shell.WriteLine("  New target : "..tostring(self.TargetSelection:GetEntity()))
-            Turbine.Shell.WriteLine("  New target's name : "..tostring(self.TargetSelection:GetEntity():GetName()))
+            Turbine.Shell.WriteLine("  New target : "..tostring(self.Target))
+            Turbine.Shell.WriteLine("  New target's name : "..tostring(self.Target:GetName()))
             self.TitleBar:SetText(self.TargetSelection:GetEntity():GetName())
     
-            if self.Target.GetLevel ~= nil then
-                self.Effects = self.Target:GetEffects()            
-                
-                Turbine.Shell.WriteLine("  Changing on target - got level")
+            if self.Target.GetLevel ~= nil then            
+                Turbine.Shell.WriteLine("  New target - got level")
                 self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
                 self.Target.self = self
-                self.Effects.self = self
-                
-                AddCallback(self.Target, "MoraleChanged", MoraleChangedHandler);
-                AddCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
-                AddCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler);
-                AddCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
-                AddCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
+               
+                AddCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
+                AddCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler)
+                AddCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler)
+                AddCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler)
+                AddCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler)
                 
                 MoraleChangedHandler(self.Target)
 
-                AddCallback(self.Target, "PowerChanged", PowerChangedHandler);
-                AddCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler);
-                AddCallback(self.Target, "MaxPowerChanged", PowerChangedHandler);
-                AddCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
-                AddCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler);
+                AddCallback(self.Target, "PowerChanged", PowerChangedHandler)
+                AddCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler)
+                AddCallback(self.Target, "MaxPowerChanged", PowerChangedHandler)
+                AddCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler)
+                AddCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler)
 
                 PowerChangedHandler(self.Target)
 
-                AddCallback(self.Effects, "EffectAdded", EffectsChangedHandler);
-                AddCallback(self.Effects, "EffectRemoved", EffectsChangedHandler);
-                AddCallback(self.Effects, "EffectsCleared", EffectsChangedHandler);               
+                self.Effects = self.Target:GetEffects()
+                self.Effects.self = self
+               
+                AddCallback(self.Effects, "EffectAdded", EffectsChangedHandler)
+                AddCallback(self.Effects, "EffectRemoved", EffectsChangedHandler)
+                AddCallback(self.Effects, "EffectsCleared", EffectsChangedHandler)
 
-                EffectsChangedHandler(self.Effects)
+                EffectsChangedHandler(self.Target)
+
+                -- Effects updated during :Update()
+                self:SetWantsUpdates(true)
             else
-                Turbine.Shell.WriteLine("  Changing on target - not got level")
+                Turbine.Shell.WriteLine("  Changing on target - no level found")
                 self.TitleBar:SetText(self.Target:GetName())
             end
         end
+
     end
 
     Turbine.Shell.WriteLine("Exiting UpdateTarget")
+end
+
+function TargetBox:Update()
+    Turbine.Shell.WriteLine(">>>>>>>>>>Entering TargetBox:Update")
+
+    if self.Target then
+        local count = self.Effects:GetCount()
+        
+        Turbine.Shell.WriteLine("Effect name "..tostring(self.Target:GetName()))
+        Turbine.Shell.WriteLine("Effect count "..tostring(self.Effects:GetCount()))
+        self.SingleEffects.FireLore.effect:SetEffect()
+        self.SingleEffects.FireLore.timer:SetText("inactive")
+        self.SingleEffects.FireLore:SetWantsUpdates(false)
+
+        self.SingleEffects.FrostLore.effect:SetEffect()
+        self.SingleEffects.FrostLore.timer:SetText("inactive")
+        self.SingleEffects.FrostLore:SetWantsUpdates(false)
+        
+        self.SingleEffects.RevealingMark.effect:SetEffect()
+        self.SingleEffects.RevealingMark.timer:SetText("inactive")
+        self.SingleEffects.RevealingMark:SetWantsUpdates(false)
+
+        self.SingleEffects.TellingMark.effect:SetEffect()
+        self.SingleEffects.TellingMark.timer:SetText("inactive")
+        self.SingleEffects.TellingMark:SetWantsUpdates(false)  
+
+        for i = 1, count do  
+            if self.Effects:Get(i):GetName() == "Fire-lore" then
+                Turbine.Shell.WriteLine(">>>>>Fire-lore<<<<<")
+                self.SingleEffects.FireLore:SetEffect(self.Effects:Get(i))      
+                self.SingleEffects.FireLore.startTime = self.Effects:Get(i):GetStartTime()
+                self.SingleEffects.FireLore.duration = self.Effects:Get(i):GetDuration()
+            elseif self.Effects:Get(i):GetName() == "Frost-lore" then
+                Turbine.Shell.WriteLine(">>>>>Frost-lore<<<<<")
+                self.SingleEffects.FrostLore:SetEffect(self.Effects:Get(i))      
+                self.SingleEffects.FrostLore.startTime = self.Effects:Get(i):GetStartTime()
+                self.SingleEffects.FrostLore.duration = self.Effects:Get(i):GetDuration()
+            elseif self.Effects:Get(i):GetName() == "Revealing Mark" then
+                Turbine.Shell.WriteLine(">>>>>Revealing Mark<<<<<")
+                self.SingleEffects.RevealingMark:SetEffect(self.Effects:Get(i))      
+                self.SingleEffects.RevealingMark.startTime = self.Effects:Get(i):GetStartTime()
+                self.SingleEffects.RevealingMark.duration = self.Effects:Get(i):GetDuration()
+            elseif self.Effects:Get(i):GetName() == "Telling Mark" then
+                Turbine.Shell.WriteLine(">>>>>Telling Mark<<<<<")
+                self.SingleEffects.TellingMark:SetEffect(self.Effects:Get(i))      
+                self.SingleEffects.TellingMark.startTime = self.Effects:Get(i):GetStartTime()
+                self.SingleEffects.TellingMark.duration = self.Effects:Get(i):GetDuration()
+            end
+             
+            Turbine.Shell.WriteLine(">>>>"..tostring(self.Effects:Get(i):GetName()).."  "..tostring(self.Effects:Get(i)).."<<<<")       
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetID()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsDebuff()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetName()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsCurable()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetStartTime()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDuration()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDescription()))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(string.format("%x",self.Effects:Get(i):GetIcon())))
+            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetCategory()))
+
+        end
+    end
+    
+    self:SetWantsUpdates(false)
+    Turbine.Shell.WriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
 end
 
 function TargetBox:DumpData()
