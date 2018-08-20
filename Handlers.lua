@@ -2,28 +2,28 @@
 -- Target Change Handler and Helpers
 -- ------------------------------------------------------------------------
 function TargetChangeHandler(sender, args)
-    Turbine.Shell.WriteLine("Entering TargetChangeHandler...")
-    Turbine.Shell.WriteLine("Changed target")
+    DebugWriteLine("Entering TargetChangeHandler...")
+    DebugWriteLine("Changed target")
     for key,box in pairs(targets) do
-        Turbine.Shell.WriteLine("ID : "..tostring(key).." value : "..tostring(box))
+        DebugWriteLine("ID : "..tostring(key).." value : "..tostring(box))
         TargetBox.UpdateTarget(box)
     end
-    Turbine.Shell.WriteLine("Exiting TargetChangeHandler...")
+    DebugWriteLine("Exiting TargetChangeHandler...")
 end
 
 
 function MoraleChangedHandler(sender, args)
-    Turbine.Shell.WriteLine("Entering MoraleChanged")
+    DebugWriteLine("Entering MoraleChanged")
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
-        Turbine.Shell.WriteLine("Skip... no target....")
+        DebugWriteLine("Skip... no target....")
         return
     end
        
-    Turbine.Shell.WriteLine("Morale changing....")
+    DebugWriteLine("Morale changing....")
     local TargetMorale = CurrentFrame.Target:GetMorale()
-    Turbine.Shell.WriteLine("Name "..tostring(CurrentFrame.Target:GetName()).." Morale "..tostring(CurrentFrame.Target:GetMorale()))
+    DebugWriteLine("Name "..tostring(CurrentFrame.Target:GetName()).." Morale "..tostring(CurrentFrame.Target:GetMorale()))
 
     if TargetMorale <= 0 and CurrentFrame.Locked then
         CurrentFrame.Lock.MouseClick()
@@ -44,22 +44,22 @@ function MoraleChangedHandler(sender, args)
     CurrentFrame.Morale.Bar:SetSize(BarSize, 20)
     CurrentFrame.Morale.Bar:SetPosition(200 - BarSize, 21)
 
-    Turbine.Shell.WriteLine("Exiting MoraleChanged")
+    DebugWriteLine("Exiting MoraleChanged")
 end
 
 
 function PowerChangedHandler(sender, args)
-    Turbine.Shell.WriteLine("Entering PowerChanged")
+    DebugWriteLine("Entering PowerChanged")
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
-        Turbine.Shell.WriteLine("Skip... no target....")
+        DebugWriteLine("Skip... no target....")
         return
     end
     
-    Turbine.Shell.WriteLine("Power changing....")
+    DebugWriteLine("Power changing....")
     local TargetPower = CurrentFrame.Target:GetPower()
-    Turbine.Shell.WriteLine("Name "..tostring(CurrentFrame.Target:GetName()).." Power "..tostring(CurrentFrame.Target:GetPower()))
+    DebugWriteLine("Name "..tostring(CurrentFrame.Target:GetName()).." Power "..tostring(CurrentFrame.Target:GetPower()))
         
     local TargetMaxPower = CurrentFrame.Target:GetMaxPower()
     local TargetTempPower = CurrentFrame.Target:GetTemporaryPower()
@@ -76,20 +76,20 @@ function PowerChangedHandler(sender, args)
     CurrentFrame.Power.Bar:SetSize(BarSize, 20)
     CurrentFrame.Power.Bar:SetPosition(200 - BarSize, 42)
 
-    Turbine.Shell.WriteLine("Exiting PowerChanged")
+    DebugWriteLine("Exiting PowerChanged")
 end
 
 function EffectsChangedHandler(sender, args)
-    Turbine.Shell.WriteLine("Entering EffectsChangedHandler")
+    DebugWriteLine("Entering EffectsChangedHandler")
 
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
-        Turbine.Shell.WriteLine("Skip... no target....")
+        DebugWriteLine("Skip... no target....")
         return
     end
    
     sender.self:SetWantsUpdates(true)
     
-    Turbine.Shell.WriteLine("Exiting EffectsChangedHandler")
+    DebugWriteLine("Exiting EffectsChangedHandler")
 end

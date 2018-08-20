@@ -10,7 +10,7 @@ TargetBox = class (Turbine.UI.Window)
 function TargetBox:Constructor(num) 
     Turbine.UI.Window.Constructor(self)
 
-    Turbine.Shell.WriteLine("Creating TargetBox")
+    DebugWriteLine("Creating TargetBox")
 
     self.ID = num
     self.Target = nil
@@ -68,7 +68,7 @@ function TargetBox:Constructor(num)
     self.Lock:SetBlendMode(Turbine.UI.BlendMode.Overlay)
 
     self.Lock.MouseClick = function ()
-        Turbine.Shell.WriteLine("Lock for ID "..tostring(self.ID).." was "..tostring(self.Locked))
+        DebugWriteLine("Lock for ID "..tostring(self.ID).." was "..tostring(self.Locked))
         self.Locked = not self.Locked
         if self.Locked then
             self.Lock:SetBackground( 0x410001D1 )
@@ -76,7 +76,7 @@ function TargetBox:Constructor(num)
             self.Lock:SetBackground( 0x410001D3 )
             TargetChangeHandler()
         end
-        Turbine.Shell.WriteLine("Lock for ID "..tostring(self.ID).." is "..tostring(self.Locked)) 
+        DebugWriteLine("Lock for ID "..tostring(self.ID).." is "..tostring(self.Locked)) 
     end
 
     -- ------------------------------------------------------------------------
@@ -206,7 +206,7 @@ function TargetBox:Constructor(num)
     self.TitleBar.MouseClick = function (sender, args)
         if args.Button == Turbine.UI.MouseButton.Right then
             self.IsDragging = false
-            Turbine.Shell.WriteLine("Showing menu")
+            DebugWriteLine("Showing menu")
         
             if CountTargets() == 1 then
                 MenuItems:GetItems():Get(3):SetEnabled(false)
@@ -225,7 +225,7 @@ function TargetBox:Constructor(num)
     self.TitleBar.MouseUp = function(sender, args)
         self.IsDragging = false
         if args.Button == Turbine.UI.MouseButton.Right then
-            Turbine.Shell.WriteLine("Closing menu")
+            DebugWriteLine("Closing menu")
         end
     end
     
@@ -239,17 +239,17 @@ function TargetBox:DestroyFrame()
 end
 
 function TargetBox:UpdateTarget()
-    Turbine.Shell.WriteLine("Entering UpdateTarget")
+    DebugWriteLine("Entering UpdateTarget")
     if self.Locked then
         if self.TargetSelection:GetEntity() then
-            Turbine.Shell.WriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity()))
-            Turbine.Shell.WriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity():GetName()))
+            DebugWriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity()))
+            DebugWriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity():GetName()))
             self:SetWantsUpdates(true)
         else
-            Turbine.Shell.WriteLine("  No change - locked on NO TARGET")
+            DebugWriteLine("  No change - locked on NO TARGET")
         end
     else
-        Turbine.Shell.WriteLine("  Changing target")
+        DebugWriteLine("  Changing target")
 
         self.TitleBar:SetText("No target")
         self.Morale.Title:SetText("")
@@ -304,12 +304,12 @@ function TargetBox:UpdateTarget()
         local ThrowAwayGetTargetCall = LocalUser:GetTarget()
     
         if self.Target then
-            Turbine.Shell.WriteLine("  New target : "..tostring(self.Target))
-            Turbine.Shell.WriteLine("  New target's name : "..tostring(self.Target:GetName()))
+            DebugWriteLine("  New target : "..tostring(self.Target))
+            DebugWriteLine("  New target's name : "..tostring(self.Target:GetName()))
             self.TitleBar:SetText(self.TargetSelection:GetEntity():GetName())
     
             if self.Target.GetLevel ~= nil then            
-                Turbine.Shell.WriteLine("  New target - got level")
+                DebugWriteLine("  New target - got level")
                 self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
                 self.Target.self = self
                
@@ -341,24 +341,24 @@ function TargetBox:UpdateTarget()
                 -- Effects updated during :Update()
                 self:SetWantsUpdates(true)
             else
-                Turbine.Shell.WriteLine("  Changing on target - no level found")
+                DebugWriteLine("  Changing on target - no level found")
                 self.TitleBar:SetText(self.Target:GetName())
             end
         end
 
     end
 
-    Turbine.Shell.WriteLine("Exiting UpdateTarget")
+    DebugWriteLine("Exiting UpdateTarget")
 end
 
 function TargetBox:Update()
-    Turbine.Shell.WriteLine(">>>>>>>>>>Entering TargetBox:Update")
+    DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
 
     if self.Target then
         local count = self.Effects:GetCount()
         
-        Turbine.Shell.WriteLine("Effect name "..tostring(self.Target:GetName()))
-        Turbine.Shell.WriteLine("Effect count "..tostring(self.Effects:GetCount()))
+        DebugWriteLine("Effect name "..tostring(self.Target:GetName()))
+        DebugWriteLine("Effect count "..tostring(self.Effects:GetCount()))
         self.SingleEffects.FireLore.effect:SetEffect()
         self.SingleEffects.FireLore.timer:SetText("inactive")
         self.SingleEffects.FireLore:SetWantsUpdates(false)
@@ -377,53 +377,53 @@ function TargetBox:Update()
 
         for i = 1, count do  
             if self.Effects:Get(i):GetName() == "Fire-lore" then
-                Turbine.Shell.WriteLine(">>>>>Fire-lore<<<<<")
+                DebugWriteLine(">>>>>Fire-lore<<<<<")
                 self.SingleEffects.FireLore:SetEffect(self.Effects:Get(i))      
                 self.SingleEffects.FireLore.startTime = self.Effects:Get(i):GetStartTime()
                 self.SingleEffects.FireLore.duration = self.Effects:Get(i):GetDuration()
             elseif self.Effects:Get(i):GetName() == "Frost-lore" then
-                Turbine.Shell.WriteLine(">>>>>Frost-lore<<<<<")
+                DebugWriteLine(">>>>>Frost-lore<<<<<")
                 self.SingleEffects.FrostLore:SetEffect(self.Effects:Get(i))      
                 self.SingleEffects.FrostLore.startTime = self.Effects:Get(i):GetStartTime()
                 self.SingleEffects.FrostLore.duration = self.Effects:Get(i):GetDuration()
             elseif self.Effects:Get(i):GetName() == "Revealing Mark" then
-                Turbine.Shell.WriteLine(">>>>>Revealing Mark<<<<<")
+                DebugWriteLine(">>>>>Revealing Mark<<<<<")
                 self.SingleEffects.RevealingMark:SetEffect(self.Effects:Get(i))      
                 self.SingleEffects.RevealingMark.startTime = self.Effects:Get(i):GetStartTime()
                 self.SingleEffects.RevealingMark.duration = self.Effects:Get(i):GetDuration()
             elseif self.Effects:Get(i):GetName() == "Telling Mark" then
-                Turbine.Shell.WriteLine(">>>>>Telling Mark<<<<<")
+                DebugWriteLine(">>>>>Telling Mark<<<<<")
                 self.SingleEffects.TellingMark:SetEffect(self.Effects:Get(i))      
                 self.SingleEffects.TellingMark.startTime = self.Effects:Get(i):GetStartTime()
                 self.SingleEffects.TellingMark.duration = self.Effects:Get(i):GetDuration()
             end
              
-            Turbine.Shell.WriteLine(">>>>"..tostring(self.Effects:Get(i):GetName()).."  "..tostring(self.Effects:Get(i)).."<<<<")       
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetID()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsDebuff()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetName()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsCurable()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetStartTime()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDuration()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDescription()))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(string.format("%x",self.Effects:Get(i):GetIcon())))
-            Turbine.Shell.WriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetCategory()))
+            DebugWriteLine(">>>>"..tostring(self.Effects:Get(i):GetName()).."  "..tostring(self.Effects:Get(i)).."<<<<")       
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetID()))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsDebuff()))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetName()))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsCurable()))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetStartTime()))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDuration()))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDescription()))
+            DebugWriteLine(">>>>>>"..tostring(string.format("%x",self.Effects:Get(i):GetIcon())))
+            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetCategory()))
 
         end
     end
     
     self:SetWantsUpdates(false)
-    Turbine.Shell.WriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
+    DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
 end
 
 function TargetBox:DumpData()
-    Turbine.Shell.WriteLine(">>>>>Data dump  ID : "..tostring(self.ID))
-    Turbine.Shell.WriteLine(">>>>>    EntityControl : "..tostring(self.TargetSelection))
+    DebugWriteLine(">>>>>Data dump  ID : "..tostring(self.ID))
+    DebugWriteLine(">>>>>    EntityControl : "..tostring(self.TargetSelection))
      if self.TargetSelection:GetEntity() ~=nil then
-        Turbine.Shell.WriteLine(">>>>>    Entity      : "..tostring(self.TargetSelection:GetEntity()))
-        Turbine.Shell.WriteLine(">>>>>    Entity Name : "..tostring(self.TargetSelection:GetEntity():GetName()))
+        DebugWriteLine(">>>>>    Entity      : "..tostring(self.TargetSelection:GetEntity()))
+        DebugWriteLine(">>>>>    Entity Name : "..tostring(self.TargetSelection:GetEntity():GetName()))
     else
-        Turbine.Shell.WriteLine(">>>>>    NO TARGET")
+        DebugWriteLine(">>>>>    NO TARGET")
     end        
 end
 

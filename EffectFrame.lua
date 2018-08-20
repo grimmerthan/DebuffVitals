@@ -7,7 +7,7 @@ EffectFrame = class (Turbine.UI.Control)
 function EffectFrame:Constructor (CurrentFrame, TargetEffect)
     Turbine.UI.Control.Constructor(self)
     
-    Turbine.Shell.WriteLine("Creating EffectFrame : "..tostring(TargetEffect))
+    DebugWriteLine("Creating EffectFrame : "..tostring(TargetEffect))
     
     self.flashPeriod = 2
     self.lastFlash = 0
@@ -55,13 +55,13 @@ function EffectFrame:SetEffect(value, target)
     self.effect:SetEffect(value)
     
     self.startTime = value:GetStartTime()
-    Turbine.Shell.WriteLine("self.startTime - "..tostring(self.startTime))
+    DebugWriteLine("self.startTime - "..tostring(self.startTime))
     self.duration = value:GetDuration()
-    Turbine.Shell.WriteLine("self.duration - "..tostring(self.duration))    
+    DebugWriteLine("self.duration - "..tostring(self.duration))    
     self.endTime = (self.startTime + self.duration)
-    Turbine.Shell.WriteLine("self.endTime - "..tostring(self.endTime))
+    DebugWriteLine("self.endTime - "..tostring(self.endTime))
     if (Turbine.Engine.GetGameTime() < self.endTime) then
-        Turbine.Shell.WriteLine("self:SetWantsUpdates(true)")
+        DebugWriteLine("self:SetWantsUpdates(true)")
         self:SetWantsUpdates(true)
     end
 end

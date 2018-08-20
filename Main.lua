@@ -22,11 +22,19 @@ import "Grimmerthan.DebuffVitals.TargetBox"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 
+DebugEnabled = false
+
+function DebugWriteLine (message)
+    if DebugEnabled then
+        Turbine.Shell.WriteLine(message)
+    end
+end
+
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
 -- ------------------------------------------------------------------------
 function plugin.Unload()
-    Turbine.Shell.WriteLine("Unloading TargetChanged handler")
+    DebugWriteLine("Unloading TargetChanged handler")
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
     for key,box in pairs(targets) do
@@ -94,48 +102,48 @@ function CountTargets()
 end
 
 function AddNewTarget()
-    Turbine.Shell.WriteLine("Entering AddNewTargetFrame...")
+    DebugWriteLine("Entering AddNewTargetFrame...")
     Count = Count + 1
 --    NewTarget = TargetBox.new(Count)
     NewTarget = TargetBox(Count)
-    Turbine.Shell.WriteLine("NewTarget : "..tostring(NewTarget))
+    DebugWriteLine("NewTarget : "..tostring(NewTarget))
     targets[Count] = NewTarget
     TargetChangeHandler (NewTarget)
-    Turbine.Shell.WriteLine("Exiting AddNewTargetFrame...")
+    DebugWriteLine("Exiting AddNewTargetFrame...")
 end
 
 function RemoveTarget(ID)
-    Turbine.Shell.WriteLine("Entering RemoveTargetFrame...")
+    DebugWriteLine("Entering RemoveTargetFrame...")
     for key,box in pairs(targets) do 
-        Turbine.Shell.WriteLine("targets[key].ID == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
+        DebugWriteLine("targets[key].ID == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
         if TargetBox.GetID(box) == ID then
-            Turbine.Shell.WriteLine("Removing : "..tostring (ID))
+            DebugWriteLine("Removing : "..tostring (ID))
             if not TargetBox.IsLocked(box) then
-                Turbine.Shell.WriteLine("Processing Removal...")
+                DebugWriteLine("Processing Removal...")
                 TargetBox.DestroyFrame(box)
                 table.remove(targets, key)
             end
             break
         end
     end
-    Turbine.Shell.WriteLine("Exiting RemoveTargetFrame...")
+    DebugWriteLine("Exiting RemoveTargetFrame...")
 end
 
 --[[
 function RemoveOtherTargets(ID)
-    Turbine.Shell.WriteLine("Entering RemoveOtherTargets...")
+    DebugWriteLine("Entering RemoveOtherTargets...")
     for key,box in pairs(targets) do 
-        Turbine.Shell.WriteLine("targets[key].ID == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
+        DebugWriteLine("targets[key].ID == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
         if TargetBox.GetID(box) ~= ID then
-            Turbine.Shell.WriteLine("Removing : "..tostring (ID))
+            DebugWriteLine("Removing : "..tostring (ID))
             if not TargetBox.IsLocked(box) then
-                Turbine.Shell.WriteLine("Processing Removal...")
+                DebugWriteLine("Processing Removal...")
                 TargetBox.DestroyFrame(box)
                 table.remove(targets, key)
             end
         end
     end
-    Turbine.Shell.WriteLine("Exiting RemoveOtherTargets...")
+    DebugWriteLine("Exiting RemoveOtherTargets...")
 end
 ]]
 
@@ -158,12 +166,12 @@ AddNewTarget()
 
 --[[
 
-Turbine.Shell.WriteLine("Turbine.Gameplay.Effect...")
+DebugWriteLine("Turbine.Gameplay.Effect...")
 for key, value in pairs (Turbine.Gameplay.Effect) do
-    Turbine.Shell.WriteLine(tostring(key))
+    DebugWriteLine(tostring(key))
 end
-Turbine.Shell.WriteLine("Turbine.Gameplay.EffectList...")
+DebugWriteLine("Turbine.Gameplay.EffectList...")
 for key, value in pairs (Turbine.Gameplay.EffectList) do
-    Turbine.Shell.WriteLine(tostring(key))
+    DebugWriteLine(tostring(key))
 end
 ]]--
