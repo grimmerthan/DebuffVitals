@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Plugin>
+  <Information>
+  <Name>DebuffVitals</Name>
+  <Author>Grimmerthan</Author>
+  <Version>1.00</Version>
+  </Information>
+  <Package>Grimmerthan.DebuffVitals.Main</Package>
+  <Configuration Apartment="DebuffVitals" />
+</Plugin>
