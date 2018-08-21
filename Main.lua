@@ -22,7 +22,7 @@ import "Grimmerthan.DebuffVitals.TargetBox"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 
-DebugEnabled = false
+DebugEnabled = true
 
 function DebugWriteLine (message)
     if DebugEnabled then
@@ -106,7 +106,7 @@ function AddNewTarget()
     Count = Count + 1
 --    NewTarget = TargetBox.new(Count)
     NewTarget = TargetBox(Count)
-    DebugWriteLine("NewTarget : "..tostring(NewTarget))
+--    DebugWriteLine("NewTarget : "..tostring(NewTarget))
     targets[Count] = NewTarget
     TargetChangeHandler (NewTarget)
     DebugWriteLine("Exiting AddNewTargetFrame...")

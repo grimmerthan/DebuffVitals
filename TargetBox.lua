@@ -16,13 +16,10 @@ function TargetBox:Constructor(num)
     self.Target = nil
     self.Morale = {}
     self.Power = {}
-    self.EffectsBar = {}
-    self.Effects = nil
 
     self:SetSize(200,146)
     self:SetVisible(true) 
     self:SetMouseVisible (false)
---    self:SetBackColor(Turbine.UI.Color.White)
     self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (Count % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (Count % 20) * 40)
     self:SetZOrder (0)
 
@@ -136,6 +133,7 @@ function TargetBox:Constructor(num)
     -- ------------------------------------------------------------------------
     -- Effect Display
     -- ------------------------------------------------------------------------
+    self.EffectList = nil
     self.SingleEffects = {}
     self.SingleEffects.FireLore = EffectFrame(self, "Fire-lore")
     self.SingleEffects.FireLore:SetPosition (0,63)
@@ -242,8 +240,7 @@ function TargetBox:UpdateTarget()
     DebugWriteLine("Entering UpdateTarget")
     if self.Locked then
         if self.TargetSelection:GetEntity() then
-            DebugWriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity()))
-            DebugWriteLine("  No change - lock on target : "..tostring(self.TargetSelection:GetEntity():GetName()))
+            DebugWriteLine("  No change - locked on target : "..tostring(self.TargetSelection:GetEntity():GetName()))
             self:SetWantsUpdates(true)
         else
             DebugWriteLine("  No change - locked on NO TARGET")
@@ -274,37 +271,29 @@ function TargetBox:UpdateTarget()
             RemoveCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler)
             self.Target = nil
         end
+                  
+        self.SingleEffects.FireLore:ClearCurrentEffect()
+        self.SingleEffects.FrostLore:ClearCurrentEffect()
+        self.SingleEffects.RevealingMark:ClearCurrentEffect()
+        self.SingleEffects.TellingMark:ClearCurrentEffect()
 
-        self.SingleEffects.FireLore.effect:SetEffect()
-        self.SingleEffects.FireLore.timer:SetText("inactive")
-        self.SingleEffects.FireLore:SetWantsUpdates(false)
-
-        self.SingleEffects.FrostLore.effect:SetEffect()
-        self.SingleEffects.FrostLore.timer:SetText("inactive")
-        self.SingleEffects.FrostLore:SetWantsUpdates(false)
-        
-        self.SingleEffects.RevealingMark.effect:SetEffect()
-        self.SingleEffects.RevealingMark.timer:SetText("inactive")
-        self.SingleEffects.RevealingMark:SetWantsUpdates(false)
-
-        self.SingleEffects.TellingMark.effect:SetEffect()
-        self.SingleEffects.TellingMark.timer:SetText("inactive")
-        self.SingleEffects.TellingMark:SetWantsUpdates(false)
-
-        if self.Effects then
-            RemoveCallback(self.Effects, "EffectAdded", EffectsChangedHandler)
-            RemoveCallback(self.Effects, "EffectRemoved", EffectsChangedHandler)
-            RemoveCallback(self.Effects, "EffectsCleared", EffectsChangedHandler)
-            self.Effects = nil   
+        if self.EffectList then
+            RemoveCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
+            RemoveCallback(self.EffectList, "EffectRemoved", EffectsChangedHandler)
+            RemoveCallback(self.EffectList, "EffectsCleared", EffectsChangedHandler)
+            self.EffectList = nil   
         end
 
         self.Target = LocalUser:GetTarget()
         self.TargetSelection:SetEntity( self.Target )
 
+        -- ------------------------------------------------------------------------
+        -- This one command is currently critical for EntityControl to work as expected.
+        -- Deleting or re-ordering this command impacts target locks. 
+        -- ------------------------------------------------------------------------
         local ThrowAwayGetTargetCall = LocalUser:GetTarget()
     
         if self.Target then
-            DebugWriteLine("  New target : "..tostring(self.Target))
             DebugWriteLine("  New target's name : "..tostring(self.Target:GetName()))
             self.TitleBar:SetText(self.TargetSelection:GetEntity():GetName())
     
@@ -329,12 +318,12 @@ function TargetBox:UpdateTarget()
 
                 PowerChangedHandler(self.Target)
 
-                self.Effects = self.Target:GetEffects()
-                self.Effects.self = self
-               
-                AddCallback(self.Effects, "EffectAdded", EffectsChangedHandler)
-                AddCallback(self.Effects, "EffectRemoved", EffectsChangedHandler)
-                AddCallback(self.Effects, "EffectsCleared", EffectsChangedHandler)
+                self.EffectList = self.Target:GetEffects()
+                self.EffectList.self = self
+              
+                AddCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
+                AddCallback(self.EffectList, "EffectRemoved", EffectsChangedHandler)
+                AddCallback(self.EffectList, "EffectsCleared", EffectsChangedHandler)
 
                 EffectsChangedHandler(self.Target)
 
@@ -355,61 +344,39 @@ function TargetBox:Update()
     DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
 
     if self.Target then
-        local count = self.Effects:GetCount()
-        
-        DebugWriteLine("Effect name "..tostring(self.Target:GetName()))
-        DebugWriteLine("Effect count "..tostring(self.Effects:GetCount()))
-        self.SingleEffects.FireLore.effect:SetEffect()
-        self.SingleEffects.FireLore.timer:SetText("inactive")
-        self.SingleEffects.FireLore:SetWantsUpdates(false)
+        DebugWriteLine("Target name "..tostring(self.Target:GetName()))
+        DebugWriteLine("Effect count "..tostring(self.EffectList:GetCount()))
+        DebugWriteLine("Effect count "..tostring(self.TargetSelection:GetEntity():GetEffects():GetCount()))
 
-        self.SingleEffects.FrostLore.effect:SetEffect()
-        self.SingleEffects.FrostLore.timer:SetText("inactive")
-        self.SingleEffects.FrostLore:SetWantsUpdates(false)
-        
-        self.SingleEffects.RevealingMark.effect:SetEffect()
-        self.SingleEffects.RevealingMark.timer:SetText("inactive")
-        self.SingleEffects.RevealingMark:SetWantsUpdates(false)
-
-        self.SingleEffects.TellingMark.effect:SetEffect()
-        self.SingleEffects.TellingMark.timer:SetText("inactive")
-        self.SingleEffects.TellingMark:SetWantsUpdates(false)  
-
-        for i = 1, count do  
-            if self.Effects:Get(i):GetName() == "Fire-lore" then
+        for i = 1, self.EffectList:GetCount() do
+            DebugWriteLine("Effect name "..tostring(self.EffectList:Get(i):GetName()))        
+            if self.EffectList:Get(i):GetName() == "Fire-lore" then
                 DebugWriteLine(">>>>>Fire-lore<<<<<")
-                self.SingleEffects.FireLore:SetEffect(self.Effects:Get(i))      
-                self.SingleEffects.FireLore.startTime = self.Effects:Get(i):GetStartTime()
-                self.SingleEffects.FireLore.duration = self.Effects:Get(i):GetDuration()
-            elseif self.Effects:Get(i):GetName() == "Frost-lore" then
+                self.SingleEffects.FireLore:SetCurrentEffect(self.EffectList:Get(i))      
+            elseif self.EffectList:Get(i):GetName() == "Frost-lore" then
                 DebugWriteLine(">>>>>Frost-lore<<<<<")
-                self.SingleEffects.FrostLore:SetEffect(self.Effects:Get(i))      
-                self.SingleEffects.FrostLore.startTime = self.Effects:Get(i):GetStartTime()
-                self.SingleEffects.FrostLore.duration = self.Effects:Get(i):GetDuration()
-            elseif self.Effects:Get(i):GetName() == "Revealing Mark" then
+                self.SingleEffects.FrostLore:SetCurrentEffect(self.EffectList:Get(i))      
+            elseif self.EffectList:Get(i):GetName() == "Revealing Mark" then
                 DebugWriteLine(">>>>>Revealing Mark<<<<<")
-                self.SingleEffects.RevealingMark:SetEffect(self.Effects:Get(i))      
-                self.SingleEffects.RevealingMark.startTime = self.Effects:Get(i):GetStartTime()
-                self.SingleEffects.RevealingMark.duration = self.Effects:Get(i):GetDuration()
-            elseif self.Effects:Get(i):GetName() == "Telling Mark" then
+                self.SingleEffects.RevealingMark:SetCurrentEffect(self.EffectList:Get(i))      
+            elseif self.EffectList:Get(i):GetName() == "Telling Mark" then
                 DebugWriteLine(">>>>>Telling Mark<<<<<")
-                self.SingleEffects.TellingMark:SetEffect(self.Effects:Get(i))      
-                self.SingleEffects.TellingMark.startTime = self.Effects:Get(i):GetStartTime()
-                self.SingleEffects.TellingMark.duration = self.Effects:Get(i):GetDuration()
+                self.SingleEffects.TellingMark:SetCurrentEffect(self.EffectList:Get(i))      
             end
-             
-            DebugWriteLine(">>>>"..tostring(self.Effects:Get(i):GetName()).."  "..tostring(self.Effects:Get(i)).."<<<<")       
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetID()))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsDebuff()))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetName()))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):IsCurable()))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetStartTime()))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDuration()))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetDescription()))
-            DebugWriteLine(">>>>>>"..tostring(string.format("%x",self.Effects:Get(i):GetIcon())))
-            DebugWriteLine(">>>>>>"..tostring(self.Effects:Get(i):GetCategory()))
 
-        end
+--[[             
+            DebugWriteLine(">>>>"..tostring(self.EffectList:Get(i):GetName()).."  "..tostring(self.EffectList:Get(i)).."<<<<")       
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetID()))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):IsDebuff()))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetName()))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):IsCurable()))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetStartTime()))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetDuration()))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetDescription()))
+            DebugWriteLine(">>>>>>"..tostring(string.format("%x",self.EffectList:Get(i):GetIcon())))
+            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetCategory()))
+]]--
+        end       
     end
     
     self:SetWantsUpdates(false)
@@ -423,7 +390,7 @@ function TargetBox:DumpData()
         DebugWriteLine(">>>>>    Entity      : "..tostring(self.TargetSelection:GetEntity()))
         DebugWriteLine(">>>>>    Entity Name : "..tostring(self.TargetSelection:GetEntity():GetName()))
     else
-        DebugWriteLine(">>>>>    NO TARGET")
+        DebugWriteLine(">>>>>    No target")
     end        
 end
 
