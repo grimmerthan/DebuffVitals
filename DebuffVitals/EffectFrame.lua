@@ -15,6 +15,7 @@ function EffectFrame:Constructor (CurrentFrame, TargetEffect)
     self.startTime = 0
     self.duration = 0
     self.endTime = 0
+    self.lastSeen = nil
 
     self:SetParent(CurrentFrame)
     self:SetVisible(true)
@@ -22,6 +23,7 @@ function EffectFrame:Constructor (CurrentFrame, TargetEffect)
 --    self:SetBackColor(Turbine.UI.Color.Gray)
     self:SetEnabled(false)
 
+--  effect display 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
     self.effectDisplay:SetParent(self)
@@ -63,7 +65,11 @@ function EffectFrame:ClearCurrentEffect()
     self.startTime = 0
     self.duration = 0
     self.endTime = 0
+    self.lastSeen = 0
     
+    
+    self.effect = nil
+
     self.effectDisplay:SetVisible(false)
 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()

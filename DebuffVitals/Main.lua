@@ -22,7 +22,7 @@ import "Grimmerthan.DebuffVitals.TargetBox"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 
-DebugEnabled = true
+DebugEnabled = false
 
 function DebugWriteLine (message)
     if DebugEnabled then

@@ -147,8 +147,6 @@ function TargetBox:Constructor(num)
     self.SingleEffects.TellingMark = EffectFrame(self, "Telling Mark")
     self.SingleEffects.TellingMark:SetPosition (0,126)
     
-    
-    
     -- ------------------------------------------------------------------------
     -- Mouse and key interactions
     -- ------------------------------------------------------------------------
@@ -332,7 +330,11 @@ function TargetBox:UpdateTarget()
             else
                 DebugWriteLine("  Changing on target - no level found")
                 self.TitleBar:SetText(self.Target:GetName())
+                self:SetWantsUpdates(false)                    
             end
+        else
+            DebugWriteLine("NO TARGET")        
+            self:SetWantsUpdates(false)        
         end
 
     end
@@ -341,46 +343,56 @@ function TargetBox:UpdateTarget()
 end
 
 function TargetBox:Update()
-    DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
+--    DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
 
     if self.Target then
-        DebugWriteLine("Target name "..tostring(self.Target:GetName()))
-        DebugWriteLine("Effect count "..tostring(self.EffectList:GetCount()))
-        DebugWriteLine("Effect count "..tostring(self.TargetSelection:GetEntity():GetEffects():GetCount()))
+--        DebugWriteLine("Target name "..tostring(self.Target:GetName()))
+--        DebugWriteLine("Effect count "..tostring(self.EffectList:GetCount()))
 
         for i = 1, self.EffectList:GetCount() do
             DebugWriteLine("Effect name "..tostring(self.EffectList:Get(i):GetName()))        
             if self.EffectList:Get(i):GetName() == "Fire-lore" then
                 DebugWriteLine(">>>>>Fire-lore<<<<<")
-                self.SingleEffects.FireLore:SetCurrentEffect(self.EffectList:Get(i))      
+                self.SingleEffects.FireLore:SetCurrentEffect(self.EffectList:Get(i))    
+                self.SingleEffects.FireLore.lastSeen = Turbine.Engine.GetGameTime()             
             elseif self.EffectList:Get(i):GetName() == "Frost-lore" then
                 DebugWriteLine(">>>>>Frost-lore<<<<<")
-                self.SingleEffects.FrostLore:SetCurrentEffect(self.EffectList:Get(i))      
+                self.SingleEffects.FrostLore:SetCurrentEffect(self.EffectList:Get(i))
+                self.SingleEffects.FrostLore.lastSeen = Turbine.Engine.GetGameTime()      
             elseif self.EffectList:Get(i):GetName() == "Revealing Mark" then
                 DebugWriteLine(">>>>>Revealing Mark<<<<<")
-                self.SingleEffects.RevealingMark:SetCurrentEffect(self.EffectList:Get(i))      
+                self.SingleEffects.RevealingMark:SetCurrentEffect(self.EffectList:Get(i))
+                self.SingleEffects.RevealingMark.lastSeen = Turbine.Engine.GetGameTime()      
             elseif self.EffectList:Get(i):GetName() == "Telling Mark" then
                 DebugWriteLine(">>>>>Telling Mark<<<<<")
-                self.SingleEffects.TellingMark:SetCurrentEffect(self.EffectList:Get(i))      
+                self.SingleEffects.TellingMark:SetCurrentEffect(self.EffectList:Get(i))
+                self.SingleEffects.TellingMark.lastSeen = Turbine.Engine.GetGameTime() 
             end
-
---[[             
-            DebugWriteLine(">>>>"..tostring(self.EffectList:Get(i):GetName()).."  "..tostring(self.EffectList:Get(i)).."<<<<")       
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetID()))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):IsDebuff()))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetName()))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):IsCurable()))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetStartTime()))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetDuration()))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetDescription()))
-            DebugWriteLine(">>>>>>"..tostring(string.format("%x",self.EffectList:Get(i):GetIcon())))
-            DebugWriteLine(">>>>>>"..tostring(self.EffectList:Get(i):GetCategory()))
-]]--
         end       
     end
     
+    if (self.SingleEffects.FireLore.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.FireLore.lastSeen) > 5 then
+        DebugWriteLine(">>>>>Fire-lore was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.FireLore.lastSeen).." seconds ago.")
+        self.SingleEffects.FireLore:ClearCurrentEffect()
+    end
+
+    if (self.SingleEffects.FrostLore.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.FrostLore.lastSeen) > 5 then
+        DebugWriteLine(">>>>>Frost-Lore was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.FrostLore.lastSeen).." seconds ago.")
+        self.SingleEffects.FrostLore:ClearCurrentEffect()
+    end
+    
+    if (self.SingleEffects.RevealingMark.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.RevealingMark.lastSeen) > 5 then
+        DebugWriteLine(">>>>>Revealing Mark was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.RevealingMark.lastSeen).." seconds ago.")
+        self.SingleEffects.RevealingMark:ClearCurrentEffect()
+    end
+    
+    if (self.SingleEffects.TellingMark.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.TellingMark.lastSeen) > 5 then
+        DebugWriteLine(">>>>>Telling Mark was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.TellingMark.lastSeen).." seconds ago.")
+        self.SingleEffects.TellingMark:ClearCurrentEffect()  
+    end            
+    
     self:SetWantsUpdates(false)
-    DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
+--    DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
 end
 
 function TargetBox:DumpData()
@@ -402,3 +414,15 @@ function TargetBox:IsLocked()
     return self.Locked
 end
 
+function TargetBox:DumpEffect(effect)
+    DebugWriteLine(">>>>"..tostring(effect:GetName()).."  "..tostring(effect.."<<<<"))       
+    DebugWriteLine(">>>>>>"..tostring(effect:GetID()))
+    DebugWriteLine(">>>>>>"..tostring(effect:IsDebuff()))
+    DebugWriteLine(">>>>>>"..tostring(effect:GetName()))
+    DebugWriteLine(">>>>>>"..tostring(effect:IsCurable()))
+    DebugWriteLine(">>>>>>"..tostring(effect:GetStartTime()))
+    DebugWriteLine(">>>>>>"..tostring(effect:GetDuration()))
+    DebugWriteLine(">>>>>>"..tostring(effect:GetDescription()))
+    DebugWriteLine(">>>>>>"..tostring(string.format("%x",effect:GetIcon())))
+    DebugWriteLine(">>>>>>"..tostring(effect:GetCategory()))
+end

@@ -3,7 +3,7 @@
   <Information>
   <Name>DebuffVitals</Name>
   <Author>Grimmerthan</Author>
-  <Version>1.00</Version>
+  <Version>0.8alpha</Version>
   </Information>
   <Package>Grimmerthan.DebuffVitals.Main</Package>
   <Configuration Apartment="DebuffVitals" />
