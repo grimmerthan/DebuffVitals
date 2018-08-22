@@ -343,11 +343,11 @@ function TargetBox:UpdateTarget()
 end
 
 function TargetBox:Update()
---    DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
+    DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
 
     if self.Target then
---        DebugWriteLine("Target name "..tostring(self.Target:GetName()))
---        DebugWriteLine("Effect count "..tostring(self.EffectList:GetCount()))
+        DebugWriteLine("Target name "..tostring(self.Target:GetName()))
+        DebugWriteLine("Effect count "..tostring(self.EffectList:GetCount()))
 
         for i = 1, self.EffectList:GetCount() do
             DebugWriteLine("Effect name "..tostring(self.EffectList:Get(i):GetName()))        
@@ -370,17 +370,7 @@ function TargetBox:Update()
             end
         end       
     end
-    
-    if (self.SingleEffects.FireLore.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.FireLore.lastSeen) > 5 then
-        DebugWriteLine(">>>>>Fire-lore was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.FireLore.lastSeen).." seconds ago.")
-        self.SingleEffects.FireLore:ClearCurrentEffect()
-    end
 
-    if (self.SingleEffects.FrostLore.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.FrostLore.lastSeen) > 5 then
-        DebugWriteLine(">>>>>Frost-Lore was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.FrostLore.lastSeen).." seconds ago.")
-        self.SingleEffects.FrostLore:ClearCurrentEffect()
-    end
-    
     if (self.SingleEffects.RevealingMark.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.RevealingMark.lastSeen) > 5 then
         DebugWriteLine(">>>>>Revealing Mark was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.RevealingMark.lastSeen).." seconds ago.")
         self.SingleEffects.RevealingMark:ClearCurrentEffect()
@@ -392,7 +382,7 @@ function TargetBox:Update()
     end            
     
     self:SetWantsUpdates(false)
---    DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
+    DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
 end
 
 function TargetBox:DumpData()
