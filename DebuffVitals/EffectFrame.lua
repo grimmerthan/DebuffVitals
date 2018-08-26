@@ -4,10 +4,10 @@
 
 EffectFrame = class (Turbine.UI.Control)
 
-function EffectFrame:Constructor (CurrentFrame, TargetEffect)
+function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
-    DebugWriteLine("Creating EffectFrame : "..tostring(TargetEffect))
+    DebugWriteLine("Creating EffectFrame : "..tostring(EffectDefinition[2]))
     
     self.flashPeriod = 2
     self.lastFlash = 0
@@ -16,13 +16,52 @@ function EffectFrame:Constructor (CurrentFrame, TargetEffect)
     self.duration = 0
     self.endTime = 0
     self.lastSeen = nil
+    self.openEnded = EffectDefinition[4]
 
     self:SetParent(CurrentFrame)
     self:SetVisible(true)
-    self:SetSize (200,20)
---    self:SetBackColor(Turbine.UI.Color.Gray)
+    self:SetSize (200,20)     
     self:SetEnabled(false)
 
+    
+--[[
+SeaShell DarkSalmon DarkGoldenrod YellowGreen PaleGreen 
+SpringGreen AliceBlue OrangeRed 
+LightSalmon SlateBlue Aquamarine OliveDrab PapayaWhip LemonChiffon OldLace FloralWhite 
+Maroon Linen DarkSlateGray CadetBlue NavajoWhite Violet PaleVioletRed LightCoral Cornsilk 
+Silver DarkCyan DarkOrchid AntiqueWhite MediumSpringGreen IndianRed DarkBlue Sienna 
+ForestGreen LightSlateGray BlanchedAlmond Crimson Moccasin LimeGreen HotPink PeachPuff 
+DimGray Purple MediumSlateBlue Coral MediumBlue Red Teal MintCream Khaki DodgerBlue 
+DarkOrange White Goldenrod Orchid Ivory DarkMagenta LightCyan LightSeaGreen MediumPurple 
+LightSteelBlue Green DarkSeaGreen LightYellow Bisque Cyan Thistle LightPink CornflowerBlue 
+LightSkyBlue Beige Aqua DarkGray PowderBlue Gainsboro Lime MediumVioletRed Salmon 
+Firebrick RosyBrown Lavender Honeydew DarkSlateBlue MediumAquamarine Yellow DarkViolet 
+WhiteSmoke Wheat Chartreuse Gold Turquoise SkyBlue BurlyWood LavenderBlush Tomato Magenta 
+Blue Tan DeepPink PaleTurquoise SlateGray Pink DeepSkyBlue MediumTurquoise DarkKhaki 
+GreenYellow Peru SeaGreen SandyBrown LightBlue SaddleBrown SteelBlue RoyalBlue Olive 
+Chocolate Indigo Transparent LightGreen Plum Gray DarkTurquoise DarkRed MediumSeaGreen 
+GhostWhite DarkGreen Snow LawnGreen PaleGoldenrod Azure MidnightBlue Orange MistyRose 
+LightGray Black Navy Brown DarkOliveGreen MediumOrchid LightGoldenrodYellow BlueViolet 
+Fuchsia
+
+    if EffectDefinition[1] == "burglar" then
+        self:SetBackColor(Turbine.UI.Color.SpringGreen)
+    elseif EffectDefinition[1] == "captain" then
+        self:SetBackColor(Turbine.UI.Color.AliceBlue)
+    elseif EffectDefinition[1] == "champion" then
+        self:SetBackColor(Turbine.UI.Color.OrangeRed)
+    elseif EffectDefinition[1] == "hunter" then
+        self:SetBackColor(Turbine.UI.Color.DarkGoldenrod)
+    elseif EffectDefinition[1] == "lore-master" then
+        self:SetBackColor(Turbine.UI.Color.YellowGreen)
+    elseif EffectDefinition[1] == "runekeeper" then
+        self:SetBackColor(Turbine.UI.Color.Gray)
+    elseif EffectDefinition[1] == "warden" then
+        self:SetBackColor(Turbine.UI.Color.PaleGreen)
+    end    
+
+    self:SetBackColor(Turbine.UI.Color.Gray)
+]]--    
 --  effect display 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
@@ -37,7 +76,7 @@ function EffectFrame:Constructor (CurrentFrame, TargetEffect)
     self.name:SetPosition(20, 0) 
     self.name:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.name:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
-    self.name:SetText(TargetEffect)
+    self.name:SetText(tostring(EffectDefinition[2]))
     
     self.timer = Turbine.UI.Label()
     self.timer:SetVisible(true)
@@ -66,8 +105,7 @@ function EffectFrame:ClearCurrentEffect()
     self.duration = 0
     self.endTime = 0
     self.lastSeen = 0
-    
-    
+
     self.effect = nil
 
     self.effectDisplay:SetVisible(false)

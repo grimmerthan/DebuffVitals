@@ -21,14 +21,40 @@ import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.TargetBox"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.EffectFrame"
+import "Grimmerthan.DebuffVitals.Effects"
 
-DebugEnabled = false
+DebugEnabled = true
 
 function DebugWriteLine (message)
     if DebugEnabled then
         Turbine.Shell.WriteLine(message)
     end
 end
+
+function plugin.GetOptionsPanel (self)
+
+    local panel = Turbine.UI.Control(self)
+    
+    
+
+    local checkbox1 = Turbine.UI.Lotro.CheckBox()
+    checkbox1:SetParent(panel)
+    checkbox1:SetPosition(10, 10)
+    checkbox1:SetSize(280, 20)
+    checkbox1:SetText("Fallora du")
+
+    checkbox1:SetChecked(true)
+
+    local checkbox2 = Turbine.UI.Lotro.CheckBox()
+    checkbox2:SetParent(panel)
+    checkbox2:SetPosition(10, 30)
+    checkbox2:SetSize(280, 20)
+    checkbox2:SetText("Skratta du")
+
+    panel:SetSize(200, 300)
+    return panel
+end
+
 
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
@@ -37,7 +63,7 @@ function plugin.Unload()
     DebugWriteLine("Unloading TargetChanged handler")
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
-    for key,box in pairs(targets) do
+    for key,box in pairs(AllTargetFrames) do
         if box.Target then 
             RemoveCallback(box.Target, "MoraleChanged", MoraleChangedHandler);
             RemoveCallback(box.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
@@ -95,7 +121,7 @@ end
 -- ------------------------------------------------------------------------
 function CountTargets()
     local number = 0
-    for key,box in pairs(targets) do 
+    for key,box in pairs(AllTargetFrames) do 
         number = number + 1
     end
     return number
@@ -107,21 +133,21 @@ function AddNewTarget()
 --    NewTarget = TargetBox.new(Count)
     NewTarget = TargetBox(Count)
 --    DebugWriteLine("NewTarget : "..tostring(NewTarget))
-    targets[Count] = NewTarget
+    AllTargetFrames[Count] = NewTarget
     TargetChangeHandler (NewTarget)
     DebugWriteLine("Exiting AddNewTargetFrame...")
 end
 
 function RemoveTarget(ID)
     DebugWriteLine("Entering RemoveTargetFrame...")
-    for key,box in pairs(targets) do 
-        DebugWriteLine("targets[key].ID == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
+    for key,box in pairs(AllTargetFrames) do 
+        DebugWriteLine("TargetBox.GetID(box) == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
         if TargetBox.GetID(box) == ID then
             DebugWriteLine("Removing : "..tostring (ID))
             if not TargetBox.IsLocked(box) then
                 DebugWriteLine("Processing Removal...")
                 TargetBox.DestroyFrame(box)
-                table.remove(targets, key)
+                table.remove(AllTargetFrames, key)
             end
             break
         end
@@ -132,14 +158,14 @@ end
 --[[
 function RemoveOtherTargets(ID)
     DebugWriteLine("Entering RemoveOtherTargets...")
-    for key,box in pairs(targets) do 
-        DebugWriteLine("targets[key].ID == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
+    for key,box in pairs(AllTargetFrames) do 
+        DebugWriteLine("TargetBox.GetID(box) == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
         if TargetBox.GetID(box) ~= ID then
             DebugWriteLine("Removing : "..tostring (ID))
             if not TargetBox.IsLocked(box) then
                 DebugWriteLine("Processing Removal...")
                 TargetBox.DestroyFrame(box)
-                table.remove(targets, key)
+                table.remove(AllTargetFrames, key)
             end
         end
     end
@@ -151,7 +177,12 @@ end
 -- Doing Stuff!
 -- ------------------------------------------------------------------------
 
-targets = {}
+
+AllTargetFrames = {}
+
+EffectsSet = {}
+
+GenerateEffectsSet()
 
 Count = 0
 
@@ -159,13 +190,24 @@ LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 
 AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 
-MenuItems = Turbine.UI.ContextMenu()
-CreateMenu(MenuItems)
+MenuItems = CreateMenu()
 
 AddNewTarget()
 
 --[[
+DebugWriteLine("Turbine.UI.Color...")
+local text = ""
+for key, value in pairs (Turbine.UI.Color) do
+    text = text.." "..tostring(key) 
+end
+    DebugWriteLine(text)
 
+for key, value in pairs (ListOfEffects) do
+    DebugWriteLine(tostring(key), tostring(value))
+    for key2, value2 in pairs (value) do
+        DebugWriteLine(tostring(key2), tostring(value2))
+    end    
+end
 DebugWriteLine("Turbine.Gameplay.Effect...")
 for key, value in pairs (Turbine.Gameplay.Effect) do
     DebugWriteLine(tostring(key))

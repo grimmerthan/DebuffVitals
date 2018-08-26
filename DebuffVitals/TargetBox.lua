@@ -17,11 +17,9 @@ function TargetBox:Constructor(num)
     self.Morale = {}
     self.Power = {}
 
-    self:SetSize(200,146)
     self:SetVisible(true) 
     self:SetMouseVisible (false)
     self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (Count % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (Count % 20) * 40)
-    self:SetZOrder (0)
 
     -- ------------------------------------------------------------------------
     -- Target Title Bar
@@ -42,7 +40,6 @@ function TargetBox:Constructor(num)
     self.TargetSelection = Turbine.UI.Lotro.EntityControl()
     self.TargetSelection:SetVisible(true)
     self.TargetSelection:SetParent (self)
-    self.TargetSelection:SetSize(200,146)
     self.TargetSelection:SetPosition (0, 20)
     self.TargetSelection:SetZOrder (100)
     
@@ -135,18 +132,17 @@ function TargetBox:Constructor(num)
     -- ------------------------------------------------------------------------
     self.EffectList = nil
     self.SingleEffects = {}
-    self.SingleEffects.FireLore = EffectFrame(self, "Fire-lore")
-    self.SingleEffects.FireLore:SetPosition (0,63)
 
-    self.SingleEffects.FrostLore = EffectFrame(self, "Frost-lore")
-    self.SingleEffects.FrostLore:SetPosition (0,84)
-    
-    self.SingleEffects.RevealingMark = EffectFrame(self, "Revealing Mark")
-    self.SingleEffects.RevealingMark:SetPosition (0,105)
+    -- create all current effects
+    local effectCount = 0
+    for k, v in pairs (EffectsSet) do
+        effectCount = effectCount + 1
+        self.SingleEffects[k] = EffectFrame(self, v)
+        self.SingleEffects[k]:SetPosition (0, 42 + effectCount * 21)
+    end     
 
-    self.SingleEffects.TellingMark = EffectFrame(self, "Telling Mark")
-    self.SingleEffects.TellingMark:SetPosition (0,126)
-    
+    self:SetSize(200, 63 + 21 * effectCount)
+    self.TargetSelection:SetSize(200, 63 * 21 * effectCount)
     -- ------------------------------------------------------------------------
     -- Mouse and key interactions
     -- ------------------------------------------------------------------------
@@ -203,14 +199,13 @@ function TargetBox:Constructor(num)
         if args.Button == Turbine.UI.MouseButton.Right then
             self.IsDragging = false
             DebugWriteLine("Showing menu")
-        
-            if CountTargets() == 1 then
+
+            if #AllTargetFrames == 1 or self.Locked then
                 MenuItems:GetItems():Get(3):SetEnabled(false)
---                MenuItems:GetItems():Get(4):SetEnabled(false)
             else
                 MenuItems:GetItems():Get(3):SetEnabled(true)
---                MenuItems:GetItems():Get(4):SetEnabled(true)
             end
+            
             MenuItems.invokerID = self.ID
             MenuItems:ShowMenu()
         end
@@ -269,11 +264,10 @@ function TargetBox:UpdateTarget()
             RemoveCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler)
             self.Target = nil
         end
-                  
-        self.SingleEffects.FireLore:ClearCurrentEffect()
-        self.SingleEffects.FrostLore:ClearCurrentEffect()
-        self.SingleEffects.RevealingMark:ClearCurrentEffect()
-        self.SingleEffects.TellingMark:ClearCurrentEffect()
+
+        for k, v in pairs (self.SingleEffects) do
+            v:ClearCurrentEffect()
+        end
 
         if self.EffectList then
             RemoveCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
@@ -346,40 +340,27 @@ function TargetBox:Update()
     DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
 
     if self.Target then
-        DebugWriteLine("Target name "..tostring(self.Target:GetName()))
-        DebugWriteLine("Effect count "..tostring(self.EffectList:GetCount()))
+        DebugWriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectList:GetCount()).." effects.")
 
-        for i = 1, self.EffectList:GetCount() do
-            DebugWriteLine("Effect name "..tostring(self.EffectList:Get(i):GetName()))        
-            if self.EffectList:Get(i):GetName() == "Fire-lore" then
-                DebugWriteLine(">>>>>Fire-lore<<<<<")
-                self.SingleEffects.FireLore:SetCurrentEffect(self.EffectList:Get(i))    
-                self.SingleEffects.FireLore.lastSeen = Turbine.Engine.GetGameTime()             
-            elseif self.EffectList:Get(i):GetName() == "Frost-lore" then
-                DebugWriteLine(">>>>>Frost-lore<<<<<")
-                self.SingleEffects.FrostLore:SetCurrentEffect(self.EffectList:Get(i))
-                self.SingleEffects.FrostLore.lastSeen = Turbine.Engine.GetGameTime()      
-            elseif self.EffectList:Get(i):GetName() == "Revealing Mark" then
-                DebugWriteLine(">>>>>Revealing Mark<<<<<")
-                self.SingleEffects.RevealingMark:SetCurrentEffect(self.EffectList:Get(i))
-                self.SingleEffects.RevealingMark.lastSeen = Turbine.Engine.GetGameTime()      
-            elseif self.EffectList:Get(i):GetName() == "Telling Mark" then
-                DebugWriteLine(">>>>>Telling Mark<<<<<")
-                self.SingleEffects.TellingMark:SetCurrentEffect(self.EffectList:Get(i))
-                self.SingleEffects.TellingMark.lastSeen = Turbine.Engine.GetGameTime() 
+        for k, v in pairs (self.SingleEffects) do
+            for i = 1, self.EffectList:GetCount() do
+                DebugWriteLine("Matching "..tostring(v.name:GetText()).." for "..tostring(self.EffectList:Get(i):GetName()))
+                if self.EffectList:Get(i):GetName() == v.name:GetText() then
+                    DebugWriteLine("Match!")
+                    v:SetCurrentEffect(self.EffectList:Get(i))
+                    v.lastSeen = Turbine.Engine.GetGameTime()
+                    break
+                end
+            end
+            if v.openEnded == 1 and v.lastSeen > 0 then
+                DebugWriteLine("Checking last seen on "..tostring(v.name:GetText()))
+                if (Turbine.Engine.GetGameTime() - v.lastSeen) > 5 then       
+                    DebugWriteLine("   not seen for "..tostring(Turbine.Engine.GetGameTime() - v.lastSeen).." seconds ago.")
+                    v:ClearCurrentEffect()
+                end
             end
         end       
-    end
-
-    if (self.SingleEffects.RevealingMark.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.RevealingMark.lastSeen) > 5 then
-        DebugWriteLine(">>>>>Revealing Mark was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.RevealingMark.lastSeen).." seconds ago.")
-        self.SingleEffects.RevealingMark:ClearCurrentEffect()
-    end
-    
-    if (self.SingleEffects.TellingMark.lastSeen > 0) and (Turbine.Engine.GetGameTime() - self.SingleEffects.TellingMark.lastSeen) > 5 then
-        DebugWriteLine(">>>>>Telling Mark was not seen for last  "..tostring(Turbine.Engine.GetGameTime() - self.SingleEffects.TellingMark.lastSeen).." seconds ago.")
-        self.SingleEffects.TellingMark:ClearCurrentEffect()  
-    end            
+    end   
     
     self:SetWantsUpdates(false)
     DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
@@ -402,17 +383,4 @@ end
 
 function TargetBox:IsLocked()
     return self.Locked
-end
-
-function TargetBox:DumpEffect(effect)
-    DebugWriteLine(">>>>"..tostring(effect:GetName()).."  "..tostring(effect.."<<<<"))       
-    DebugWriteLine(">>>>>>"..tostring(effect:GetID()))
-    DebugWriteLine(">>>>>>"..tostring(effect:IsDebuff()))
-    DebugWriteLine(">>>>>>"..tostring(effect:GetName()))
-    DebugWriteLine(">>>>>>"..tostring(effect:IsCurable()))
-    DebugWriteLine(">>>>>>"..tostring(effect:GetStartTime()))
-    DebugWriteLine(">>>>>>"..tostring(effect:GetDuration()))
-    DebugWriteLine(">>>>>>"..tostring(effect:GetDescription()))
-    DebugWriteLine(">>>>>>"..tostring(string.format("%x",effect:GetIcon())))
-    DebugWriteLine(">>>>>>"..tostring(effect:GetCategory()))
 end

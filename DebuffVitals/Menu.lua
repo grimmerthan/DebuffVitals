@@ -1,13 +1,13 @@
 -- ------------------------------------------------------------------------
 -- Menu and Menu Utilities
 -- ------------------------------------------------------------------------
-function CreateMenu(MenuItems)
-        
-    menu=MenuItems:GetItems()
+function CreateMenu()
+
+    menuItems = Turbine.UI.ContextMenu()        
+    menu=menuItems:GetItems()
     menu:Add(Turbine.UI.MenuItem("Effects Menu", false))
     menu:Add(Turbine.UI.MenuItem("New Target"))
     menu:Add(Turbine.UI.MenuItem("Remove Target"))
---    menu:Add(Turbine.UI.MenuItem("Remove Other Targets"))
     
     menu:Get(2).Click = function(sender, args)
         DebugWriteLine("New Target")
@@ -15,11 +15,7 @@ function CreateMenu(MenuItems)
     end
     menu:Get(3).Click = function(sender, args)
         DebugWriteLine("Remove Target")
-        RemoveTarget(MenuItems.invokerID)
+        RemoveTarget(menuItems.invokerID)
     end
---    menu:Get(4).Click = function(sender, args)
---        DebugWriteLine("Remove Other Targets")
---        RemoveOtherTargets(MenuItems.invokerID)
---    end
-    
+    return menuItems
 end

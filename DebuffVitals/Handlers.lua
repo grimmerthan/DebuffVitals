@@ -4,7 +4,7 @@
 function TargetChangeHandler(sender, args)
     DebugWriteLine("Entering TargetChangeHandler...")
     DebugWriteLine("Changed target")
-    for key,box in pairs(targets) do
+    for key,box in pairs(AllTargetFrames) do
         DebugWriteLine("ID : "..tostring(key).." value : "..tostring(box))
         TargetBox.UpdateTarget(box)
     end
