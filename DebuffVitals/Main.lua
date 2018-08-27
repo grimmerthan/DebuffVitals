@@ -27,7 +27,7 @@ import "Grimmerthan.DebuffVitals.OptionsPanel"
 -- ------------------------------------------------------------------------
 -- Debug output
 -- ------------------------------------------------------------------------
-DebugEnabled = true
+DebugEnabled = false
 
 function DebugWriteLine (message)
     if DebugEnabled then
