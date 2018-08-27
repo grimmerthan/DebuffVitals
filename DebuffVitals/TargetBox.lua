@@ -19,7 +19,7 @@ function TargetBox:Constructor(num)
 
     self:SetVisible(true) 
     self:SetMouseVisible (false)
-    self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (Count % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (Count % 20) * 40)
+    self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (FrameID % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (FrameID % 20) * 40)
 
     -- ------------------------------------------------------------------------
     -- Target Title Bar
@@ -132,17 +132,9 @@ function TargetBox:Constructor(num)
     -- ------------------------------------------------------------------------
     self.EffectList = nil
     self.SingleEffects = {}
+   
+    self:SetEnabledEffects()
 
-    -- create all current effects
-    local effectCount = 0
-    for k, v in pairs (EffectsSet) do
-        effectCount = effectCount + 1
-        self.SingleEffects[k] = EffectFrame(self, v)
-        self.SingleEffects[k]:SetPosition (0, 42 + effectCount * 21)
-    end     
-
-    self:SetSize(200, 63 + 21 * effectCount)
-    self.TargetSelection:SetSize(200, 63 * 21 * effectCount)
     -- ------------------------------------------------------------------------
     -- Mouse and key interactions
     -- ------------------------------------------------------------------------
@@ -200,7 +192,7 @@ function TargetBox:Constructor(num)
             self.IsDragging = false
             DebugWriteLine("Showing menu")
 
-            if #AllTargetFrames == 1 or self.Locked then
+            if #TargetFrames == 1 or self.Locked then
                 MenuItems:GetItems():Get(3):SetEnabled(false)
             else
                 MenuItems:GetItems():Get(3):SetEnabled(true)
@@ -222,6 +214,31 @@ function TargetBox:Constructor(num)
     
     self.TitleBar.MouseMove = self.TargetSelection.MouseMove
 
+end
+
+function TargetBox:SetEnabledEffects()
+    DebugWriteLine("Entering SetEnabledEffects")
+    -- clear current effects
+    for k, v in pairs(self.SingleEffects) do
+        v:SetVisible(false)
+        v = nil
+    end
+
+    self.SingleEffects = {}
+    
+    -- generate new effects
+    local effectCount = 0
+
+    for k, v in pairs (EffectsSet) do
+        effectCount = effectCount + 1
+        self.SingleEffects[k] = EffectFrame(self, v)
+        self.SingleEffects[k]:SetPosition (0, 42 + effectCount * 21)
+    end     
+
+    self:SetSize(200, 63 + 21 * effectCount)
+    self.TargetSelection:SetSize(200, 63 * 21 * effectCount)
+    
+    DebugWriteLine("Exiting SetEnabledEffects")    
 end
 
 function TargetBox:DestroyFrame()
@@ -344,9 +361,11 @@ function TargetBox:Update()
 
         for k, v in pairs (self.SingleEffects) do
             for i = 1, self.EffectList:GetCount() do
-                DebugWriteLine("Matching "..tostring(v.name:GetText()).." for "..tostring(self.EffectList:Get(i):GetName()))
-                if self.EffectList:Get(i):GetName() == v.name:GetText() then
-                    DebugWriteLine("Match!")
+                local matchName = v.name:GetText() 
+                if matchName == "Wind-lore" then
+                    matchName = "Wind.lore"
+                end                
+                if string.find (self.EffectList:Get(i):GetName(), matchName) then
                     v:SetCurrentEffect(self.EffectList:Get(i))
                     v.lastSeen = Turbine.Engine.GetGameTime()
                     break

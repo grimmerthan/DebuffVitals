@@ -1,46 +1,65 @@
 -- ------------------------------------------------------------------------
 -- List of effects and state
+--   class,        debuff name,             in use,  toggle  
 -- ------------------------------------------------------------------------
-ListOfEffects =  {
-    -- class,       debuff name,                  on, open-ended
-    {"common",      "Dazed",                        1, 0},    
-    {"common",      "Stunned",                      1, 0},
-    {"common",      "Rooted",                       1, 0},
-    {"common",      "Temporary State Immunity",     1, 0},
-    {"burglar",     "reveal weakness",              0, 0}, 
-    {"burglar",     "trick: enrage",                0, 0},
-    {"burglar",     "trick: disable",               0, 0},
-    {"burglar",     "addle",                        0, 0},
-    {"burglar",     "a small snag",                 0, 0},
-    {"burglar",     "quite a snag",                 0, 0},
-    {"captain",     "Revealing Mark",               1, 1},
-    {"captain",     "Telling Mark",                 1, 1},
-    {"captain",     "oathbreaker's shame",          0, 0},
-    {"captain",     "armour rend",                  0, 0},
-    {"champion",    "Rend",                         0, 0},
-    {"hunter",      "penetrating shot",             0, 0},
-    {"lore-master", "Fire-lore",                    1, 0},
-    {"lore-master", "Frost-lore",                   1, 0},    
-    {"lore-master", "Wind-lore",                    0, 0},
-    {"lore-master", "sticky tar",                   0, 0},
-    {"lore-master", "ancient craft",                0, 0},
-    {"lore-master", "shatter arms",                 0, 0},
-    {"lore-master", "benediction of the raven",     0, 0},
-    {"lore-master", "root strike",                  0, 0},
-    {"lore-master", "warding knowledge",            0, 0},
-    {"lore-master", "knowledge of the lore-master", 0, 0},
-    {"runekeeper",  "essence of winter",            0, 0},
-    {"runekeeper",  "flurry of words",              0, 0},
-    {"warden",      "diminished target",            0, 0},
-    {"warden",      "marked target",                0, 0},
+DefaultEffects =  {
+    {"Common",      "Dazed",                         1, 0},    
+    {"Common",      "Stunned",                       1, 0},
+    {"Common",      "Rooted",                        1, 0},
+    {"Common",      "Temporary State Immunity",      1, 0},
+    {"Burglar",     "Addle",                         0, 0},
+    {"Burglar",     "A Small Snag",                  0, 0},
+    {"Burglar",     "Improved Trick: Disable",       0, 0},
+    {"Burglar",     "Quite a Snag",                  0, 0},
+    {"Burglar",     "Reveal Weakness",               0, 0}, 
+    {"Burglar",     "Trick: Enraged (Trick)",        0, 0},
+    {"Captain",     "Armour Rend",                   0, 0},
+    {"Captain",     "Oathbreaker's Shame",           0, 0},
+    {"Captain",     "Revealing Mark",                0, 1},
+    {"Captain",     "Telling Mark",                  0, 1},
+    {"Champion",    "Rend",                          0, 0},
+    {"Hunter",      "Penetrating Shot",              0, 0},
+    {"Lore-master", "Ancient Craft",                 0, 0},
+    {"Lore-master", "Benediction of the Raven",      0, 0},
+    {"Lore-master", "Fire-lore",                     1, 0},
+    {"Lore-master", "Frost-lore",                    1, 0},    
+    {"Lore-master", "Knowledge of the Lore-master",  0, 0},
+    {"Lore-master", "Root Strike",                   0, 0},
+    {"Lore-master", "Shatter Arms",                  0, 0},
+    {"Lore-master", "Sticky Tar: Fire Vulnerability",0, 0},
+    {"Lore-master", "Sticky Tar: Slow",              0, 0},
+    {"Lore-master", "Warding Lore",                  0, 0},
+    {"Lore-master", "Wind-lore",                     0, 0},
+    {"Runekeeper",  "Essence of Winter",             0, 0},
+    {"Runekeeper",  "Flurry of Words",               0, 0},
+    {"Warden",      "Diminished Target",             0, 0},
+    {"Warden",      "Marked Target",                 0, 0},
 }
 
-function GenerateEffectsSet()
+function LoadEffects()
     local count = 1
-    for k, v in ipairs (ListOfEffects) do
+    
+    local SavedEffects = Turbine.PluginData.Load(Turbine.DataScope.Character, "DebuffVitals", nil);
+    
+    for k, v in ipairs (SavedEffects or DefaultEffects) do
+        DebugWriteLine("Loading  in "..tostring(v[1]).." / "..tostring(v[2])..
+                        " / "..tostring(v[3]).." / "..tostring(v[4]))        
+        TrackedEffects[count] = {v[1], v[2], v[3], v[4]}
+        count = count + 1
+    end
+end    
+
+function GenerateEnabledSet()      
+    local count = 1    
+    DebugWriteLine("count "..tostring(#TrackedEffects))
+    
+    EffectsSet = {}
+    
+    for k, v in ipairs (TrackedEffects) do
         if v[3] == 1 then
-            DebugWriteLine("Adding in "..tostring(v[2]))        
-            EffectsSet[count] = v
+            DebugWriteLine("Adding in "..tostring(v[1]).." / "..tostring(v[2])..
+                            " / "..tostring(v[3]).." / "..tostring(v[4]))        
+            EffectsSet[count] = {v[1], v[2], v[3], v[4]}
             count = count + 1
         end
     end

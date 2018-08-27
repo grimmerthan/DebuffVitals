@@ -3,12 +3,12 @@
 check 1) basic layout
 check 2) Lock functionality
 check 3) target change callback
-4) morale callback
-5) power callback
-6) fire-lore and Frost-lore detection
-7) timer remaining
+check 4) morale callback
+check 5) power callback
+check 6) fire-lore and Frost-lore detection
+check 7) timer remaining
 8) corruption detection
-9) other buffs 
+check 9) other buffs 
 10) configuration options
 11) localization
 
@@ -22,7 +22,11 @@ import "Grimmerthan.DebuffVitals.TargetBox"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 import "Grimmerthan.DebuffVitals.Effects"
+import "Grimmerthan.DebuffVitals.OptionsPanel"
 
+-- ------------------------------------------------------------------------
+-- Debug output
+-- ------------------------------------------------------------------------
 DebugEnabled = true
 
 function DebugWriteLine (message)
@@ -31,39 +35,14 @@ function DebugWriteLine (message)
     end
 end
 
-function plugin.GetOptionsPanel (self)
-
-    local panel = Turbine.UI.Control(self)
-    
-    
-
-    local checkbox1 = Turbine.UI.Lotro.CheckBox()
-    checkbox1:SetParent(panel)
-    checkbox1:SetPosition(10, 10)
-    checkbox1:SetSize(280, 20)
-    checkbox1:SetText("Fallora du")
-
-    checkbox1:SetChecked(true)
-
-    local checkbox2 = Turbine.UI.Lotro.CheckBox()
-    checkbox2:SetParent(panel)
-    checkbox2:SetPosition(10, 30)
-    checkbox2:SetSize(280, 20)
-    checkbox2:SetText("Skratta du")
-
-    panel:SetSize(200, 300)
-    return panel
-end
-
-
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
 -- ------------------------------------------------------------------------
-function plugin.Unload()
-    DebugWriteLine("Unloading TargetChanged handler")
+function Turbine.Plugin.Unload()
+    DebugWriteLine("Plugin unload")
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
-    for key,box in pairs(AllTargetFrames) do
+    for key,box in pairs(TargetFrames) do
         if box.Target then 
             RemoveCallback(box.Target, "MoraleChanged", MoraleChangedHandler);
             RemoveCallback(box.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
@@ -82,8 +61,8 @@ function plugin.Unload()
             RemoveCallback(box.Effects, "EffectsCleared", EffectsChangedHandler);   
         end
     end    
-    
 end
+
 
 -- ------------------------------------------------------------------------
 -- Callbacks
@@ -100,6 +79,7 @@ function AddCallback(object, event, callback)
     end
     return callback;
 end
+
 function RemoveCallback(object, event, callback)
     if (object[event] == callback) then
         object[event] = nil;
@@ -119,35 +99,24 @@ end
 -- ------------------------------------------------------------------------
 -- targets Utilities
 -- ------------------------------------------------------------------------
-function CountTargets()
-    local number = 0
-    for key,box in pairs(AllTargetFrames) do 
-        number = number + 1
-    end
-    return number
-end
-
 function AddNewTarget()
     DebugWriteLine("Entering AddNewTargetFrame...")
-    Count = Count + 1
---    NewTarget = TargetBox.new(Count)
-    NewTarget = TargetBox(Count)
---    DebugWriteLine("NewTarget : "..tostring(NewTarget))
-    AllTargetFrames[Count] = NewTarget
+    FrameID = FrameID + 1
+    TargetFrames[FrameID] = TargetBox(FrameID)
     TargetChangeHandler (NewTarget)
     DebugWriteLine("Exiting AddNewTargetFrame...")
 end
 
 function RemoveTarget(ID)
     DebugWriteLine("Entering RemoveTargetFrame...")
-    for key,box in pairs(AllTargetFrames) do 
+    for key,box in pairs(TargetFrames) do 
         DebugWriteLine("TargetBox.GetID(box) == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
         if TargetBox.GetID(box) == ID then
             DebugWriteLine("Removing : "..tostring (ID))
             if not TargetBox.IsLocked(box) then
                 DebugWriteLine("Processing Removal...")
                 TargetBox.DestroyFrame(box)
-                table.remove(AllTargetFrames, key)
+                table.remove(TargetFrames, key)
             end
             break
         end
@@ -155,36 +124,21 @@ function RemoveTarget(ID)
     DebugWriteLine("Exiting RemoveTargetFrame...")
 end
 
---[[
-function RemoveOtherTargets(ID)
-    DebugWriteLine("Entering RemoveOtherTargets...")
-    for key,box in pairs(AllTargetFrames) do 
-        DebugWriteLine("TargetBox.GetID(box) == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
-        if TargetBox.GetID(box) ~= ID then
-            DebugWriteLine("Removing : "..tostring (ID))
-            if not TargetBox.IsLocked(box) then
-                DebugWriteLine("Processing Removal...")
-                TargetBox.DestroyFrame(box)
-                table.remove(AllTargetFrames, key)
-            end
-        end
-    end
-    DebugWriteLine("Exiting RemoveOtherTargets...")
-end
-]]
-
 -- ------------------------------------------------------------------------
 -- Doing Stuff!
+-- 1) generate effects list (load configuration)
+-- 2) generate effect frames
 -- ------------------------------------------------------------------------
 
+TargetFrames = {}
 
-AllTargetFrames = {}
-
+TrackedEffects = {}
 EffectsSet = {}
 
-GenerateEffectsSet()
+LoadEffects{}
+GenerateEnabledSet()
 
-Count = 0
+FrameID = 0
 
 LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 
@@ -194,6 +148,10 @@ MenuItems = CreateMenu()
 
 AddNewTarget()
 
+DebugWriteLine("MATCH ON WIND ".. tostring( string.find ('Wind-lore - Tier 3', 'Wind-lore')))
+DebugWriteLine("MATCH ON WIND ".. tostring( string.match ("Wind-lore - Tier 3", "Wind-")))
+DebugWriteLine("MATCH ON WIND ".. tostring( string.match ("ab", "a")))
+
 --[[
 DebugWriteLine("Turbine.UI.Color...")
 local text = ""
@@ -202,7 +160,7 @@ for key, value in pairs (Turbine.UI.Color) do
 end
     DebugWriteLine(text)
 
-for key, value in pairs (ListOfEffects) do
+for key, value in pairs (DefaultEffects) do
     DebugWriteLine(tostring(key), tostring(value))
     for key2, value2 in pairs (value) do
         DebugWriteLine(tostring(key2), tostring(value2))

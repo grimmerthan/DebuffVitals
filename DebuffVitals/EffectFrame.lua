@@ -8,10 +8,7 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
     DebugWriteLine("Creating EffectFrame : "..tostring(EffectDefinition[2]))
-    
-    self.flashPeriod = 2
-    self.lastFlash = 0
-    self.flash = false
+
     self.startTime = 0
     self.duration = 0
     self.endTime = 0
@@ -72,20 +69,24 @@ Fuchsia
     self.name = Turbine.UI.Label()
     self.name:SetVisible(true)
     self.name:SetParent(self)
-    self.name:SetSize(100, 20)
+    self.name:SetSize(170, 20)
     self.name:SetPosition(20, 0) 
     self.name:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.name:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
     self.name:SetText(tostring(EffectDefinition[2]))
-    
+    self.name:SetForeColor (Turbine.UI.Color.Gray)
+    self.name:SetMultiline(false)
+   
     self.timer = Turbine.UI.Label()
     self.timer:SetVisible(true)
     self.timer:SetParent(self)
-    self.timer:SetSize(80, 20)
-    self.timer:SetPosition(120, 0)
+    self.timer:SetSize(30, 20)
+    self.timer:SetPosition(170, 0)
     self.timer:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleRight);
     self.timer:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
-    self.timer:SetText("inactive") 
+    self.timer:SetForeColor (Turbine.UI.Color.Gray)
+    self.timer:SetText("-")
+
 
 end
 
@@ -98,6 +99,9 @@ function EffectFrame:SetCurrentEffect(effect)
     if (Turbine.Engine.GetGameTime() < self.endTime) then
         self:SetWantsUpdates(true)
     end
+    
+    self.name:SetForeColor (Turbine.UI.Color.White)
+    self.timer:SetForeColor (Turbine.UI.Color.White)
 end
 
 function EffectFrame:ClearCurrentEffect()
@@ -109,15 +113,19 @@ function EffectFrame:ClearCurrentEffect()
     self.effect = nil
 
     self.effectDisplay:SetVisible(false)
+    self.effectDisplay = nil
 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
     self.effectDisplay:SetParent(self)
     self.effectDisplay:SetSize(20, 20)
-    self.effectDisplay:SetPosition(0, 0)
-    
+    self.effectDisplay:SetPosition(0, 0)  
     self.effectDisplay:SetEffect(nil)
-    self.timer:SetText("inactive")
+
+    self.name:SetForeColor (Turbine.UI.Color.Gray)
+    self.timer:SetText("-")
+    self.timer:SetForeColor (Turbine.UI.Color.Gray)    
+
     self:SetWantsUpdates(false)
 end
 
