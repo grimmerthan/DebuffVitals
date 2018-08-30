@@ -11,9 +11,10 @@ function TargetChangeHandler(sender, args)
     DebugWriteLine("Exiting TargetChangeHandler...")
 end
 
-
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function MoraleChangedHandler(sender, args)
---    DebugWriteLine("Entering MoraleChangedHandler")
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
@@ -21,9 +22,7 @@ function MoraleChangedHandler(sender, args)
         return
     end
        
---    DebugWriteLine("Morale changing....")
     local TargetMorale = CurrentFrame.Target:GetMorale()
---    DebugWriteLine("Name "..tostring(CurrentFrame.Target:GetName()).." Morale "..tostring(CurrentFrame.Target:GetMorale()))
 
     if TargetMorale <= 0 and CurrentFrame.Locked then
         CurrentFrame.Lock.MouseClick()
@@ -44,12 +43,12 @@ function MoraleChangedHandler(sender, args)
     CurrentFrame.Morale.Bar:SetSize(BarSize, 20)
     CurrentFrame.Morale.Bar:SetPosition(200 - BarSize, 21)
 
---    DebugWriteLine("Exiting MoraleChangedHandler")
 end
 
-
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function PowerChangedHandler(sender, args)
---    DebugWriteLine("Entering PowerChangedHandler")
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
@@ -57,10 +56,7 @@ function PowerChangedHandler(sender, args)
         return
     end
     
---    DebugWriteLine("Power changing....")
     local TargetPower = CurrentFrame.Target:GetPower()
---    DebugWriteLine("Name "..tostring(CurrentFrame.Target:GetName()).." Power "..tostring(CurrentFrame.Target:GetPower()))
-        
     local TargetMaxPower = CurrentFrame.Target:GetMaxPower()
     local TargetTempPower = CurrentFrame.Target:GetTemporaryPower()
     local TargetMaxTempPower = CurrentFrame.Target:GetMaxTemporaryPower()
@@ -76,9 +72,11 @@ function PowerChangedHandler(sender, args)
     CurrentFrame.Power.Bar:SetSize(BarSize, 20)
     CurrentFrame.Power.Bar:SetPosition(200 - BarSize, 42)
 
---    DebugWriteLine("Exiting PowerChangedHandler")
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function EffectsChangedHandler(sender, args)
     DebugWriteLine("Entering EffectsChangedHandler")
 

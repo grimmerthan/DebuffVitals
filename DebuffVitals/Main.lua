@@ -9,7 +9,7 @@ check 6) fire-lore and Frost-lore detection
 check 7) timer remaining
 8) corruption detection
 check 9) other buffs 
-10) configuration options
+check 10) configuration options
 11) localization
 
 ]]
@@ -147,10 +147,6 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 MenuItems = CreateMenu()
 
 AddNewTarget()
-
-DebugWriteLine("MATCH ON WIND ".. tostring( string.find ('Wind-lore - Tier 3', 'Wind-lore')))
-DebugWriteLine("MATCH ON WIND ".. tostring( string.match ("Wind-lore - Tier 3", "Wind-")))
-DebugWriteLine("MATCH ON WIND ".. tostring( string.match ("ab", "a")))
 
 --[[
 DebugWriteLine("Turbine.UI.Color...")

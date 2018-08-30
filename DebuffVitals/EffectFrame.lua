@@ -4,6 +4,9 @@
 
 EffectFrame = class (Turbine.UI.Control)
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
@@ -20,46 +23,6 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self:SetSize (200,20)     
     self:SetEnabled(false)
 
-    
---[[
-SeaShell DarkSalmon DarkGoldenrod YellowGreen PaleGreen 
-SpringGreen AliceBlue OrangeRed 
-LightSalmon SlateBlue Aquamarine OliveDrab PapayaWhip LemonChiffon OldLace FloralWhite 
-Maroon Linen DarkSlateGray CadetBlue NavajoWhite Violet PaleVioletRed LightCoral Cornsilk 
-Silver DarkCyan DarkOrchid AntiqueWhite MediumSpringGreen IndianRed DarkBlue Sienna 
-ForestGreen LightSlateGray BlanchedAlmond Crimson Moccasin LimeGreen HotPink PeachPuff 
-DimGray Purple MediumSlateBlue Coral MediumBlue Red Teal MintCream Khaki DodgerBlue 
-DarkOrange White Goldenrod Orchid Ivory DarkMagenta LightCyan LightSeaGreen MediumPurple 
-LightSteelBlue Green DarkSeaGreen LightYellow Bisque Cyan Thistle LightPink CornflowerBlue 
-LightSkyBlue Beige Aqua DarkGray PowderBlue Gainsboro Lime MediumVioletRed Salmon 
-Firebrick RosyBrown Lavender Honeydew DarkSlateBlue MediumAquamarine Yellow DarkViolet 
-WhiteSmoke Wheat Chartreuse Gold Turquoise SkyBlue BurlyWood LavenderBlush Tomato Magenta 
-Blue Tan DeepPink PaleTurquoise SlateGray Pink DeepSkyBlue MediumTurquoise DarkKhaki 
-GreenYellow Peru SeaGreen SandyBrown LightBlue SaddleBrown SteelBlue RoyalBlue Olive 
-Chocolate Indigo Transparent LightGreen Plum Gray DarkTurquoise DarkRed MediumSeaGreen 
-GhostWhite DarkGreen Snow LawnGreen PaleGoldenrod Azure MidnightBlue Orange MistyRose 
-LightGray Black Navy Brown DarkOliveGreen MediumOrchid LightGoldenrodYellow BlueViolet 
-Fuchsia
-
-    if EffectDefinition[1] == "burglar" then
-        self:SetBackColor(Turbine.UI.Color.SpringGreen)
-    elseif EffectDefinition[1] == "captain" then
-        self:SetBackColor(Turbine.UI.Color.AliceBlue)
-    elseif EffectDefinition[1] == "champion" then
-        self:SetBackColor(Turbine.UI.Color.OrangeRed)
-    elseif EffectDefinition[1] == "hunter" then
-        self:SetBackColor(Turbine.UI.Color.DarkGoldenrod)
-    elseif EffectDefinition[1] == "lore-master" then
-        self:SetBackColor(Turbine.UI.Color.YellowGreen)
-    elseif EffectDefinition[1] == "runekeeper" then
-        self:SetBackColor(Turbine.UI.Color.Gray)
-    elseif EffectDefinition[1] == "warden" then
-        self:SetBackColor(Turbine.UI.Color.PaleGreen)
-    end    
-
-    self:SetBackColor(Turbine.UI.Color.Gray)
-]]--    
---  effect display 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
     self.effectDisplay:SetParent(self)
@@ -76,6 +39,9 @@ Fuchsia
     self.name:SetText(tostring(EffectDefinition[2]))
     self.name:SetForeColor (Turbine.UI.Color.Gray)
     self.name:SetMultiline(false)
+    
+    self.effectName = EffectDefinition[2]
+    self.patternMatch = EffectDefinition[5]    
    
     self.timer = Turbine.UI.Label()
     self.timer:SetVisible(true)
@@ -86,10 +52,11 @@ Fuchsia
     self.timer:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
     self.timer:SetForeColor (Turbine.UI.Color.Gray)
     self.timer:SetText("-")
-
-
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function EffectFrame:SetCurrentEffect(effect)
     self.effectDisplay:SetEffect(effect)
 
@@ -102,8 +69,14 @@ function EffectFrame:SetCurrentEffect(effect)
     
     self.name:SetForeColor (Turbine.UI.Color.White)
     self.timer:SetForeColor (Turbine.UI.Color.White)
+    if self.patternMatch then
+        self.name:SetText(effect:GetName())
+    end
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function EffectFrame:ClearCurrentEffect()
     self.startTime = 0
     self.duration = 0
@@ -123,12 +96,18 @@ function EffectFrame:ClearCurrentEffect()
     self.effectDisplay:SetEffect(nil)
 
     self.name:SetForeColor (Turbine.UI.Color.Gray)
+    if self.patternMatch then
+        self.name:SetText(tostring(self.effectName))
+    end
     self.timer:SetText("-")
-    self.timer:SetForeColor (Turbine.UI.Color.Gray)    
+    self.timer:SetForeColor (Turbine.UI.Color.Gray)  
 
     self:SetWantsUpdates(false)
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function EffectFrame:Update(args)
     local gameTime = Turbine.Engine.GetGameTime()
     local elapsedTime = gameTime - self.startTime
@@ -148,7 +127,9 @@ function EffectFrame:Update(args)
     end
 end
 
-
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function TimeFormat (value)
     if (value >= 3600) then
         local sec = math.fmod(value, 3600) / 60;

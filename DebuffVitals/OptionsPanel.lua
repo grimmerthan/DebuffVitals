@@ -7,6 +7,9 @@ function plugin.GetOptionsPanel (self)
     return OP
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 OptionsPanel = class (Turbine.UI.Control)
 
 function OptionsPanel:Constructor ()
@@ -27,6 +30,7 @@ function OptionsPanel:Constructor ()
     self.title:SetText("Debuffs and Effects")
 
     for k, v in ipairs (TrackedEffects) do
+        DebugWriteLine("Total tracked effects :  "..tostring(v[2]))    
         DebugWriteLine("OptionsPanel: Adding in "..tostring(v[2]))               
         local checkbox = Turbine.UI.Lotro.CheckBox()    
         checkbox:SetParent(self)
@@ -73,9 +77,12 @@ function OptionsPanel:Constructor ()
     end
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function OptionsPanel:Defaults()
     for k, v in ipairs (DefaultEffects) do
-        if v[3] == 1 then
+        if v[1] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else
             self.checkboxes[k]:SetChecked(false)
@@ -83,6 +90,9 @@ function OptionsPanel:Defaults()
     end   
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function OptionsPanel:Accept()
     for k, v in ipairs (self.checkboxes) do
         if v:IsChecked() then
@@ -102,9 +112,12 @@ function OptionsPanel:Accept()
     
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function OptionsPanel:Revert()
     for k, v in ipairs (TrackedEffects) do
-        if v[3] == 1 then
+        if v[1] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else
             self.checkboxes[k]:SetChecked(false)

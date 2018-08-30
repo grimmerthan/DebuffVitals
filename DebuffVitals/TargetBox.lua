@@ -1,12 +1,8 @@
 -- ------------------------------------------------------------------------
--- Target Box
+-- TargetBox - the base panel that tracks morale/power and effects 
 -- ------------------------------------------------------------------------
-
 TargetBox = class (Turbine.UI.Window)
 
--- ------------------------------------------------------------------------
--- TargetBox
--- ------------------------------------------------------------------------
 function TargetBox:Constructor(num) 
     Turbine.UI.Window.Constructor(self)
 
@@ -216,6 +212,9 @@ function TargetBox:Constructor(num)
 
 end
 
+-- ------------------------------------------------------------------------
+-- clears and sets up all enabled/tracked effects
+-- ------------------------------------------------------------------------
 function TargetBox:SetEnabledEffects()
     DebugWriteLine("Entering SetEnabledEffects")
     -- clear current effects
@@ -241,11 +240,17 @@ function TargetBox:SetEnabledEffects()
     DebugWriteLine("Exiting SetEnabledEffects")    
 end
 
+-- ------------------------------------------------------------------------
+--  Remove an existing frame
+-- ------------------------------------------------------------------------
 function TargetBox:DestroyFrame()
     self:SetVisible(false)
-    self= nil
+    self = nil
 end
 
+-- ------------------------------------------------------------------------
+-- Set handlers, morale, power, and effects, when player target changes
+-- ------------------------------------------------------------------------
 function TargetBox:UpdateTarget()
     DebugWriteLine("Entering UpdateTarget")
     if self.Locked then
@@ -353,6 +358,9 @@ function TargetBox:UpdateTarget()
     DebugWriteLine("Exiting UpdateTarget")
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function TargetBox:Update()
     DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
 
@@ -361,10 +369,15 @@ function TargetBox:Update()
 
         for k, v in pairs (self.SingleEffects) do
             for i = 1, self.EffectList:GetCount() do
-                local matchName = v.name:GetText() 
-                if matchName == "Wind-lore" then
-                    matchName = "Wind.lore"
+                local matchName = {}
+                if v.patternMatch == nil then
+                    matchName = v.effectName
+                else
+                    matchName = v.patternMatch
                 end                
+                                
+                DebugWriteLine(">>>>>>>>>> "..tostring(v.effectName).." "..tostring(v.patternMatch).." "..tostring(matchName))                                                
+
                 if string.find (self.EffectList:Get(i):GetName(), matchName) then
                     v:SetCurrentEffect(self.EffectList:Get(i))
                     v.lastSeen = Turbine.Engine.GetGameTime()
@@ -385,6 +398,9 @@ function TargetBox:Update()
     DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function TargetBox:DumpData()
     DebugWriteLine(">>>>>Data dump  ID : "..tostring(self.ID))
     DebugWriteLine(">>>>>    EntityControl : "..tostring(self.TargetSelection))
@@ -396,10 +412,16 @@ function TargetBox:DumpData()
     end        
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function TargetBox:GetID()
     return self.ID
 end
 
+-- ------------------------------------------------------------------------
+-- 
+-- ------------------------------------------------------------------------
 function TargetBox:IsLocked()
     return self.Locked
 end
