@@ -16,24 +16,26 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self.duration = 0
     self.endTime = 0
     self.lastSeen = nil
-    self.openEnded = EffectDefinition[4]
+    self.toggle = EffectDefinition[4]
 
     self:SetParent(CurrentFrame)
     self:SetVisible(true)
-    self:SetSize (200,20)     
+    self:SetSize (DEFAULT_WIDTH, DEFAULT_HEIGHT)     
     self:SetEnabled(false)
 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
+    self.effectDisplay:SetMouseVisible(true)
     self.effectDisplay:SetParent(self)
-    self.effectDisplay:SetSize(20, 20)
+    self.effectDisplay:SetSize(DEFAULT_HEIGHT, DEFAULT_HEIGHT)
     self.effectDisplay:SetPosition(0, 0)
+    self.effectDisplay:SetZOrder(200)
 
     self.name = Turbine.UI.Label()
     self.name:SetVisible(true)
     self.name:SetParent(self)
-    self.name:SetSize(170, 20)
-    self.name:SetPosition(20, 0) 
+    self.name:SetSize(DEFAULT_WIDTH - DEFAULT_HEIGHT - 30, DEFAULT_HEIGHT)
+    self.name:SetPosition(DEFAULT_HEIGHT, 0) 
     self.name:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.name:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
     self.name:SetText(tostring(EffectDefinition[2]))
@@ -46,8 +48,8 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self.timer = Turbine.UI.Label()
     self.timer:SetVisible(true)
     self.timer:SetParent(self)
-    self.timer:SetSize(30, 20)
-    self.timer:SetPosition(170, 0)
+    self.timer:SetSize(30, DEFAULT_HEIGHT)
+    self.timer:SetPosition(DEFAULT_WIDTH - 30, 0)
     self.timer:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleRight);
     self.timer:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
     self.timer:SetForeColor (Turbine.UI.Color.Gray)
@@ -91,7 +93,7 @@ function EffectFrame:ClearCurrentEffect()
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
     self.effectDisplay:SetParent(self)
-    self.effectDisplay:SetSize(20, 20)
+    self.effectDisplay:SetSize(DEFAULT_HEIGHT, DEFAULT_HEIGHT)
     self.effectDisplay:SetPosition(0, 0)  
     self.effectDisplay:SetEffect(nil)
 

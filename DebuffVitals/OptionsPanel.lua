@@ -29,8 +29,7 @@ function OptionsPanel:Constructor ()
     self.title:SetFont( Turbine.UI.Lotro.Font.Verdana20 )
     self.title:SetText("Debuffs and Effects")
 
-    for k, v in ipairs (TrackedEffects) do
-        DebugWriteLine("Total tracked effects :  "..tostring(v[2]))    
+    for k, v in ipairs (TrackedEffects) do 
         DebugWriteLine("OptionsPanel: Adding in "..tostring(v[2]))               
         local checkbox = Turbine.UI.Lotro.CheckBox()    
         checkbox:SetParent(self)
@@ -81,8 +80,8 @@ end
 -- 
 -- ------------------------------------------------------------------------
 function OptionsPanel:Defaults()
-    for k, v in ipairs (DefaultEffects) do
-        if v[1] == 1 then
+    for k, v in ipairs (DEFAULT_EFFECTS) do
+        if v[3] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else
             self.checkboxes[k]:SetChecked(false)
@@ -117,7 +116,7 @@ end
 -- ------------------------------------------------------------------------
 function OptionsPanel:Revert()
     for k, v in ipairs (TrackedEffects) do
-        if v[1] == 1 then
+        if v[3] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else
             self.checkboxes[k]:SetChecked(false)

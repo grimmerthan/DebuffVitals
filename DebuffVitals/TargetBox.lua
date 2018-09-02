@@ -11,7 +11,10 @@ function TargetBox:Constructor(num)
     self.ID = num
     self.Target = nil
     self.Morale = {}
+    self.Morale.visible = true
     self.Power = {}
+    self.Power.visible = true 
+    self.Locked = false
 
     self:SetVisible(true) 
     self:SetMouseVisible (false)
@@ -23,7 +26,8 @@ function TargetBox:Constructor(num)
     self.TitleBar = Turbine.UI.Label()
     self.TitleBar:SetVisible(true)
     self.TitleBar:SetParent (self)
-    self.TitleBar:SetSize(180,20)
+    -- to accomodate the square lock icon
+    self.TitleBar:SetSize(DEFAULT_WIDTH - NAMEBAR_HEIGHT, NAMEBAR_HEIGHT)
     self.TitleBar:SetPosition (0,0)
     self.TitleBar:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft )
     self.TitleBar:SetFont( Turbine.UI.Lotro.Font.Verdana14 )
@@ -36,6 +40,7 @@ function TargetBox:Constructor(num)
     self.TargetSelection = Turbine.UI.Lotro.EntityControl()
     self.TargetSelection:SetVisible(true)
     self.TargetSelection:SetParent (self)
+    -- size will be set later, when all effects are loaded
     self.TargetSelection:SetPosition (0, 20)
     self.TargetSelection:SetZOrder (100)
     
@@ -45,16 +50,15 @@ function TargetBox:Constructor(num)
     self.LockBackground = Turbine.UI.Control()
     self.LockBackground:SetParent (self)
     self.LockBackground:SetBackColor ( Turbine.UI.Color.Black )
-    self.LockBackground:SetSize(20, 20)
-    self.LockBackground:SetPosition (180,0)
+    self.LockBackground:SetSize(NAMEBAR_HEIGHT, NAMEBAR_HEIGHT)
+    self.LockBackground:SetPosition (DEFAULT_WIDTH - NAMEBAR_HEIGHT,0)
     
-    self.Locked = false
     self.Lock = Turbine.UI.Control()
     self.Lock:SetParent (self)
     self.Lock:SetBackground( 0x410001D3 )
 
-    self.Lock:SetSize(20, 20)
-    self.Lock:SetPosition (180,0)
+    self.Lock:SetSize(NAMEBAR_HEIGHT, NAMEBAR_HEIGHT)
+    self.Lock:SetPosition (DEFAULT_WIDTH - NAMEBAR_HEIGHT,0)
     self.Lock:SetBlendMode(Turbine.UI.BlendMode.Overlay)
 
     self.Lock.MouseClick = function ()
@@ -72,56 +76,61 @@ function TargetBox:Constructor(num)
     -- ------------------------------------------------------------------------
     -- Morale 
     -- ------------------------------------------------------------------------
+    local moralePosition = self.TitleBar:GetHeight()
+    
     self.Morale.Bar = Turbine.UI.Control()
     self.Morale.Bar:SetParent (self)
     self.Morale.Bar:SetBackColor ( Turbine.UI.Color.ForestGreen )
-    self.Morale.Bar:SetSize (200, 20)
-    self.Morale.Bar:SetPosition (0,21)
+    self.Morale.Bar:SetSize (DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    self.Morale.Bar:SetPosition (0, moralePosition)
     self.Morale.Bar:SetMouseVisible (false)
+
+    self.Morale.Percent = Turbine.UI.Label()
+    self.Morale.Percent:SetParent (self)
+    self.Morale.Percent:SetPosition (0,moralePosition)
+    self.Morale.Percent:SetSize(45, DEFAULT_HEIGHT)
+    self.Morale.Percent:SetMouseVisible (false)
+    self.Morale.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
+    self.Morale.Percent:SetFont( Turbine.UI.Lotro.Font.Verdana12 )    
 
     self.Morale.Title = Turbine.UI.Label()
     self.Morale.Title:SetParent (self)
-    self.Morale.Title:SetPosition (45,21)
-    self.Morale.Title:SetSize(155, 20)
+    self.Morale.Title:SetPosition (45, moralePosition)
+    self.Morale.Title:SetSize(DEFAULT_WIDTH - 45, DEFAULT_HEIGHT)
     self.Morale.Title:SetMouseVisible (false)
     self.Morale.Title:SetText ("")
     self.Morale.Title:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleRight)
     self.Morale.Title:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
 
-    self.Morale.Percent = Turbine.UI.Label()
-    self.Morale.Percent:SetParent (self)
-    self.Morale.Percent:SetPosition (0,21)
-    self.Morale.Percent:SetSize(45, 20)
-    self.Morale.Percent:SetMouseVisible (false)
-    self.Morale.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
-    self.Morale.Percent:SetFont( Turbine.UI.Lotro.Font.Verdana12 )    
-
     -- ------------------------------------------------------------------------
     -- Power
     -- ------------------------------------------------------------------------
+    local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
+    
     self.Power.Bar = Turbine.UI.Control()
     self.Power.Bar:SetParent (self)
     self.Power.Bar:SetBackColor ( Turbine.UI.Color.RoyalBlue )
-    self.Power.Bar:SetSize(200, 20)
-    self.Power.Bar:SetPosition (0,42)
+    self.Power.Bar:SetSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    self.Power.Bar:SetPosition (0, powerPosition)
     self.Power.Bar:SetMouseVisible (false)
+
+    self.Power.Percent = Turbine.UI.Label()
+    self.Power.Percent:SetParent (self)
+    self.Power.Percent:SetPosition (0, powerPosition)
+    self.Power.Percent:SetSize(45, DEFAULT_HEIGHT)
+    self.Power.Percent:SetMouseVisible (false)
+    self.Power.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
+    self.Power.Percent:SetFont( Turbine.UI.Lotro.Font.Verdana12 )    
 
     self.Power.Title = Turbine.UI.Label()
     self.Power.Title:SetParent (self)
-    self.Power.Title:SetPosition (45,42)
-    self.Power.Title:SetSize(155, 20)
+    self.Power.Title:SetPosition (45, powerPosition)
+    self.Power.Title:SetSize(DEFAULT_WIDTH - 45, DEFAULT_HEIGHT)
     self.Power.Title:SetMouseVisible (false)
     self.Power.Title:SetText ("")
     self.Power.Title:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleRight)
     self.Power.Title:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
 
-    self.Power.Percent = Turbine.UI.Label()
-    self.Power.Percent:SetParent (self)
-    self.Power.Percent:SetPosition (0,42)
-    self.Power.Percent:SetSize(45, 20)
-    self.Power.Percent:SetMouseVisible (false)
-    self.Power.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
-    self.Power.Percent:SetFont( Turbine.UI.Lotro.Font.Verdana12 )    
   
     -- ------------------------------------------------------------------------
     -- Effect Display
@@ -226,16 +235,18 @@ function TargetBox:SetEnabledEffects()
     self.SingleEffects = {}
     
     -- generate new effects
-    local effectCount = 0
-
-    for k, v in pairs (EffectsSet) do
-        effectCount = effectCount + 1
+    for k, v in ipairs (EffectsSet) do
         self.SingleEffects[k] = EffectFrame(self, v)
-        self.SingleEffects[k]:SetPosition (0, 42 + effectCount * 21)
+        self.SingleEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
+                + self.Power.Bar:GetHeight() + (k - 1) * DEFAULT_HEIGHT)
     end     
 
-    self:SetSize(200, 63 + 21 * effectCount)
-    self.TargetSelection:SetSize(200, 63 * 21 * effectCount)
+    -- title bar, morale bar, power bar + all effects
+    local frameSize = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight() 
+                + self.Power.Bar:GetHeight() + #self.SingleEffects * DEFAULT_HEIGHT
+    
+    self:SetSize(DEFAULT_WIDTH, frameSize) 
+    self.TargetSelection:SetSize(DEFAULT_WIDTH, frameSize)
     
     DebugWriteLine("Exiting SetEnabledEffects")    
 end
@@ -268,10 +279,10 @@ function TargetBox:UpdateTarget()
         self.Morale.Percent:SetText("")
         self.Power.Title:SetText("")
         self.Power.Percent:SetText("")
-        self.Morale.Bar:SetSize (200, 20)
-        self.Morale.Bar:SetPosition (0,21)
-        self.Power.Bar:SetSize(200, 20)
-        self.Power.Bar:SetPosition (0,42)
+        self.Morale.Bar:SetSize (DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        self.Morale.Bar:SetPosition (0, self.TitleBar:GetHeight())
+        self.Power.Bar:SetSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        self.Power.Bar:SetPosition (0,self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight())
         
         if self.Target then
             RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
@@ -367,6 +378,7 @@ function TargetBox:Update()
     if self.Target then
         DebugWriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectList:GetCount()).." effects.")
 
+        -- in this loop, 'v' is the list of EffectFrames
         for k, v in pairs (self.SingleEffects) do
             for i = 1, self.EffectList:GetCount() do
                 local matchName = {}
@@ -375,16 +387,17 @@ function TargetBox:Update()
                 else
                     matchName = v.patternMatch
                 end                
-                                
-                DebugWriteLine(">>>>>>>>>> "..tostring(v.effectName).." "..tostring(v.patternMatch).." "..tostring(matchName))                                                
+
+                DebugWriteLine(">>>>Matching '"..tostring(matchName).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'")                                                
 
                 if string.find (self.EffectList:Get(i):GetName(), matchName) then
+                    DebugWriteLine(">>>> FOUND")                 
                     v:SetCurrentEffect(self.EffectList:Get(i))
                     v.lastSeen = Turbine.Engine.GetGameTime()
                     break
                 end
             end
-            if v.openEnded == 1 and v.lastSeen > 0 then
+            if v.toggle == 1 and v.lastSeen > 0 then
                 DebugWriteLine("Checking last seen on "..tostring(v.name:GetText()))
                 if (Turbine.Engine.GetGameTime() - v.lastSeen) > 5 then       
                     DebugWriteLine("   not seen for "..tostring(Turbine.Engine.GetGameTime() - v.lastSeen).." seconds ago.")
@@ -396,20 +409,6 @@ function TargetBox:Update()
     
     self:SetWantsUpdates(false)
     DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
-end
-
--- ------------------------------------------------------------------------
--- 
--- ------------------------------------------------------------------------
-function TargetBox:DumpData()
-    DebugWriteLine(">>>>>Data dump  ID : "..tostring(self.ID))
-    DebugWriteLine(">>>>>    EntityControl : "..tostring(self.TargetSelection))
-     if self.TargetSelection:GetEntity() ~=nil then
-        DebugWriteLine(">>>>>    Entity      : "..tostring(self.TargetSelection:GetEntity()))
-        DebugWriteLine(">>>>>    Entity Name : "..tostring(self.TargetSelection:GetEntity():GetName()))
-    else
-        DebugWriteLine(">>>>>    No target")
-    end        
 end
 
 -- ------------------------------------------------------------------------

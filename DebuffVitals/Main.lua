@@ -11,29 +11,24 @@ check 7) timer remaining
 check 9) other buffs 
 check 10) configuration options
 11) localization
+12) hide morale/power
+13) reduce footprint
+14) flash timer
 
 ]]
 
 import "Turbine.Gameplay"
 import "Turbine.UI" 
 import "Turbine.UI.Lotro"
-import "Grimmerthan.DebuffVitals.Menu"
-import "Grimmerthan.DebuffVitals.TargetBox"
-import "Grimmerthan.DebuffVitals.Handlers"
-import "Grimmerthan.DebuffVitals.EffectFrame"
+import "Grimmerthan.DebuffVitals.Constants"
+import "Grimmerthan.DebuffVitals.Debug"
 import "Grimmerthan.DebuffVitals.Effects"
+import "Grimmerthan.DebuffVitals.EffectFrame"
+import "Grimmerthan.DebuffVitals.Handlers"
+import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.OptionsPanel"
+import "Grimmerthan.DebuffVitals.TargetBox"
 
--- ------------------------------------------------------------------------
--- Debug output
--- ------------------------------------------------------------------------
-DebugEnabled = false
-
-function DebugWriteLine (message)
-    if DebugEnabled then
-        Turbine.Shell.WriteLine(message)
-    end
-end
 
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
@@ -97,7 +92,7 @@ function RemoveCallback(object, event, callback)
 end
 
 -- ------------------------------------------------------------------------
--- targets Utilities
+-- Target Utilities
 -- ------------------------------------------------------------------------
 function AddNewTarget()
     DebugWriteLine("Entering AddNewTargetFrame...")
@@ -156,7 +151,7 @@ for key, value in pairs (Turbine.UI.Color) do
 end
     DebugWriteLine(text)
 
-for key, value in pairs (DefaultEffects) do
+for key, value in pairs (DEFAULT_EFFECTS) do
     DebugWriteLine(tostring(key), tostring(value))
     for key2, value2 in pairs (value) do
         DebugWriteLine(tostring(key2), tostring(value2))
