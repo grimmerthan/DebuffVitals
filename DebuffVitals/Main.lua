@@ -126,16 +126,16 @@ end
 -- ------------------------------------------------------------------------
 
 TargetFrames = {}
-
 TrackedEffects = {}
 EffectsSet = {}
+FrameID = 0
+LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
+FrameWidth = DEFAULT_WIDTH
+ControlHeight = DEFAULT_HEIGHT
 
 LoadEffects{}
+
 GenerateEnabledSet()
-
-FrameID = 0
-
-LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 
 AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 

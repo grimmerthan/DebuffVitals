@@ -20,22 +20,22 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
 
     self:SetParent(CurrentFrame)
     self:SetVisible(true)
-    self:SetSize (DEFAULT_WIDTH, DEFAULT_HEIGHT)     
+    self:SetSize (FrameWidth, ControlHeight)     
     self:SetEnabled(false)
 
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
     self.effectDisplay:SetMouseVisible(true)
     self.effectDisplay:SetParent(self)
-    self.effectDisplay:SetSize(DEFAULT_HEIGHT, DEFAULT_HEIGHT)
+    self.effectDisplay:SetSize(ControlHeight, ControlHeight)
     self.effectDisplay:SetPosition(0, 0)
     self.effectDisplay:SetZOrder(200)
 
     self.name = Turbine.UI.Label()
     self.name:SetVisible(true)
     self.name:SetParent(self)
-    self.name:SetSize(DEFAULT_WIDTH - DEFAULT_HEIGHT - 30, DEFAULT_HEIGHT)
-    self.name:SetPosition(DEFAULT_HEIGHT, 0) 
+    self.name:SetSize(FrameWidth - ControlHeight - 30, ControlHeight)
+    self.name:SetPosition(ControlHeight, 0) 
     self.name:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.name:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
     self.name:SetText(tostring(EffectDefinition[2]))
@@ -48,8 +48,8 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self.timer = Turbine.UI.Label()
     self.timer:SetVisible(true)
     self.timer:SetParent(self)
-    self.timer:SetSize(30, DEFAULT_HEIGHT)
-    self.timer:SetPosition(DEFAULT_WIDTH - 30, 0)
+    self.timer:SetSize(30, ControlHeight)
+    self.timer:SetPosition(FrameWidth - 30, 0)
     self.timer:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleRight);
     self.timer:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
     self.timer:SetForeColor (Turbine.UI.Color.Gray)
@@ -93,7 +93,7 @@ function EffectFrame:ClearCurrentEffect()
     self.effectDisplay = Turbine.UI.Lotro.EffectDisplay()
     self.effectDisplay:SetVisible(true)
     self.effectDisplay:SetParent(self)
-    self.effectDisplay:SetSize(DEFAULT_HEIGHT, DEFAULT_HEIGHT)
+    self.effectDisplay:SetSize(ControlHeight, ControlHeight)
     self.effectDisplay:SetPosition(0, 0)  
     self.effectDisplay:SetEffect(nil)
 
@@ -116,11 +116,11 @@ function EffectFrame:Update(args)
    
     -- update the time
     if (self.duration > 86400) then
-        local time = TimeFormat(math.floor(elapsedTime))
+        local time = FormatTime(math.floor(elapsedTime))
         self.timer:SetText(time)
     else
         local remaining = self.duration - math.ceil(elapsedTime)
-        local time = TimeFormat(remaining < 0 and 0 or remaining)
+        local time = FormatTime(remaining < 0 and 0 or remaining)
         self.timer:SetText(time)
         
         if (gameTime > self.endTime) then
@@ -132,7 +132,7 @@ end
 -- ------------------------------------------------------------------------
 -- 
 -- ------------------------------------------------------------------------
-function TimeFormat (value)
+function FormatTime (value)
     if (value >= 3600) then
         local sec = math.fmod(value, 3600) / 60;
         value = ("%d:%02d:%02d"):format(value / 3600, value % 3600 / 60, value % 60);
@@ -143,3 +143,4 @@ function TimeFormat (value)
     end
     return value;
 end
+

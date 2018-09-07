@@ -31,9 +31,9 @@ function MoraleChangedHandler(sender, args)
     local TargetMaxMorale = CurrentFrame.Target:GetMaxMorale()
     local TargetTempMorale = CurrentFrame.Target:GetTemporaryMorale()
     local TargetMaxTempMorale = CurrentFrame.Target:GetMaxTemporaryMorale()
-    
-    CurrentFrame.Morale.Title:SetText(string.format("%d", FormatMoraleAndPower(TargetMorale))
-                    .." / "..string.format("%d", FormatMoraleAndPower(TargetMaxMorale)).." ")
+
+    CurrentFrame.Morale.Title:SetText(string.format("%s", FormatBigNumbers(TargetMorale))
+                    .." / "..string.format("%s", FormatBigNumbers(TargetMaxMorale)).." ")
 
     if TargetMorale <= 1 then
         CurrentFrame.Morale.Percent:SetText(string.format("0.0%%"))
@@ -41,9 +41,9 @@ function MoraleChangedHandler(sender, args)
         CurrentFrame.Morale.Percent:SetText(string.format("%.1f", 100 * TargetMorale / TargetMaxMorale).."%")
     end
 
-    local BarSize = math.floor(TargetMorale/TargetMaxMorale * DEFAULT_WIDTH)
-    CurrentFrame.Morale.Bar:SetSize(BarSize, DEFAULT_HEIGHT)
-    CurrentFrame.Morale.Bar:SetPosition(DEFAULT_WIDTH - BarSize, CurrentFrame.TitleBar:GetHeight())
+    local BarSize = math.floor(TargetMorale/TargetMaxMorale * FrameWidth)
+    CurrentFrame.Morale.Bar:SetSize(BarSize, ControlHeight)
+    CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.TitleBar:GetHeight())
 
 end
 
@@ -62,8 +62,8 @@ function PowerChangedHandler(sender, args)
     local TargetMaxPower = CurrentFrame.Target:GetMaxPower()
     local TargetTempPower = CurrentFrame.Target:GetTemporaryPower()
     local TargetMaxTempPower = CurrentFrame.Target:GetMaxTemporaryPower()
-    CurrentFrame.Power.Title:SetText(string.format("%d", FormatMoraleAndPower(TargetPower))
-                    .." / "..string.format("%d", FormatMoraleAndPower(TargetMaxPower)).." ")
+    CurrentFrame.Power.Title:SetText(string.format("%s", FormatBigNumbers(TargetPower))
+                    .." / "..string.format("%s", FormatBigNumbers(TargetMaxPower)).." ")
 
     if TargetPower <= 1 then
         CurrentFrame.Power.Percent:SetText(string.format("0.0%%"))
@@ -71,9 +71,9 @@ function PowerChangedHandler(sender, args)
         CurrentFrame.Power.Percent:SetText(string.format("%.1f", 100 * TargetPower / TargetMaxPower).."%")
     end
 
-    local BarSize = math.floor(TargetPower/TargetMaxPower * DEFAULT_WIDTH)
-    CurrentFrame.Power.Bar:SetSize(BarSize, DEFAULT_HEIGHT)
-    CurrentFrame.Power.Bar:SetPosition(DEFAULT_WIDTH - BarSize, CurrentFrame.TitleBar:GetHeight() + CurrentFrame.Morale.Bar:GetHeight())
+    local BarSize = math.floor(TargetPower/TargetMaxPower * FrameWidth)
+    CurrentFrame.Power.Bar:SetSize(BarSize, ControlHeight)
+    CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.TitleBar:GetHeight() + CurrentFrame.Morale.Bar:GetHeight())
 
 end
 
@@ -95,11 +95,42 @@ function EffectsChangedHandler(sender, args)
     DebugWriteLine("Exiting EffectsChangedHandler")
 end
 
-
 -- ------------------------------------------------------------------------
 -- 
 -- ------------------------------------------------------------------------
-function FormatMoraleAndPower(num)
-
-    return num
+function FormatBigNumbers(num)
+    local numString = {}
+    
+    if num > 99999 and num < 1000000 then
+        numString = tostring (math.floor(num / 1000)).."K"
+    elseif num > 999999 then
+        numString = tostring (math.floor(num / 1000000)).."M"
+    else
+        numString = tostring (math.floor(num))
+    end
+        
+    
+    return numString
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

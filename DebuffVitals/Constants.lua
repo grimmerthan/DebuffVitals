@@ -49,6 +49,5 @@ DEFAULT_WIDTH = 200
 -- default height of controls
 DEFAULT_HEIGHT = 20
 
--- default size of the name/title control
-NAMEBAR_HEIGHT = 20
-
+-- Debuff and Effects offset
+DEBUFF_AND_EFFECTS_OFFSET = 80
