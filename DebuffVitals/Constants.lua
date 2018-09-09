@@ -51,3 +51,6 @@ DEFAULT_HEIGHT = 20
 
 -- Debuff and Effects offset
 DEBUFF_AND_EFFECTS_OFFSET = 80
+
+-- DEBUFFING 
+DEBUG_ENABLED = false

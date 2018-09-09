@@ -100,37 +100,14 @@ end
 -- ------------------------------------------------------------------------
 function FormatBigNumbers(num)
     local numString = {}
-    
+
     if num > 99999 and num < 1000000 then
-        numString = tostring (math.floor(num / 1000)).."K"
+        numString = string.format("%.1f", num / 1000).."K"
     elseif num > 999999 then
-        numString = tostring (math.floor(num / 1000000)).."M"
+        numString = string.format("%.1f", num / 1000000).."M"
     else
         numString = tostring (math.floor(num))
     end
-        
-    
+
     return numString
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

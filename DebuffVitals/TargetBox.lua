@@ -138,6 +138,7 @@ function TargetBox:Constructor(num)
     self.EffectList = nil
     self.SingleEffects = {}
 
+    self:SetEnabledEffects()
     self:Resize()
     -- ------------------------------------------------------------------------
     -- Mouse and key interactions
@@ -236,8 +237,6 @@ function TargetBox:SetEnabledEffects()
     -- generate new effects
     for k, v in ipairs (EffectsSet) do
         self.SingleEffects[k] = EffectFrame(self, v)
-        self.SingleEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
-                + self.Power.Bar:GetHeight() + (k - 1) * ControlHeight)
     end     
     
     DebugWriteLine("Exiting SetEnabledEffects")    
@@ -435,8 +434,10 @@ function TargetBox:Resize()
     self.Power.Title:SetPosition (45, powerPosition)
     self.Power.Title:SetSize(FrameWidth - 45, ControlHeight)
 
-    -- effect bars
-    self:SetEnabledEffects()
+    for k, v in ipairs (EffectsSet) do
+        self.SingleEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
+                + self.Power.Bar:GetHeight() + (k - 1) * ControlHeight)
+    end
 
     -- title bar, morale bar, power bar + all effects
     local frameSize = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight() 

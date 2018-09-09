@@ -1,10 +1,8 @@
 -- ------------------------------------------------------------------------
 -- Debug output
 -- ------------------------------------------------------------------------
-DebugEnabled = true
-
 function DebugWriteLine (message)
-    if DebugEnabled then
+    if DEBUG_ENABLED then
         Turbine.Shell.WriteLine(message)
     end
 end

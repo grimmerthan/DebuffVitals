@@ -35,7 +35,7 @@ function OptionsPanel:Constructor ()
     self.widthScrollBar:SetPosition(200, 46) 
     self.widthScrollBar:SetMinimum(150)
     self.widthScrollBar:SetMaximum(250)
-    self.widthScrollBar:SetValue(200)    
+    self.widthScrollBar:SetValue(FrameWidth)    
     self.widthScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
     self.widthScrollBar:SetBackColor (Turbine.UI.Color.White)
     self.widthScrollBar.ValueChanged = function() 
@@ -46,7 +46,7 @@ function OptionsPanel:Constructor ()
     self.widthTitle = Turbine.UI.Label()
     self.widthTitle:SetVisible(true)
     self.widthTitle:SetParent(self)
-    self.widthTitle:SetSize(200, 20)
+    self.widthTitle:SetSize(130, 20)
     self.widthTitle:SetPosition(40, 40) 
     self.widthTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.widthTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
@@ -60,7 +60,7 @@ function OptionsPanel:Constructor ()
     self.heightScrollBar:SetPosition(200, 66) 
     self.heightScrollBar:SetMinimum(10)
     self.heightScrollBar:SetMaximum(30)
-    self.heightScrollBar:SetValue(20)    
+    self.heightScrollBar:SetValue(ControlHeight)    
     self.heightScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
     self.heightScrollBar:SetBackColor (Turbine.UI.Color.White)
     self.heightScrollBar.ValueChanged = function() 
@@ -70,7 +70,7 @@ function OptionsPanel:Constructor ()
     self.heightTitle = Turbine.UI.Label()
     self.heightTitle:SetVisible(true)
     self.heightTitle:SetParent(self)
-    self.heightTitle:SetSize(200, 20)
+    self.heightTitle:SetSize(130, 20)
     self.heightTitle:SetPosition(40, 60) 
     self.heightTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.heightTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
@@ -131,11 +131,6 @@ function OptionsPanel:Constructor ()
     self.acceptButton:SetText("Accept");
     self.acceptButton.Click = function(sender, args)
         self:Accept();
-        FrameWidth = self.widthScrollBar:GetValue()
-        ControlHeight = self.heightScrollBar:GetValue()
-        for k, frame in pairs (TargetFrames) do
-            frame:Resize()
-        end
     end    
 end
 
@@ -164,14 +159,17 @@ function OptionsPanel:Accept()
         end
     end
 
-    Turbine.PluginData.Save(Turbine.DataScope.Character, "DebuffVitals", TrackedEffects, nil);
+    SaveSettings(self)
 
     GenerateEnabledSet()
+    
+    FrameWidth = self.widthScrollBar:GetValue()
+    ControlHeight = self.heightScrollBar:GetValue()   
 
     for k, v in pairs(TargetFrames) do
         v:SetEnabledEffects()
+        v:Resize()
     end
-    
 end
 
 -- ------------------------------------------------------------------------

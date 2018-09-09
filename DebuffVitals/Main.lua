@@ -129,11 +129,12 @@ TargetFrames = {}
 TrackedEffects = {}
 EffectsSet = {}
 FrameID = 0
-LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
 
-LoadEffects{}
+LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
+
+LoadSettings{}
 
 GenerateEnabledSet()
 
