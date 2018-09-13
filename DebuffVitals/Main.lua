@@ -1,19 +1,16 @@
 --[[
 
-check 1) basic layout
-check 2) Lock functionality
-check 3) target change callback
-check 4) morale callback
-check 5) power callback
-check 6) fire-lore and Frost-lore detection
-check 7) timer remaining
-8) corruption detection
-check 9) other buffs 
-check 10) configuration options
-11) localization
-12) hide morale/power
-13) reduce footprint
-14) flash timer
+This plugin is a tool to help players track mobs and specific effects on mobs.  This plugins :
+- shows current level, name, morale, and power
+- shows presence and timers of specific and selected effects
+- resizable
+- position lockable
+
+Future works include:   
+- counting remaining corruption levels for specific boxes
+- localization 
+- extend to include player buffs, eg, stun immunity
+- creep side  
 
 ]]
 
@@ -22,13 +19,12 @@ import "Turbine.UI"
 import "Turbine.UI.Lotro"
 import "Grimmerthan.DebuffVitals.Constants"
 import "Grimmerthan.DebuffVitals.Debug"
-import "Grimmerthan.DebuffVitals.Effects"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.OptionsPanel"
-import "Grimmerthan.DebuffVitals.TargetBox"
-
+import "Grimmerthan.DebuffVitals.TargetFrame"
+import "Grimmerthan.DebuffVitals.Utilities"
 
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
@@ -37,58 +33,25 @@ function Turbine.Plugin.Unload()
     DebugWriteLine("Plugin unload")
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
-    for key,box in pairs(TargetFrames) do
-        if box.Target then 
-            RemoveCallback(box.Target, "MoraleChanged", MoraleChangedHandler);
-            RemoveCallback(box.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(box.Target, "MaxMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(box.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(box.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
-            RemoveCallback(box.Target, "PowerChanged", PowerChangedHandler);
-            RemoveCallback(box.Target, "BaseMaxPowerChanged", PowerChangedHandler);
-            RemoveCallback(box.Target, "MaxPowerChanged", PowerChangedHandler);
-            RemoveCallback(box.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
-            RemoveCallback(box.Target, "TemporaryPowerChanged", PowerChangedHandler);
+    for key, frame in pairs (TargetFrames) do
+        if frame.Target then 
+            RemoveCallback(frame.Target, "MoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "MaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "PowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "BaseMaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "MaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "TemporaryPowerChanged", PowerChangedHandler);
         end
-        if box.Effects then
-            RemoveCallback(box.Effects, "EffectAdded", EffectsChangedHandler);
-            RemoveCallback(box.Effects, "EffectRemoved", EffectsChangedHandler);
-            RemoveCallback(box.Effects, "EffectsCleared", EffectsChangedHandler);   
+        if frame.Effects then
+            RemoveCallback(frame.Effects, "EffectAdded", EffectsChangedHandler);
+            RemoveCallback(frame.Effects, "EffectRemoved", EffectsChangedHandler);
+            RemoveCallback(frame.Effects, "EffectsCleared", EffectsChangedHandler);   
         end
     end    
-end
-
-
--- ------------------------------------------------------------------------
--- Callbacks
--- ------------------------------------------------------------------------
-function AddCallback(object, event, callback)
-    if (object[event] == nil) then
-        object[event] = callback;
-    else
-        if (type(object[event]) == "table") then
-            table.insert(object[event], callback);
-        else
-            object[event] = {object[event], callback};
-        end
-    end
-    return callback;
-end
-
-function RemoveCallback(object, event, callback)
-    if (object[event] == callback) then
-        object[event] = nil;
-    else
-        if (type(object[event]) == "table") then
-            local size = table.getn(object[event]);
-            for i = 1, size do
-                if (object[event][i] == callback) then
-                    table.remove(object[event], i);
-                    break;
-                end
-            end
-        end
-    end
 end
 
 -- ------------------------------------------------------------------------
@@ -97,21 +60,22 @@ end
 function AddNewTarget()
     DebugWriteLine("Entering AddNewTargetFrame...")
     FrameID = FrameID + 1
-    TargetFrames[FrameID] = TargetBox(FrameID)
-    TargetChangeHandler (NewTarget)
+    TargetFrames[FrameID] = TargetFrame(FrameID)
+    TargetChangeHandler ()
     DebugWriteLine("Exiting AddNewTargetFrame...")
+    return TargetFrames[FrameID]
 end
 
 function RemoveTarget(ID)
     DebugWriteLine("Entering RemoveTargetFrame...")
-    for key,box in pairs(TargetFrames) do 
-        DebugWriteLine("TargetBox.GetID(box) == ID //"..tostring (TargetBox.GetID(box).." == "..tostring(ID)))
-        if TargetBox.GetID(box) == ID then
+    for key, frame in pairs (TargetFrames) do 
+        DebugWriteLine("frame.GetID(frame) == ID //"..tostring (frame.ID).." == "..tostring(ID))
+        if frame.ID == ID then
             DebugWriteLine("Removing : "..tostring (ID))
-            if not TargetBox.IsLocked(box) then
+            if not frame.Locked then
                 DebugWriteLine("Processing Removal...")
-                TargetBox.DestroyFrame(box)
-                table.remove(TargetFrames, key)
+                frame:SetVisible(false)
+                TargetFrames[key] = nil
             end
             break
         end
@@ -121,8 +85,9 @@ end
 
 -- ------------------------------------------------------------------------
 -- Doing Stuff!
--- 1) generate effects list (load configuration)
--- 2) generate effect frames
+-- 1) loads any stored configuration
+-- 2) generate a set of interesting effects
+-- 3) generate intial effect frames
 -- ------------------------------------------------------------------------
 
 TargetFrames = {}
@@ -131,6 +96,12 @@ EffectsSet = {}
 FrameID = 0
 FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
+PreLoadedCount = DEFAULT_PRELOAD_COUNT
+LockedPosition = DEFAULT_LOCKED_POSITION
+SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
+FramePositions = {}
+ShowMorale = DEFAULT_SHOW_MORALE
+ShowPower = DEFAULT_SHOW_POWER
 
 LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 
@@ -142,28 +113,15 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 
 MenuItems = CreateMenu()
 
-AddNewTarget()
+for i = 1, PreLoadedCount do
 
---[[
-DebugWriteLine("Turbine.UI.Color...")
-local text = ""
-for key, value in pairs (Turbine.UI.Color) do
-    text = text.." "..tostring(key) 
-end
-    DebugWriteLine(text)
+    target = AddNewTarget()
 
-for key, value in pairs (DEFAULT_EFFECTS) do
-    DebugWriteLine(tostring(key), tostring(value))
-    for key2, value2 in pairs (value) do
-        DebugWriteLine(tostring(key2), tostring(value2))
-    end    
+    if FramePositions[i] then
+        if FramePositions[i][1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
+           FramePositions[i][2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
+            target:SetPosition(FramePositions[i][1],FramePositions[i][2])
+        end
+    end
 end
-DebugWriteLine("Turbine.Gameplay.Effect...")
-for key, value in pairs (Turbine.Gameplay.Effect) do
-    DebugWriteLine(tostring(key))
-end
-DebugWriteLine("Turbine.Gameplay.EffectList...")
-for key, value in pairs (Turbine.Gameplay.EffectList) do
-    DebugWriteLine(tostring(key))
-end
-]]--
+

@@ -1,20 +1,55 @@
 -- ------------------------------------------------------------------------
--- Target Change Handler and Helpers
+-- Callbacks
+-- ------------------------------------------------------------------------
+function AddCallback(object, event, callback)
+    if (object[event] == nil) then
+        object[event] = callback;
+    else
+        if (type(object[event]) == "table") then
+            table.insert(object[event], callback);
+        else
+            object[event] = {object[event], callback};
+        end
+    end
+    return callback;
+end
+
+function RemoveCallback(object, event, callback)
+    if (object[event] == callback) then
+        object[event] = nil;
+    else
+        if (type(object[event]) == "table") then
+            local size = table.getn(object[event]);
+            for i = 1, size do
+                if (object[event][i] == callback) then
+                    table.remove(object[event], i);
+                    break;
+                end
+            end
+        end
+    end
+end
+
+-- ------------------------------------------------------------------------
+-- Target Change Handler
 -- ------------------------------------------------------------------------
 function TargetChangeHandler(sender, args)
     DebugWriteLine("Entering TargetChangeHandler...")
-    DebugWriteLine("Changed target")
-    for key,box in pairs(TargetFrames) do
-        DebugWriteLine("ID : "..tostring(key).." value : "..tostring(box))
-        TargetBox.UpdateTarget(box)
+
+    for key, frame in pairs (TargetFrames) do
+        DebugWriteLine("ID : "..tostring(key).." value : "..tostring(frame))
+        TargetFrame.UpdateTarget(frame)
     end
+    
     DebugWriteLine("Exiting TargetChangeHandler...")
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Morale Change Handler
 -- ------------------------------------------------------------------------
 function MoraleChangedHandler(sender, args)
+    DebugWriteLine("Entering MoraleChangedHandler")
+    
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
@@ -45,12 +80,14 @@ function MoraleChangedHandler(sender, args)
     CurrentFrame.Morale.Bar:SetSize(BarSize, ControlHeight)
     CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.TitleBar:GetHeight())
 
+    DebugWriteLine("Exiting EffectsChangedHandler")
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Power Change Handler
 -- ------------------------------------------------------------------------
 function PowerChangedHandler(sender, args)
+    DebugWriteLine("Entering PowerChangedHandler")
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
@@ -75,10 +112,11 @@ function PowerChangedHandler(sender, args)
     CurrentFrame.Power.Bar:SetSize(BarSize, ControlHeight)
     CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.TitleBar:GetHeight() + CurrentFrame.Morale.Bar:GetHeight())
 
+    DebugWriteLine("Exiting EffectsChangedHandler")
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Effect Change Handler
 -- ------------------------------------------------------------------------
 function EffectsChangedHandler(sender, args)
     DebugWriteLine("Entering EffectsChangedHandler")
@@ -93,21 +131,4 @@ function EffectsChangedHandler(sender, args)
     sender.self:SetWantsUpdates(true)
     
     DebugWriteLine("Exiting EffectsChangedHandler")
-end
-
--- ------------------------------------------------------------------------
--- 
--- ------------------------------------------------------------------------
-function FormatBigNumbers(num)
-    local numString = {}
-
-    if num > 99999 and num < 1000000 then
-        numString = string.format("%.1f", num / 1000).."K"
-    elseif num > 999999 then
-        numString = string.format("%.1f", num / 1000000).."M"
-    else
-        numString = tostring (math.floor(num))
-    end
-
-    return numString
 end

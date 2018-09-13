@@ -1,12 +1,8 @@
 -- ------------------------------------------------------------------------
--- Constants 
--- ------------------------------------------------------------------------
-
--- ------------------------------------------------------------------------
 -- List of effects and state
 --   class,        effect name,           use or not,  toggle, regex pattern   
 -- ------------------------------------------------------------------------
-DEFAULT_EFFECTS =  {
+DEFAULT_FREEP_EFFECTS =  {
     {"Common",      "Dazed",                          1, 0},    
     {"Common",      "Recovering",                     0, 0}, 
     {"Common",      "Stunned",                        1, 0}, 
@@ -31,7 +27,7 @@ DEFAULT_EFFECTS =  {
     {"Lore-master", "Fire-lore",                      1, 0, "Fire%-lore"}, 
     {"Lore-master", "Frost-lore",                     1, 0, "Frost%-lore"}, 
     {"Lore-master", "Knowledge of the Lore-master",   0, 0}, 
-    {"Lore-master", "Root Strike",                    0, 0}, 
+    {"Lore-master", "Ranged Critical Chance",         0, 0}, 
     {"Lore-master", "Shatter Arms",                   0, 0}, 
     {"Lore-master", "Sticky Tar: Fire Vulnerability", 0, 0}, 
     {"Lore-master", "Sticky Tar: Slow",               0, 0}, 
@@ -43,14 +39,28 @@ DEFAULT_EFFECTS =  {
     {"Warden",      "Marked Target",                  0, 0},    
 }
 
--- default width of controls
-DEFAULT_WIDTH = 200
+DEFAULT_FREEP_PLAYER_EFFECTS = {
+    {"Lore-master", "Temporary State Immunity",       0, 0},
+}
 
--- default height of controls
-DEFAULT_HEIGHT = 20
+DEFAULT_CREEP_EFFECTS = {
+}
 
--- Debuff and Effects offset
-DEBUFF_AND_EFFECTS_OFFSET = 80
+DEFAULT_CREEP_PLAYER_EFFECTS = {
+} 
 
--- DEBUFFING 
+DEFAULT_EFFECTS = DEFAULT_FREEP_EFFECTS
+
+-- ------------------------------------------------------------------------
+-- Constants 
+-- ------------------------------------------------------------------------
 DEBUG_ENABLED = false
+DEBUFF_AND_EFFECTS_OFFSET = 190
+DEFAULT_WIDTH = 200
+DEFAULT_HEIGHT = 20
+DEFAULT_SAVE_FRAME_POSITIONS = false
+DEFAULT_LOCKED_POSITION = false
+DEFAULT_PRELOAD_COUNT = 1
+DEFAULT_SHOW_MORALE = true
+DEFAULT_SHOW_POWER = true
+

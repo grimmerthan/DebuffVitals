@@ -8,7 +8,7 @@ function plugin.GetOptionsPanel (self)
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Panel in Plugin Manager
 -- ------------------------------------------------------------------------
 OptionsPanel = class (Turbine.UI.Control)
 
@@ -28,53 +28,111 @@ function OptionsPanel:Constructor ()
     self.OptionsTitle:SetFont( Turbine.UI.Lotro.Font.Verdana20 )
     self.OptionsTitle:SetText("Options")
 
-    self.widthScrollBar = Turbine.UI.Lotro.ScrollBar()
-    self.widthScrollBar:SetVisible(true)
-    self.widthScrollBar:SetParent(self)
-    self.widthScrollBar:SetSize(200, 10)
-    self.widthScrollBar:SetPosition(200, 46) 
-    self.widthScrollBar:SetMinimum(150)
-    self.widthScrollBar:SetMaximum(250)
-    self.widthScrollBar:SetValue(FrameWidth)    
-    self.widthScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
-    self.widthScrollBar:SetBackColor (Turbine.UI.Color.White)
-    self.widthScrollBar.ValueChanged = function() 
-        self.widthTitle:SetText("Frame width : "..tostring(self.widthScrollBar:GetValue()))    
+    self.ShowMorale = Turbine.UI.Lotro.CheckBox()    
+    self.ShowMorale:SetParent(self)
+    self.ShowMorale:SetPosition(40, 40)
+    self.ShowMorale:SetSize(400, 20)
+    self.ShowMorale:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.ShowMorale:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.ShowMorale:SetText(" Show morale")
+    self.ShowMorale:SetChecked(ShowMorale)
+
+    self.ShowPower = Turbine.UI.Lotro.CheckBox()    
+    self.ShowPower:SetParent(self)
+    self.ShowPower:SetPosition(40, 60)
+    self.ShowPower:SetSize(400, 20)
+    self.ShowPower:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.ShowPower:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.ShowPower:SetText(" Show power")
+    self.ShowPower:SetChecked(ShowPower)
+
+    self.WidthScrollBar = Turbine.UI.Lotro.ScrollBar()
+    self.WidthScrollBar:SetVisible(true)
+    self.WidthScrollBar:SetParent(self)
+    self.WidthScrollBar:SetSize(200, 10)
+    self.WidthScrollBar:SetPosition(200, 85) 
+    self.WidthScrollBar:SetMinimum(150)
+    self.WidthScrollBar:SetMaximum(250)
+    self.WidthScrollBar:SetValue(FrameWidth)    
+    self.WidthScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
+    self.WidthScrollBar:SetBackColor (Turbine.UI.Color.White)
+    self.WidthScrollBar.ValueChanged = function() 
+        self.WidthTitle:SetText("Frame width : "..tostring(self.WidthScrollBar:GetValue()))    
     end
 
+    self.WidthTitle = Turbine.UI.Label()
+    self.WidthTitle:SetVisible(true)
+    self.WidthTitle:SetParent(self)
+    self.WidthTitle:SetSize(130, 20)
+    self.WidthTitle:SetPosition(40, 80) 
+    self.WidthTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.WidthTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.WidthScrollBar.ValueChanged()
 
-    self.widthTitle = Turbine.UI.Label()
-    self.widthTitle:SetVisible(true)
-    self.widthTitle:SetParent(self)
-    self.widthTitle:SetSize(130, 20)
-    self.widthTitle:SetPosition(40, 40) 
-    self.widthTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
-    self.widthTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
-    self.widthTitle:SetText("Frame width : "..tostring(self.widthScrollBar:GetValue()))
-
-
-    self.heightScrollBar = Turbine.UI.Lotro.ScrollBar()
-    self.heightScrollBar:SetVisible(true)
-    self.heightScrollBar:SetParent(self)
-    self.heightScrollBar:SetSize(200, 10)
-    self.heightScrollBar:SetPosition(200, 66) 
-    self.heightScrollBar:SetMinimum(10)
-    self.heightScrollBar:SetMaximum(30)
-    self.heightScrollBar:SetValue(ControlHeight)    
-    self.heightScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
-    self.heightScrollBar:SetBackColor (Turbine.UI.Color.White)
-    self.heightScrollBar.ValueChanged = function() 
-        self.heightTitle:SetText("Effect height : "..tostring(self.heightScrollBar:GetValue()))    
+    self.HeightScrollBar = Turbine.UI.Lotro.ScrollBar()
+    self.HeightScrollBar:SetVisible(true)
+    self.HeightScrollBar:SetParent(self)
+    self.HeightScrollBar:SetSize(200, 10)
+    self.HeightScrollBar:SetPosition(200, 105) 
+    self.HeightScrollBar:SetMinimum(10)
+    self.HeightScrollBar:SetMaximum(30)
+    self.HeightScrollBar:SetValue(ControlHeight)    
+    self.HeightScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
+    self.HeightScrollBar:SetBackColor (Turbine.UI.Color.White)
+    self.HeightScrollBar.ValueChanged = function() 
+        self.HeightTitle:SetText("Effect height : "..tostring(self.HeightScrollBar:GetValue()))    
     end  
 
-    self.heightTitle = Turbine.UI.Label()
-    self.heightTitle:SetVisible(true)
-    self.heightTitle:SetParent(self)
-    self.heightTitle:SetSize(130, 20)
-    self.heightTitle:SetPosition(40, 60) 
-    self.heightTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
-    self.heightTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
-    self.heightTitle:SetText("Effect height : "..tostring(self.heightScrollBar:GetValue()))
+    self.HeightTitle = Turbine.UI.Label()
+    self.HeightTitle:SetVisible(true)
+    self.HeightTitle:SetParent(self)
+    self.HeightTitle:SetSize(130, 20)
+    self.HeightTitle:SetPosition(40, 100) 
+    self.HeightTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.HeightTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.HeightScrollBar.ValueChanged()
+
+    self.PreloadScrollBar = Turbine.UI.Lotro.ScrollBar()
+    self.PreloadScrollBar:SetVisible(true)
+    self.PreloadScrollBar:SetParent(self)
+    self.PreloadScrollBar:SetSize(200, 10)
+    self.PreloadScrollBar:SetPosition(200, 125) 
+    self.PreloadScrollBar:SetMinimum(2)
+    self.PreloadScrollBar:SetMaximum(20)
+    self.PreloadScrollBar:SetValue(PreLoadedCount * 2)
+    self.PreloadScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
+    self.PreloadScrollBar:SetBackColor (Turbine.UI.Color.White)
+    self.PreloadScrollBar.ValueChanged = function() 
+        -- workaround bad scrollbar behaviour 
+        self.PreloadTitle:SetText("Load frames : "..tostring(math.floor(self.PreloadScrollBar:GetValue()/2)))    
+    end  
+
+    self.PreloadTitle = Turbine.UI.Label()
+    self.PreloadTitle:SetVisible(true)
+    self.PreloadTitle:SetParent(self)
+    self.PreloadTitle:SetSize(130, 20)
+    self.PreloadTitle:SetPosition(40, 120) 
+    self.PreloadTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.PreloadTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.PreloadScrollBar.ValueChanged()
+
+    self.LockedPosition = Turbine.UI.Lotro.CheckBox()    
+    self.LockedPosition:SetParent(self)
+    self.LockedPosition:SetPosition(40, 140)
+    self.LockedPosition:SetSize(400, 20)
+    self.LockedPosition:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.LockedPosition:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.LockedPosition:SetText(" Locked position")
+    self.LockedPosition:SetChecked(LockedPosition)
+
+    self.SaveFramePositions = Turbine.UI.Lotro.CheckBox()    
+    self.SaveFramePositions:SetParent(self)
+    self.SaveFramePositions:SetPosition(40, 160)
+    self.SaveFramePositions:SetSize(400, 20)
+    self.SaveFramePositions:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.SaveFramePositions:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.SaveFramePositions:SetText(" Save frame position")
+    self.SaveFramePositions:SetChecked(SaveFramePositions)
 
     -- DEBUFFS AND EFFECTS
     self.DebuffsTitle = Turbine.UI.Label()
@@ -90,7 +148,7 @@ function OptionsPanel:Constructor ()
         DebugWriteLine("OptionsPanel: Adding in "..tostring(v[2]))               
         local checkbox = Turbine.UI.Lotro.CheckBox()    
         checkbox:SetParent(self)
-        checkbox:SetPosition(20, DEBUFF_AND_EFFECTS_OFFSET + 20 + k * 20)
+        checkbox:SetPosition(40, DEBUFF_AND_EFFECTS_OFFSET + 20 + k * 20)
         checkbox:SetSize(400, 20)
         checkbox:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
         checkbox:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
@@ -106,38 +164,47 @@ function OptionsPanel:Constructor ()
     self:SetSize(0, DEBUFF_AND_EFFECTS_OFFSET + 100 + #self.checkboxes * 20)
     
     -- buttons
-    self.revertButton = Turbine.UI.Lotro.Button();
-    self.revertButton:SetParent(self);
-    self.revertButton:SetSize(80, 20);
-    self.revertButton:SetPosition(10, self:GetHeight() - 40)
-    self.revertButton:SetText("Revert");
-    self.revertButton.Click = function(sender, args)
+    self.RevertButton = Turbine.UI.Lotro.Button();
+    self.RevertButton:SetParent(self);
+    self.RevertButton:SetSize(80, 20);
+    self.RevertButton:SetPosition(10, self:GetHeight() - 40)
+    self.RevertButton:SetText("Revert");
+    self.RevertButton.Click = function(sender, args)
         self:Revert();
     end
 
-    self.defaultButton = Turbine.UI.Lotro.Button();
-    self.defaultButton:SetParent(self);
-    self.defaultButton:SetSize(80, 20);
-    self.defaultButton:SetPosition(110, self:GetHeight() - 40)
-    self.defaultButton:SetText("Defaults");
-    self.defaultButton.Click = function(sender, args)
+    self.DefaultButton = Turbine.UI.Lotro.Button();
+    self.DefaultButton:SetParent(self);
+    self.DefaultButton:SetSize(80, 20);
+    self.DefaultButton:SetPosition(110, self:GetHeight() - 40)
+    self.DefaultButton:SetText("Defaults");
+    self.DefaultButton.Click = function(sender, args)
         self:Defaults();        
     end
 
-    self.acceptButton  = Turbine.UI.Lotro.Button();
-    self.acceptButton:SetParent(self);
-    self.acceptButton:SetSize(80, 20);
-    self.acceptButton:SetPosition(210, self:GetHeight() - 40)
-    self.acceptButton:SetText("Accept");
-    self.acceptButton.Click = function(sender, args)
+    self.AcceptButton  = Turbine.UI.Lotro.Button();
+    self.AcceptButton:SetParent(self);
+    self.AcceptButton:SetSize(80, 20);
+    self.AcceptButton:SetPosition(210, self:GetHeight() - 40)
+    self.AcceptButton:SetText("Accept");
+    self.AcceptButton.Click = function(sender, args)
         self:Accept();
     end    
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Pressing the Defaults Button
 -- ------------------------------------------------------------------------
 function OptionsPanel:Defaults()
+
+    self.WidthScrollBar:SetValue(DEFAULT_WIDTH)
+    self.HeightScrollBar:SetValue(DEFAULT_HEIGHT)  
+    self.SaveFramePositions:SetChecked(DEFAULT_SAVE_FRAME_POSITIONS)
+    self.LockedPosition:SetChecked(DEFAULT_LOCKED_POSITION)
+    self.PreloadScrollBar:SetValue(DEFAULT_PRELOAD_COUNT)
+    self.ShowMorale:SetChecked(DEFAULT_SHOW_MORALE)
+    self.ShowPower:SetChecked(DEFAULT_SHOW_POWER)
+
     for k, v in ipairs (DEFAULT_EFFECTS) do
         if v[3] == 1 then
             self.checkboxes[k]:SetChecked(true)
@@ -148,7 +215,7 @@ function OptionsPanel:Defaults()
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Pressing the Accept Button
 -- ------------------------------------------------------------------------
 function OptionsPanel:Accept()
     for k, v in ipairs (self.checkboxes) do
@@ -163,19 +230,33 @@ function OptionsPanel:Accept()
 
     GenerateEnabledSet()
     
-    FrameWidth = self.widthScrollBar:GetValue()
-    ControlHeight = self.heightScrollBar:GetValue()   
+    FrameWidth = self.WidthScrollBar:GetValue()
+    ControlHeight = self.HeightScrollBar:GetValue()
+    SaveFramePositions = self.SaveFramePositions:IsChecked()
+    LockedPosition = self.LockedPosition:IsChecked()
+    PreLoadedCount = self.PreloadScrollBar:GetValue()
+    ShowMorale = self.ShowMorale:IsChecked()
+    ShowPower = self.ShowPower:IsChecked()
 
-    for k, v in pairs(TargetFrames) do
+    for k, v in pairs (TargetFrames) do
         v:SetEnabledEffects()
         v:Resize()
     end
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Pressing the Revert Button
 -- ------------------------------------------------------------------------
 function OptionsPanel:Revert()
+
+    self.WidthScrollBar:SetValue(FrameWidth)
+    self.HeightScrollBar:SetValue(ControlHeight)  
+    self.SaveFramePositions:SetChecked(SaveFramePositions)
+    self.LockedPosition:SetChecked(LockedPosition)
+    self.PreloadScrollBar:SetValue(PreLoadedCount) 
+    self.ShowMorale:SetChecked(ShowMorale)
+    self.ShowPower:SetChecked(ShowPower)
+
     for k, v in ipairs (TrackedEffects) do
         if v[3] == 1 then
             self.checkboxes[k]:SetChecked(true)

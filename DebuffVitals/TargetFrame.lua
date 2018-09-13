@@ -1,12 +1,12 @@
 -- ------------------------------------------------------------------------
--- TargetBox - the base panel that tracks morale/power and effects 
+-- TargetFrame - the base panel that tracks morale/power and effects 
 -- ------------------------------------------------------------------------
-TargetBox = class (Turbine.UI.Window)
+TargetFrame = class (Turbine.UI.Window)
 
-function TargetBox:Constructor(num) 
+function TargetFrame:Constructor(num) 
     Turbine.UI.Window.Constructor(self)
 
-    DebugWriteLine("Creating TargetBox")
+    DebugWriteLine("Creating TargetFrame")
 
     self.ID = num
     self.Target = nil
@@ -29,16 +29,16 @@ function TargetBox:Constructor(num)
     -- to accomodate the square lock icon
     self.TitleBar:SetSize(FrameWidth - ControlHeight, ControlHeight)
     self.TitleBar:SetPosition (0,0)
-    self.TitleBar:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft )
-    self.TitleBar:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
-    self.TitleBar:SetBackColor( Turbine.UI.Color.Black )
-    self.TitleBar:SetMultiline( false )  
+    self.TitleBar:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleLeft)
+    self.TitleBar:SetFont (Turbine.UI.Lotro.Font.Verdana12)
+    self.TitleBar:SetBackColor (Turbine.UI.Color.Black)
+    self.TitleBar:SetMultiline (false)  
   
     -- ------------------------------------------------------------------------
     -- Target Selection
     -- ------------------------------------------------------------------------
     self.TargetSelection = Turbine.UI.Lotro.EntityControl()
-    self.TargetSelection:SetVisible(true)
+    self.TargetSelection:SetVisible (true)
     self.TargetSelection:SetParent (self)
     -- size will be set later, when all effects are loaded
     self.TargetSelection:SetPosition (0, 20)
@@ -49,17 +49,17 @@ function TargetBox:Constructor(num)
     -- ------------------------------------------------------------------------
     self.LockBackground = Turbine.UI.Control()
     self.LockBackground:SetParent (self)
-    self.LockBackground:SetBackColor ( Turbine.UI.Color.Black )
-    self.LockBackground:SetSize(ControlHeight, ControlHeight)
-    self.LockBackground:SetPosition (FrameWidth - ControlHeight,0)
+    self.LockBackground:SetBackColor (Turbine.UI.Color.Black)
+    self.LockBackground:SetSize (ControlHeight, ControlHeight)
+    self.LockBackground:SetPosition (FrameWidth - ControlHeight, 0)
     
     self.Lock = Turbine.UI.Control()
     self.Lock:SetParent (self)
-    self.Lock:SetBackground( 0x410001D3 )
+    self.Lock:SetBackground (0x410001D3)
 
-    self.Lock:SetSize(ControlHeight, ControlHeight)
+    self.Lock:SetSize (ControlHeight, ControlHeight)
     self.Lock:SetPosition (FrameWidth - ControlHeight,0)
-    self.Lock:SetBlendMode(Turbine.UI.BlendMode.Overlay)
+    self.Lock:SetBlendMode (Turbine.UI.BlendMode.Overlay)
 
     self.Lock.MouseClick = function ()
         DebugWriteLine("Lock for ID "..tostring(self.ID).." was "..tostring(self.Locked))
@@ -80,18 +80,20 @@ function TargetBox:Constructor(num)
     
     self.Morale.Bar = Turbine.UI.Control()
     self.Morale.Bar:SetParent (self)
-    self.Morale.Bar:SetBackColor ( Turbine.UI.Color.ForestGreen )
+    self.Morale.Bar:SetBackColor (Turbine.UI.Color.ForestGreen )
     self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
     self.Morale.Bar:SetPosition (0, moralePosition)
     self.Morale.Bar:SetMouseVisible (false)
+    self.Morale.Bar:SetVisible (ShowMorale)
 
     self.Morale.Percent = Turbine.UI.Label()
     self.Morale.Percent:SetParent (self)
     self.Morale.Percent:SetPosition (0, moralePosition)
-    self.Morale.Percent:SetSize(45, ControlHeight)
+    self.Morale.Percent:SetSize (45, ControlHeight)
     self.Morale.Percent:SetMouseVisible (false)
-    self.Morale.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
-    self.Morale.Percent:SetFont( Turbine.UI.Lotro.Font.Verdana12 )    
+    self.Morale.Percent:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleLeft)
+    self.Morale.Percent:SetFont (Turbine.UI.Lotro.Font.Verdana12 )
+    self.Morale.Percent:SetVisible (ShowMorale)    
 
     self.Morale.Title = Turbine.UI.Label()
     self.Morale.Title:SetParent (self)
@@ -99,8 +101,9 @@ function TargetBox:Constructor(num)
     self.Morale.Title:SetSize(FrameWidth - 45, ControlHeight)
     self.Morale.Title:SetMouseVisible (false)
     self.Morale.Title:SetText ("")
-    self.Morale.Title:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleRight)
-    self.Morale.Title:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
+    self.Morale.Title:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleRight)
+    self.Morale.Title:SetFont (Turbine.UI.Lotro.Font.Verdana12)
+    self.Morale.Title:SetVisible (ShowMorale)
 
     -- ------------------------------------------------------------------------
     -- Power
@@ -109,18 +112,20 @@ function TargetBox:Constructor(num)
     
     self.Power.Bar = Turbine.UI.Control()
     self.Power.Bar:SetParent (self)
-    self.Power.Bar:SetBackColor ( Turbine.UI.Color.RoyalBlue )
-    self.Power.Bar:SetSize(FrameWidth, ControlHeight)
+    self.Power.Bar:SetBackColor (Turbine.UI.Color.RoyalBlue)
+    self.Power.Bar:SetSize (FrameWidth, ControlHeight)
     self.Power.Bar:SetPosition (0, powerPosition)
     self.Power.Bar:SetMouseVisible (false)
+    self.Power.Bar:SetVisible (ShowPower)
 
     self.Power.Percent = Turbine.UI.Label()
     self.Power.Percent:SetParent (self)
     self.Power.Percent:SetPosition (0, powerPosition)
-    self.Power.Percent:SetSize(45, ControlHeight)
+    self.Power.Percent:SetSize (45, ControlHeight)
     self.Power.Percent:SetMouseVisible (false)
-    self.Power.Percent:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleLeft)
-    self.Power.Percent:SetFont( Turbine.UI.Lotro.Font.Verdana12 )    
+    self.Power.Percent:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleLeft)
+    self.Power.Percent:SetFont (Turbine.UI.Lotro.Font.Verdana12)
+    self.Power.Percent:SetVisible (ShowPower)
 
     self.Power.Title = Turbine.UI.Label()
     self.Power.Title:SetParent (self)
@@ -128,9 +133,9 @@ function TargetBox:Constructor(num)
     self.Power.Title:SetSize(FrameWidth - 45, ControlHeight)
     self.Power.Title:SetMouseVisible (false)
     self.Power.Title:SetText ("")
-    self.Power.Title:SetTextAlignment( Turbine.UI.ContentAlignment.MiddleRight)
-    self.Power.Title:SetFont( Turbine.UI.Lotro.Font.Verdana12 )
-
+    self.Power.Title:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleRight)
+    self.Power.Title:SetFont (Turbine.UI.Lotro.Font.Verdana12)
+    self.Power.Title:SetVisible (ShowPower)
   
     -- ------------------------------------------------------------------------
     -- Effect Display
@@ -156,7 +161,7 @@ function TargetBox:Constructor(num)
     self.IsDragging = false
 
     self.TargetSelection.MouseDown = function(sender, args)
-        if args.Button == Turbine.UI.MouseButton.Left then
+        if args.Button == Turbine.UI.MouseButton.Left and not LockedPosition then
             startX = args.X
             startY = args.Y
             self.IsDragging = true
@@ -165,12 +170,12 @@ function TargetBox:Constructor(num)
 
     self.TargetSelection.MouseUp = function(sender, args)
         if args.Button == Turbine.UI.MouseButton.Left then
-            if ( self.IsDragging ) then
+            if self.IsDragging then
                 self.IsDragging = false
                 
                 self:SetLeft(self:GetLeft() + (args.X - startX))
                 self:SetTop(self:GetTop() + (args.Y - startY))
-    
+
                 if self:GetLeft() < 0 then
                     self:SetLeft(0)
                 elseif self:GetLeft() + self:GetWidth() > Turbine.UI.Display:GetWidth() then
@@ -197,7 +202,13 @@ function TargetBox:Constructor(num)
             self.IsDragging = false
             DebugWriteLine("Showing menu")
 
-            if #TargetFrames == 1 or self.Locked then
+            local count = 0
+            for k, v in pairs (TargetFrames) do
+                count = count + 1
+            end
+            
+            DebugWriteLine("#TargetFrames :"..tostring(count))            
+            if count == 1 or self.Locked then
                 MenuItems:GetItems():Get(3):SetEnabled(false)
             else
                 MenuItems:GetItems():Get(3):SetEnabled(true)
@@ -210,24 +221,19 @@ function TargetBox:Constructor(num)
 
     self.TitleBar.MouseDown = self.TargetSelection.MouseDown
 
-    self.TitleBar.MouseUp = function(sender, args)
-        self.IsDragging = false
-        if args.Button == Turbine.UI.MouseButton.Right then
-            DebugWriteLine("Closing menu")
-        end
-    end
+    self.TitleBar.MouseUp = self.TargetSelection.MouseUp
     
     self.TitleBar.MouseMove = self.TargetSelection.MouseMove
 
 end
 
 -- ------------------------------------------------------------------------
--- clears and sets up all enabled/tracked effects
+-- Clears and sets up all enabled/tracked effects
 -- ------------------------------------------------------------------------
-function TargetBox:SetEnabledEffects()
+function TargetFrame:SetEnabledEffects()
     DebugWriteLine("Entering SetEnabledEffects")
     -- clear current effects
-    for k, v in pairs(self.SingleEffects) do
+    for k, v in ipairs (self.SingleEffects) do
         v:SetVisible(false)
         v = nil
     end
@@ -243,17 +249,9 @@ function TargetBox:SetEnabledEffects()
 end
 
 -- ------------------------------------------------------------------------
---  Remove an existing frame
--- ------------------------------------------------------------------------
-function TargetBox:DestroyFrame()
-    self:SetVisible(false)
-    self = nil
-end
-
--- ------------------------------------------------------------------------
 -- Set handlers, morale, power, and effects, when player target changes
 -- ------------------------------------------------------------------------
-function TargetBox:UpdateTarget()
+function TargetFrame:UpdateTarget()
     DebugWriteLine("Entering UpdateTarget")
     if self.Locked then
         if self.TargetSelection:GetEntity() then
@@ -266,15 +264,17 @@ function TargetBox:UpdateTarget()
         DebugWriteLine("  Changing target")
 
         self.TitleBar:SetText("No target")
+        
         self.Morale.Title:SetText("")
         self.Morale.Percent:SetText("")
-        self.Power.Title:SetText("")
-        self.Power.Percent:SetText("")
         self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
         self.Morale.Bar:SetPosition (0, self.TitleBar:GetHeight())
+
+        self.Power.Title:SetText("")
+        self.Power.Percent:SetText("")
         self.Power.Bar:SetSize(FrameWidth, ControlHeight)
         self.Power.Bar:SetPosition (0,self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight())
-        
+
         if self.Target then
             RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
             RemoveCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler)
@@ -289,7 +289,7 @@ function TargetBox:UpdateTarget()
             self.Target = nil
         end
 
-        for k, v in pairs (self.SingleEffects) do
+        for k, v in ipairs (self.SingleEffects) do
             v:ClearCurrentEffect()
         end
 
@@ -317,34 +317,40 @@ function TargetBox:UpdateTarget()
                 DebugWriteLine("  New target - got level")
                 self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
                 self.Target.self = self
-               
-                AddCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
-                AddCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler)
-                AddCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler)
-                AddCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler)
-                AddCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler)
                 
-                MoraleChangedHandler(self.Target)
+                if ShowMorale then
+                    AddCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
+                    AddCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler)
+                    AddCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler)
+                    AddCallback(self.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler)
+                    AddCallback(self.Target, "TemporaryMoraleChanged", MoraleChangedHandler)
+                    
+                    MoraleChangedHandler(self.Target)
+                end
 
-                AddCallback(self.Target, "PowerChanged", PowerChangedHandler)
-                AddCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler)
-                AddCallback(self.Target, "MaxPowerChanged", PowerChangedHandler)
-                AddCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler)
-                AddCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler)
+                if ShowPower then
+                    AddCallback(self.Target, "PowerChanged", PowerChangedHandler)
+                    AddCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler)
+                    AddCallback(self.Target, "MaxPowerChanged", PowerChangedHandler)
+                    AddCallback(self.Target, "MaxTemporaryPowerChanged", PowerChangedHandler)
+                    AddCallback(self.Target, "TemporaryPowerChanged", PowerChangedHandler)
+    
+                    PowerChangedHandler(self.Target)
+                end
 
-                PowerChangedHandler(self.Target)
+                if #EffectsSet > 0 then             
+                    self.EffectList = self.Target:GetEffects()
+                    self.EffectList.self = self
+    
+                    AddCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
+                    AddCallback(self.EffectList, "EffectRemoved", EffectsChangedHandler)
+                    AddCallback(self.EffectList, "EffectsCleared", EffectsChangedHandler)
+    
+                    EffectsChangedHandler(self.Target)
 
-                self.EffectList = self.Target:GetEffects()
-                self.EffectList.self = self
-              
-                AddCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
-                AddCallback(self.EffectList, "EffectRemoved", EffectsChangedHandler)
-                AddCallback(self.EffectList, "EffectsCleared", EffectsChangedHandler)
-
-                EffectsChangedHandler(self.Target)
-
-                -- Effects updated during :Update()
-                self:SetWantsUpdates(true)
+                    -- Effects updated during :Update()
+                    self:SetWantsUpdates(true)
+                end
             else
                 DebugWriteLine("  Changing on target - no level found")
                 self.TitleBar:SetText(self.Target:GetName())
@@ -354,23 +360,22 @@ function TargetBox:UpdateTarget()
             DebugWriteLine("NO TARGET")        
             self:SetWantsUpdates(false)        
         end
-
     end
 
     DebugWriteLine("Exiting UpdateTarget")
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Update triggered after an Effect handler triggers, cross-checking lists of effects
 -- ------------------------------------------------------------------------
-function TargetBox:Update()
-    DebugWriteLine(">>>>>>>>>>Entering TargetBox:Update")
+function TargetFrame:Update()
+    DebugWriteLine(">>>>>>>>>>Entering TargetFrame:Update")
 
     if self.Target then
         DebugWriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectList:GetCount()).." effects.")
 
         -- in this loop, 'v' is the list of EffectFrames
-        for k, v in pairs (self.SingleEffects) do
+        for k, v in ipairs (self.SingleEffects) do
             for i = 1, self.EffectList:GetCount() do
                 local matchName = {}
                 if v.patternMatch == nil then
@@ -394,19 +399,19 @@ function TargetBox:Update()
                     DebugWriteLine("   not seen for "..tostring(Turbine.Engine.GetGameTime() - v.lastSeen).." seconds ago.")
                     v:ClearCurrentEffect()
                 end
-            end
-        end       
+            end                        
+        end
     end   
     
     self:SetWantsUpdates(false)
-    DebugWriteLine(">>>>>>>>>>Exiting TargetBox:Update")    
+    DebugWriteLine(">>>>>>>>>>Exiting TargetFrame:Update")    
 end
 
 -- ------------------------------------------------------------------------
---  
+--  Set size/visibility of all controls
 -- ------------------------------------------------------------------------
-function TargetBox:Resize()
-    DebugWriteLine("Entering TargetBox:Resize ")
+function TargetFrame:Resize()
+    DebugWriteLine("Entering TargetFrame:Resize ")
     DebugWriteLine("FrameWidth : "..tostring(FrameWidth))
     -- name 
     self.TitleBar:SetSize(FrameWidth - ControlHeight, ControlHeight)
@@ -417,31 +422,46 @@ function TargetBox:Resize()
     self.Lock:SetSize(ControlHeight, ControlHeight)
     self.Lock:SetPosition (FrameWidth - ControlHeight,0)
 
+    local MoralePowerHeight = 0
     -- morale/power
-    local moralePosition = self.TitleBar:GetHeight()
-    self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
-    self.Morale.Bar:SetPosition (0, moralePosition)
-    self.Morale.Percent:SetSize(45, ControlHeight)
-    self.Morale.Percent:SetPosition (0, moralePosition)
-    self.Morale.Title:SetSize(FrameWidth - 45, ControlHeight)
-    self.Morale.Title:SetPosition (45, moralePosition)
+    if ShowMorale then
+        local moralePosition = self.TitleBar:GetHeight()
+        self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
+        self.Morale.Bar:SetPosition (0, moralePosition)
+        self.Morale.Percent:SetSize(45, ControlHeight)
+        self.Morale.Percent:SetPosition (0, moralePosition)
+        self.Morale.Title:SetSize(FrameWidth - 45, ControlHeight)
+        self.Morale.Title:SetPosition (45, moralePosition)
 
-    local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
-    self.Power.Bar:SetSize(FrameWidth, ControlHeight)
-    self.Power.Bar:SetPosition (0, powerPosition)
-    self.Power.Percent:SetSize(45, ControlHeight)    
-    self.Power.Percent:SetPosition (0, powerPosition)
-    self.Power.Title:SetPosition (45, powerPosition)
-    self.Power.Title:SetSize(FrameWidth - 45, ControlHeight)
+        MoralePowerHeight = MoralePowerHeight + ControlHeight
+    end
+    self.Morale.Bar:SetVisible(ShowMorale)
+    self.Morale.Percent:SetVisible(ShowMorale)
+    self.Morale.Title:SetVisible(ShowMorale)
+
+    if ShowPower then
+        local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
+        self.Power.Bar:SetSize(FrameWidth, ControlHeight)
+        self.Power.Bar:SetPosition (0, powerPosition)
+        self.Power.Percent:SetSize(45, ControlHeight)    
+        self.Power.Percent:SetPosition (0, powerPosition)
+        self.Power.Title:SetPosition (45, powerPosition)
+        self.Power.Title:SetSize(FrameWidth - 45, ControlHeight)
+        
+        MoralePowerHeight = MoralePowerHeight + ControlHeight
+    end
+    self.Power.Bar:SetVisible(ShowPower)
+    self.Power.Percent:SetVisible(ShowPower)
+    self.Power.Title:SetVisible(ShowPower)
 
     for k, v in ipairs (EffectsSet) do
-        self.SingleEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
-                + self.Power.Bar:GetHeight() + (k - 1) * ControlHeight)
+        self.SingleEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight
+                + (k - 1) * ControlHeight)
     end
 
     -- title bar, morale bar, power bar + all effects
-    local frameSize = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight() 
-                + self.Power.Bar:GetHeight() + #self.SingleEffects * ControlHeight
+    local frameSize = self.TitleBar:GetHeight() + MoralePowerHeight
+                + #self.SingleEffects * ControlHeight
     
     self:SetSize(FrameWidth, frameSize)
     self.TargetSelection:SetPosition(0,ControlHeight)
@@ -449,20 +469,5 @@ function TargetBox:Resize()
     
     self:UpdateTarget()
 
-    DebugWriteLine("Exiting TargetBox:Resize ")    
+    DebugWriteLine("Exiting TargetFrame:Resize ")    
 end
-
--- ------------------------------------------------------------------------
--- 
--- ------------------------------------------------------------------------
-function TargetBox:GetID()
-    return self.ID
-end
-
--- ------------------------------------------------------------------------
--- 
--- ------------------------------------------------------------------------
-function TargetBox:IsLocked()
-    return self.Locked
-end
-

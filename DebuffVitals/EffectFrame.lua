@@ -1,12 +1,8 @@
 -- ------------------------------------------------------------------------
--- Effect boxes and timers
+-- EffectFrame - base UI control
 -- ------------------------------------------------------------------------
-
 EffectFrame = class (Turbine.UI.Control)
 
--- ------------------------------------------------------------------------
--- 
--- ------------------------------------------------------------------------
 function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
@@ -57,7 +53,7 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Sets the specific effect and timers
 -- ------------------------------------------------------------------------
 function EffectFrame:SetCurrentEffect(effect)
     self.effectDisplay:SetEffect(effect)
@@ -77,7 +73,7 @@ function EffectFrame:SetCurrentEffect(effect)
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Remove an existing effect on target change or timeout
 -- ------------------------------------------------------------------------
 function EffectFrame:ClearCurrentEffect()
     self.startTime = 0
@@ -87,6 +83,8 @@ function EffectFrame:ClearCurrentEffect()
 
     self.effect = nil
 
+    -- Workaround for an issue with EffectDisplay, where the EffectDisplay persists
+    --   the previous background colour, after an effect is cleared via SetEffect
     self.effectDisplay:SetVisible(false)
     self.effectDisplay = nil
 
@@ -108,39 +106,18 @@ function EffectFrame:ClearCurrentEffect()
 end
 
 -- ------------------------------------------------------------------------
--- 
+-- Updates timers
 -- ------------------------------------------------------------------------
 function EffectFrame:Update(args)
     local gameTime = Turbine.Engine.GetGameTime()
     local elapsedTime = gameTime - self.startTime
    
     -- update the time
-    if (self.duration > 86400) then
-        local time = FormatTime(math.floor(elapsedTime))
-        self.timer:SetText(time)
-    else
-        local remaining = self.duration - math.ceil(elapsedTime)
-        local time = FormatTime(remaining < 0 and 0 or remaining)
-        self.timer:SetText(time)
-        
-        if (gameTime > self.endTime) then
-            self:ClearCurrentEffect()
-        end        
+    local remaining = self.duration - math.ceil(elapsedTime)
+    local time = FormatTime(remaining)
+    self.timer:SetText(time)
+    
+    if (gameTime >= self.endTime) then
+        self:ClearCurrentEffect()
     end
 end
-
--- ------------------------------------------------------------------------
--- 
--- ------------------------------------------------------------------------
-function FormatTime (value)
-    if (value >= 3600) then
-        local sec = math.fmod(value, 3600) / 60;
-        value = ("%d:%02d:%02d"):format(value / 3600, value % 3600 / 60, value % 60);
-    elseif (value >= 60) then
-        value = ("%d:%02d"):format(value / 60, value % 60);
-    else
-        value = ("%d"):format(value);
-    end
-    return value;
-end
-
