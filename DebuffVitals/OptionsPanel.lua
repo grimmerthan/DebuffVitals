@@ -189,9 +189,19 @@ function OptionsPanel:Constructor ()
     self.AcceptButton:SetText("Accept");
     self.AcceptButton.Click = function(sender, args)
         self:Accept();
-    end    
+    end
+    
 end
 
+function OptionsPanel:Update()
+    self:Resize()
+end
+
+function OptionsPanel:Resize()
+
+
+end
+    
 -- ------------------------------------------------------------------------
 -- Pressing the Defaults Button
 -- ------------------------------------------------------------------------

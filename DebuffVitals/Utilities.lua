@@ -45,23 +45,22 @@ function LoadSettings()
             ShowPower = settings.ShowPower
         end
 
-        for k, v in ipairs (settings.TrackedEffects) do
-            local found = false
-            DebugWriteLine("Loading  in "..tostring(v[1]).." / "..tostring(v[2])..
-                            " / "..tostring(v[3]).." / "..tostring(v[4]).." / "..tostring(v[5]))
-            for key, value in ipairs (TrackedEffects) do
-                if value[2] == v[2] then
-                    value[1] = v[1]
-                    value[3] = v[3]
-                    value[4] = v[4]
-                    value[5] = v[5]
-                    found = true
-                    break
+        if settings.TrackedEffects ~=nil then
+            for k, v in ipairs (settings.TrackedEffects) do
+                local found = false
+                DebugWriteLine("Loading  in "..tostring(v[1]).." / "..tostring(v[2])..
+                                " / "..tostring(v[3]).." / "..tostring(v[4]).." / "..tostring(v[5]))
+                for key, value in ipairs (TrackedEffects) do
+                    if value[2] == v[2] then
+                        value[3] = v[3]
+                        found = true
+                        break
+                    end
                 end
-            end
-            if not found then
-                TrackedEffects[count] = {v[1], v[2], v[3], v[4], v[5]}
-                count = count + 1        
+                if not found then
+                    TrackedEffects[count] = {v[1], v[2], v[3], v[4], v[5]}
+                    count = count + 1        
+                end
             end
         end 
     end

@@ -377,23 +377,40 @@ function TargetFrame:Update()
         -- in this loop, 'v' is the list of EffectFrames
         for k, v in ipairs (self.SingleEffects) do
             for i = 1, self.EffectList:GetCount() do
-                local matchName = {}
+                local matchPattern = {}
                 if v.patternMatch == nil then
-                    matchName = v.effectName
+                    matchPattern = v.effectName
                 else
-                    matchName = v.patternMatch
+                    matchPattern = v.patternMatch
                 end                
 
-                DebugWriteLine(">>>>Matching '"..tostring(matchName).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'")                                                
+                DebugWriteLine(">>>>Matching '"..tostring(matchPattern).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'")                                                
 
-                if string.find (self.EffectList:Get(i):GetName(), matchName) then
-                    DebugWriteLine(">>>> FOUND")                 
-                    v:SetCurrentEffect(self.EffectList:Get(i))
-                    v.lastSeen = Turbine.Engine.GetGameTime()
-                    break
+                if type (matchPattern) == "string" then                  
+                    if string.find (self.EffectList:Get(i):GetName(), matchPattern) then
+                        DebugWriteLine(">>>> FOUND")                 
+                        v:SetCurrentEffect(self.EffectList:Get(i))
+                        v.lastSeen = Turbine.Engine.GetGameTime()
+                        break
+                    end
+                else
+                    local found = false
+                    for key, pattern in pairs (matchPattern) do
+                        DebugWriteLine(">>>>Matching '"..tostring(pattern).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'")                    
+                        if string.find (self.EffectList:Get(i):GetName(), pattern) then
+                            DebugWriteLine(">>>> FOUND")                 
+                            v:SetCurrentEffect(self.EffectList:Get(i))
+                            v.lastSeen = Turbine.Engine.GetGameTime()
+                            found = true
+                            break
+                        end                   
+                    end
+                    if found then
+                        break
+                    end
                 end
             end
-            if v.toggle == 1 and v.lastSeen > 0 then
+            if v.toggle == 1 and v.lastSeen then
                 DebugWriteLine("Checking last seen on "..tostring(v.name:GetText()))
                 if (Turbine.Engine.GetGameTime() - v.lastSeen) > 5 then       
                     DebugWriteLine("   not seen for "..tostring(Turbine.Engine.GetGameTime() - v.lastSeen).." seconds ago.")

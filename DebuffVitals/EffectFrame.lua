@@ -6,7 +6,7 @@ EffectFrame = class (Turbine.UI.Control)
 function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
-    DebugWriteLine("Creating EffectFrame : "..tostring(EffectDefinition[2]))
+    DebugWriteLine("Creating EffectFrame : "..tostring(EffectDefinition[2]).." ("..tostring(EffectDefinition[5])..")")
 
     self.startTime = 0
     self.duration = 0
@@ -79,7 +79,7 @@ function EffectFrame:ClearCurrentEffect()
     self.startTime = 0
     self.duration = 0
     self.endTime = 0
-    self.lastSeen = 0
+    self.lastSeen = nil
 
     self.effect = nil
 
@@ -109,15 +109,19 @@ end
 -- Updates timers
 -- ------------------------------------------------------------------------
 function EffectFrame:Update(args)
-    local gameTime = Turbine.Engine.GetGameTime()
-    local elapsedTime = gameTime - self.startTime
-   
-    -- update the time
-    local remaining = self.duration - math.ceil(elapsedTime)
-    local time = FormatTime(remaining)
-    self.timer:SetText(time)
+    if self.toggle == 1 then
+        self.timer:SetText("T")
+    else
+        local gameTime = Turbine.Engine.GetGameTime()
+        local elapsedTime = gameTime - self.startTime
     
-    if (gameTime >= self.endTime) then
-        self:ClearCurrentEffect()
+        -- update the time
+        local remaining = self.duration - math.ceil(elapsedTime)
+        local time = FormatTime(remaining)
+        self.timer:SetText(time)
+    
+        if (gameTime >= self.endTime) then
+            self:ClearCurrentEffect()
+        end
     end
 end
