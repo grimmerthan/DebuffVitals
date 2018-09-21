@@ -3,7 +3,7 @@
   <Information>
     <Name>DebuffVitals</Name>
     <Author>Grimmerthan</Author>
-    <Version>0.9.5.beta2</Version>
+    <Version>0.9.5.beta3</Version>
     <Description>DebuffVitals provides multiple target monitoring of morale, power and specific effects.</Description>
   </Information>
   <Package>Grimmerthan.DebuffVitals.Main</Package>
