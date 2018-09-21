@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Plugin>
   <Information>
-  	<Name>DebuffVitals</Name>
-  	<Author>Grimmerthan</Author>
-  	<Version>0.9.5.beta1</Version>
-	<Description>DebuffVitals provides multiple target monitoring of morale, power and specific effects.</Description>
+    <Name>DebuffVitals</Name>
+    <Author>Grimmerthan</Author>
+    <Version>0.9.5.beta2</Version>
+    <Description>DebuffVitals provides multiple target monitoring of morale, power and specific effects.</Description>
   </Information>
   <Package>Grimmerthan.DebuffVitals.Main</Package>
   <Configuration Apartment="DebuffVitals" />
