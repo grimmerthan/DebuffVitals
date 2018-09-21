@@ -1,6 +1,6 @@
 -- ------------------------------------------------------------------------
 -- List of effects and state
---   class,        effect name,                  use or not,  toggle, regex pattern   
+--   class,        effect name,                       use or not, toggle, regex pattern   
 -- ------------------------------------------------------------------------
 DEFAULT_FREEP_EFFECTS =  {
     {"Common",      "Dazed",                                    1, 0},
@@ -22,7 +22,7 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Captain",     "Telling Mark",                             0, 1},
     {"Champion",    "Aggressive Exchange",                      0, 0},
     {"Champion",    "Armour Rend",                              0, 0},    
-    {"Champion",    "Coward's Fate",                            1, 0, "Coward's Fate"},
+    {"Champion",    "Coward's Fate",                            0, 1, "Coward's Fate"},
     {"Champion",    "Deep Strikes",                             0, 0},    
     {"Champion",    "Devastated",                               0, 0},
     {"Champion",    "Horn of Gondor Physical Mitigation",       0, 0},    
@@ -73,7 +73,6 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Warden",      "Moderate Bleed",                           0, 0, "Moderate Bleed"},
     {"Warden",      "Major Bleed",                              0, 0, "Major Bleed"},
     {"Warden",      "Severe Bleed",                             0, 0, "Severe Bleed"},
-
 }
 
 DEFAULT_FREEP_PLAYER_EFFECTS = {
