@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Id>1015</Id>
+  <Name>DebuffVitals</Name>
+  <Version>1.0</Version>
+  <Author>Grimmerthan</Author>
+  <InfoUrl>https://www.lotrointerface.com/downloads/info1015-DebuffVitals.html</InfoUrl>
+  <DownloadUrl>https://www.lotrointerface.com/downloads/download1015-DebuffVitals</DownloadUrl>
+  <Descriptors>
+    <descriptor>Grimmerthan\DebubfVitals\DebuffVitals.plugin</descriptor>
+  </Descriptors>
+  <Dependencies>
+    <dependency>1012</dependency>
+  </Dependencies>
+</PluginConfig>
