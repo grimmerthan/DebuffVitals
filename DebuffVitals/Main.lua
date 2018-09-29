@@ -18,19 +18,19 @@ import "Turbine.Gameplay"
 import "Turbine.UI" 
 import "Turbine.UI.Lotro"
 import "Grimmerthan.DebuffVitals.Constants"
-import "Grimmerthan.DebuffVitals.Debug"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.OptionsPanel"
 import "Grimmerthan.DebuffVitals.TargetFrame"
 import "Grimmerthan.DebuffVitals.Utilities"
+import "Grimmerthan.DebuffVitals.VindarPatch"
 
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
 -- ------------------------------------------------------------------------
 function Turbine.Plugin.Unload()
-    DebugWriteLine("Plugin unload")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Plugin unload") end
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
     for key, frame in pairs (TargetFrames) do
@@ -58,29 +58,29 @@ end
 -- Target Utilities
 -- ------------------------------------------------------------------------
 function AddNewTarget()
-    DebugWriteLine("Entering AddNewTargetFrame...")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering AddNewTargetFrame...") end
     FrameID = FrameID + 1
     TargetFrames[FrameID] = TargetFrame(FrameID)
     TargetChangeHandler ()
-    DebugWriteLine("Exiting AddNewTargetFrame...")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting AddNewTargetFrame...") end
     return TargetFrames[FrameID]
 end
 
 function RemoveTarget(ID)
-    DebugWriteLine("Entering RemoveTargetFrame...")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering RemoveTargetFrame...") end
     for key, frame in pairs (TargetFrames) do 
-        DebugWriteLine("frame.GetID(frame) == ID //"..tostring (frame.ID).." == "..tostring(ID))
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("frame.GetID(frame) == ID //"..tostring (frame.ID).." == "..tostring(ID)) end
         if frame.ID == ID then
-            DebugWriteLine("Removing : "..tostring (ID))
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("Removing : "..tostring (ID)) end
             if not frame.Locked then
-                DebugWriteLine("Processing Removal...")
+                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Processing Removal...") end
                 frame:SetVisible(false)
                 TargetFrames[key] = nil
             end
             break
         end
     end
-    DebugWriteLine("Exiting RemoveTargetFrame...")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting RemoveTargetFrame...") end
 end
 
 -- ------------------------------------------------------------------------

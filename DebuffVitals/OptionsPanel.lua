@@ -2,7 +2,7 @@
 -- Plugin Manager Options Panel
 -- ------------------------------------------------------------------------
 function plugin.GetOptionsPanel (self)
-    DebugWriteLine("GetOptionsPanel")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("GetOptionsPanel") end
     OP = OptionsPanel()   
     return OP
 end
@@ -144,8 +144,9 @@ function OptionsPanel:Constructor ()
     self.DebuffsTitle:SetFont( Turbine.UI.Lotro.Font.Verdana20 )
     self.DebuffsTitle:SetText("Debuffs and Effects")
 
-    for k, v in ipairs (TrackedEffects) do 
-        DebugWriteLine("OptionsPanel: Adding in "..tostring(v[2]))               
+    local effects = TrackedEffects
+    for k, v in ipairs (effects) do 
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("OptionsPanel: Adding in "..tostring(v[2])) end
         local checkbox = Turbine.UI.Lotro.CheckBox()    
         checkbox:SetParent(self)
         checkbox:SetPosition(40, DEBUFF_AND_EFFECTS_OFFSET + 20 + k * 20)
@@ -228,7 +229,8 @@ end
 -- Pressing the Accept Button
 -- ------------------------------------------------------------------------
 function OptionsPanel:Accept()
-    for k, v in ipairs (self.checkboxes) do
+    local checkBoxes = self.checkboxes
+    for k, v in ipairs (checkBoxes) do
         if v:IsChecked() then
             TrackedEffects[k][3] = 1
         else
@@ -267,7 +269,8 @@ function OptionsPanel:Revert()
     self.ShowMorale:SetChecked(ShowMorale)
     self.ShowPower:SetChecked(ShowPower)
 
-    for k, v in ipairs (TrackedEffects) do
+    local effects = TrackedEffects
+    for k, v in ipairs (effects) do
         if v[3] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else

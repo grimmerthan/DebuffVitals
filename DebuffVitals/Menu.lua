@@ -10,11 +10,11 @@ function CreateMenu()
     menu:Add(Turbine.UI.MenuItem("Remove Target"))
     
     menu:Get(2).Click = function(sender, args)
-        DebugWriteLine("New Target")
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("New Target") end
         AddNewTarget()
     end
     menu:Get(3).Click = function(sender, args)
-        DebugWriteLine("Remove Target")
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Remove Target") end
         RemoveTarget(menuItems.invokerID)
     end
     return menuItems

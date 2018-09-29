@@ -6,7 +6,7 @@ EffectFrame = class (Turbine.UI.Control)
 function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
-    DebugWriteLine("Creating EffectFrame : "..tostring(EffectDefinition[2]).." ("..tostring(EffectDefinition[5])..")")
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine ("Creating EffectFrame : "..tostring(EffectDefinition[2]).." ("..tostring(EffectDefinition[5])..")") end
 
     self.startTime = 0
     self.duration = 0
