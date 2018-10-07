@@ -387,9 +387,9 @@ function TargetFrame:Update()
                 if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(matchPattern).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'") end                                                
 
                 if type (matchPattern) == "string" then                  
-                    if string.find (self.EffectList:Get(i):GetName(), matchPattern) then
+                    if string.find (targetEffects:Get(i):GetName(), matchPattern) then
                         if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>> FOUND") end                 
-                        v:SetCurrentEffect(self.EffectList:Get(i))
+                        v:SetCurrentEffect(targetEffects:Get(i))
                         v.lastSeen = Turbine.Engine.GetGameTime()
                         break
                     end
@@ -418,7 +418,29 @@ function TargetFrame:Update()
                 end
             end                        
         end
-    end   
+        
+        local number = nil
+        local count = 0
+        for i = 1, targetEffects:GetCount() do
+            if targetEffects:Get(i):GetCategory() == Turbine.Gameplay.EffectCategory.Corruption then
+                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Corruption detected : "..tostring(targetEffects:Get(i):GetName())) end
+                number = string.match(targetEffects:Get(i):GetName(), "%d+")
+                if number then
+                    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Corruption count : "..tostring(number)) end
+                end
+                count = count + 1                
+            end
+        end
+
+        if number then           
+            self.TitleBar:SetText(tostring(number).." ["..self.Target:GetLevel().."] " ..self.Target:GetName())
+        elseif count > 0 then
+            self.TitleBar:SetText(tostring(count).." ["..self.Target:GetLevel().."] " ..self.Target:GetName())
+        else
+            self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
+        end
+        
+    end
     
     self:SetWantsUpdates(false)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>>>>>>>Exiting TargetFrame:Update") end

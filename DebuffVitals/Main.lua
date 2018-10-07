@@ -5,12 +5,19 @@ This plugin is a tool to help players track mobs and specific effects on mobs.  
 - shows presence and timers of specific and selected effects
 - resizable
 - position lockable
+- track corruption counts, for specific boss fights
 
 Future works include:   
-- counting remaining corruption levels for specific boxes
-- localization 
-- extend to include player buffs, eg, stun immunity
-- creep side  
+(up next) - re-order effects
+(up next) - right click context menu for effect selection
+(up next) - allow different effects for each frame
+- morale/power bar at bottom
+- add more effects as requested or apparent
+- fix issues (please find some)
+- localization
+- player buff tracking, eg, stun immunity
+- creep-side versions
+- look into garbage collection for possible memory concerns
 
 ]]
 
@@ -93,6 +100,7 @@ end
 TargetFrames = {}
 TrackedEffects = {}
 EffectsSet = {}
+GroupedEffectsSet = {}
 FrameID = 0
 FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
@@ -108,6 +116,8 @@ LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 LoadSettings{}
 
 GenerateEnabledSet()
+
+--GenerateGroupedSet()
 
 AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 

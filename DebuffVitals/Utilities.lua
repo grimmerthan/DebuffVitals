@@ -118,6 +118,32 @@ function GenerateEnabledSet()
 end
 
 -- ------------------------------------------------------------------------
+-- Creates the subset of effects that will be monitored in a tuple formed of class and tuple of everything else 
+-- ------------------------------------------------------------------------
+function GenerateGroupedSet()
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering GenerateGroupedSet...") end
+    local count = 1
+    
+    GroupedEffectsSet = {}
+
+    local effects = EffectsSet
+    
+    for k, v in ipairs (effects) do
+        if v[3] == 1 then 
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("Adding in "..tostring(v[1]).." / "..tostring(v[2])..
+                        " / "..tostring(v[3]).." / "..tostring(v[4]).." / "..tostring(v[5])) end
+            EffectsSet[count] = {v[1], v[2], v[3], v[4], v[5]}
+            count = count + 1
+        end
+    end
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting GenerateGroupedSet...") end
+
+
+
+end
+
+
+-- ------------------------------------------------------------------------
 -- Returns formatted time values
 -- ------------------------------------------------------------------------
 function FormatTime (value)

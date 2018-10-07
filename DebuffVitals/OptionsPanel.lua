@@ -145,7 +145,7 @@ function OptionsPanel:Constructor ()
     self.DebuffsTitle:SetText("Debuffs and Effects")
 
     local effects = TrackedEffects
-    for k, v in ipairs (effects) do 
+    for k, v in ipairs (effects) do
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("OptionsPanel: Adding in "..tostring(v[2])) end
         local checkbox = Turbine.UI.Lotro.CheckBox()    
         checkbox:SetParent(self)
