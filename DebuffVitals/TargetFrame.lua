@@ -15,6 +15,7 @@ function TargetFrame:Constructor(num)
     self.Power = {}
     self.Power.visible = true 
     self.Locked = false
+    self.lastCorruptionSeen = 0
 
     self:SetVisible(true) 
     self:SetMouseVisible (false)
@@ -429,7 +430,8 @@ function TargetFrame:Update()
                 if number then
                     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Corruption count : "..tostring(number)) end
                 end
-                count = count + 1                
+                count = count + 1
+                self.lastCorruptionSeen = Turbine.Engine.GetGameTime() 
             end
         end
 
@@ -438,7 +440,10 @@ function TargetFrame:Update()
         elseif count > 0 then
             self.TitleBar:SetText(tostring(count).." ["..self.Target:GetLevel().."] " ..self.Target:GetName())
         else
-            self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
+            if (Turbine.Engine.GetGameTime() - self.lastCorruptionSeen) > 1 then
+                self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
+                self.lastCorruptionSeen = 0
+            end
         end
         
     end
