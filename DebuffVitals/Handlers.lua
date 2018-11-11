@@ -78,7 +78,7 @@ function MoraleChangedHandler(sender, args)
 
     local BarSize = math.floor(TargetMorale/TargetMaxMorale * FrameWidth)
     CurrentFrame.Morale.Bar:SetSize(BarSize, ControlHeight)
-    CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.TitleBar:GetHeight())
+    CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Morale.Bar:GetTop())
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting EffectsChangedHandler") end
 end
@@ -111,7 +111,7 @@ function PowerChangedHandler(sender, args)
 
     local BarSize = math.floor(TargetPower/TargetMaxPower * FrameWidth)
     CurrentFrame.Power.Bar:SetSize(BarSize, ControlHeight)
-    CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.TitleBar:GetHeight() + CurrentFrame.Morale.Bar:GetHeight())
+    CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Power.Bar:GetTop())
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting EffectsChangedHandler") end
 end

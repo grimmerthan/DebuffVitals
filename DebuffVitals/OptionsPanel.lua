@@ -122,7 +122,7 @@ function OptionsPanel:Constructor ()
     self.LockedPosition:SetSize(400, 20)
     self.LockedPosition:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.LockedPosition:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
-    self.LockedPosition:SetText(" Locked position")
+    self.LockedPosition:SetText(" Lock position")
     self.LockedPosition:SetChecked(LockedPosition)
 
     self.SaveFramePositions = Turbine.UI.Lotro.CheckBox()    

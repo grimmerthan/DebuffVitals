@@ -206,23 +206,26 @@ function TargetFrame:Constructor(num)
             for k, v in pairs (TargetFrames) do
                 count = count + 1
             end
-            
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("#TargetFrames :"..tostring(count)) end        
+
+            -- Set checked states
+            MenuItems:GetItems():Get(3):GetItems():Get(1):SetChecked(ShowMorale)
+            MenuItems:GetItems():Get(3):GetItems():Get(2):SetChecked(ShowPower)
+            MenuItems:GetItems():Get(4):GetItems():Get(1):SetChecked(LockedPosition)
+            MenuItems:GetItems():Get(4):GetItems():Get(2):SetChecked(SaveFramePositions)
+
             if count == 1 or self.Locked then
-                MenuItems:GetItems():Get(3):SetEnabled(false)
+                MenuItems:GetItems():Get(2):SetEnabled(false)
             else
-                MenuItems:GetItems():Get(3):SetEnabled(true)
+                MenuItems:GetItems():Get(2):SetEnabled(true)
             end
-            
+
             MenuItems.invokerID = self.ID
             MenuItems:ShowMenu()
         end
     end
 
     self.TitleBar.MouseDown = self.TargetSelection.MouseDown
-
     self.TitleBar.MouseUp = self.TargetSelection.MouseUp
-    
     self.TitleBar.MouseMove = self.TargetSelection.MouseMove
 
 end
@@ -264,16 +267,14 @@ function TargetFrame:UpdateTarget()
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("  Changing target") end
 
         self.TitleBar:SetText("No target")
-        
+
         self.Morale.Title:SetText("")
         self.Morale.Percent:SetText("")
         self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
-        self.Morale.Bar:SetPosition (0, self.TitleBar:GetHeight())
 
         self.Power.Title:SetText("")
         self.Power.Percent:SetText("")
         self.Power.Bar:SetSize(FrameWidth, ControlHeight)
-        self.Power.Bar:SetPosition (0,self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight())
 
         if self.Target then
             RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
@@ -479,7 +480,7 @@ function TargetFrame:Resize()
     self.Morale.Title:SetVisible(ShowMorale)
 
     if ShowPower then
-        local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
+        local powerPosition = self.TitleBar:GetHeight() + MoralePowerHeight
         self.Power.Bar:SetSize(FrameWidth, ControlHeight)
         self.Power.Bar:SetPosition (0, powerPosition)
         self.Power.Percent:SetSize(45, ControlHeight)    
