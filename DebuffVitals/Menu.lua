@@ -38,7 +38,7 @@ function CreateMenu()
         end
     end
     
-    showItems:Add(Turbine.UI.MenuItem("Effects"))
+    --showItems:Add(Turbine.UI.MenuItem("Effects"))
     menu:Add(show, true)
 
     local options = Turbine.UI.MenuItem("Options", true)
@@ -55,9 +55,9 @@ function CreateMenu()
     end    
     
     optionsItems:Add(Turbine.UI.MenuItem("Save settings "))
-    optionsItems:Get(2).Click = function(sender, args)
+    optionsItems:Get(3).Click = function(sender, args)
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Save settings") end
-
+        SaveSettings()
     end    
     
     menu:Add(options, true)

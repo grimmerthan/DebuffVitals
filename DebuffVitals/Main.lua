@@ -104,7 +104,6 @@ GroupedEffectsSet = {}
 FrameID = 0
 FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
-PreLoadedCount = DEFAULT_PRELOAD_COUNT
 LockedPosition = DEFAULT_LOCKED_POSITION
 SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
 FramePositions = {}
@@ -123,7 +122,8 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 
 MenuItems = CreateMenu()
 
-for i = 1, PreLoadedCount do
+--for i = 1, PreLoadedCount do
+for i = 1, 1 do
 
     target = AddNewTarget()
 

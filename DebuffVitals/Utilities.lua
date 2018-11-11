@@ -16,13 +16,9 @@ function LoadSettings()
         if settings.FrameWidth then
             FrameWidth = settings.FrameWidth
         end
-        
+
         if settings.ControlHeight then
             ControlHeight = settings.ControlHeight
-        end
-
-        if settings.PreloadedCount then
-            PreLoadedCount = settings.PreloadedCount
         end
 
         if settings.LockedPosition ~= nil then
@@ -71,16 +67,15 @@ end
 -- ------------------------------------------------------------------------
 -- Save settings / character
 -- ------------------------------------------------------------------------
-function SaveSettings(panel)
+function SaveSettings()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering SaveSettings...") end
     settings = {}
     settings.FramePositions = {}
     settings.TrackedEffects = TrackedEffects
-    settings.FrameWidth = panel.WidthScrollBar:GetValue()
-    settings.ControlHeight = panel.HeightScrollBar:GetValue()
-    settings.PreloadedCount = math.floor(panel.PreloadScrollBar:GetValue()/2)
-    settings.LockedPosition = panel.LockedPosition:IsChecked()
-    settings.SaveFramePositions = panel.SaveFramePositions:IsChecked()
+    settings.FrameWidth = FrameWidth
+    settings.ControlHeight = ControlHeight
+    settings.LockedPosition = LockedPosition
+    settings.SaveFramePositions = SaveFramePositions
     if settings.SaveFramePositions then
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("{v:GetPosition()}") end
         for k, v in pairs (TargetFrames) do
@@ -88,8 +83,8 @@ function SaveSettings(panel)
         end
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("{v:GetPosition()}") end
     end
-    settings.ShowMorale = panel.ShowMorale:IsChecked()
-    settings.ShowPower = panel.ShowPower:IsChecked()
+    settings.ShowMorale = ShowMorale
+    settings.ShowPower = ShowPower
     
     PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", settings, nil);
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SaveSettings...") end
@@ -137,11 +132,7 @@ function GenerateGroupedSet()
         end
     end
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting GenerateGroupedSet...") end
-
-
-
 end
-
 
 -- ------------------------------------------------------------------------
 -- Returns formatted time values
