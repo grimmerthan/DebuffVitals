@@ -142,7 +142,8 @@ function TargetFrame:Constructor(num)
     -- Effect Display
     -- ------------------------------------------------------------------------
     self.EffectList = nil
-    self.SingleEffects = {}
+    self.EnabledEffects = {}
+    self.EffectToggles = {}
 
     self:SetEnabledEffects()
     self:Resize()
@@ -237,16 +238,16 @@ end
 function TargetFrame:SetEnabledEffects()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering SetEnabledEffects") end
     -- clear current effects
-    for k, v in ipairs (self.SingleEffects) do
+    for k, v in ipairs (self.EnabledEffects) do
         v:SetVisible(false)
         v = nil
     end
 
-    self.SingleEffects = {}
+    self.EnabledEffects = {}
     
     -- generate new effects
     for k, v in ipairs (EffectsSet) do
-        self.SingleEffects[k] = EffectFrame(self, v)
+        self.EnabledEffects[k] = EffectFrame(self, v)
     end     
     
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SetEnabledEffects") end  
@@ -272,10 +273,12 @@ function TargetFrame:UpdateTarget()
         self.Morale.Title:SetText("")
         self.Morale.Percent:SetText("")
         self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
+        self.Morale.Bar:SetPosition(0, self.Morale.Bar:GetTop())
 
         self.Power.Title:SetText("")
         self.Power.Percent:SetText("")
         self.Power.Bar:SetSize(FrameWidth, ControlHeight)
+        self.Power.Bar:SetPosition(0, self.Power.Bar:GetTop())
 
         if self.Target then
             RemoveCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
@@ -291,7 +294,7 @@ function TargetFrame:UpdateTarget()
             self.Target = nil
         end
 
-        for k, v in ipairs (self.SingleEffects) do
+        for k, v in ipairs (self.EnabledEffects) do
             v:ClearCurrentEffect()
         end
 
@@ -353,6 +356,7 @@ function TargetFrame:UpdateTarget()
             else
                 if DEBUG_ENABLED then Turbine.Shell.WriteLine("  Changing on target - no level found") end
                 self.TitleBar:SetText(self.Target:GetName())
+
                 self:SetWantsUpdates(false)                    
             end
         else
@@ -374,7 +378,7 @@ function TargetFrame:Update()
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectList:GetCount()).." effects.") end
 
         -- in this loop, 'v' is the list of EffectFrames
-        local trackedEffects = self.SingleEffects
+        local trackedEffects = self.EnabledEffects
         local targetEffects = self.EffectList
 
         for k, v in ipairs (trackedEffects) do
@@ -412,7 +416,7 @@ function TargetFrame:Update()
                     end
                 end
             end
-            if v.toggle == 1 and v.lastSeen then
+            if v.timedType > 0 and v.lastSeen then
                 if DEBUG_ENABLED then Turbine.Shell.WriteLine("Checking last seen on "..tostring(v.name:GetText())) end
                 if (Turbine.Engine.GetGameTime() - v.lastSeen) > 5 then       
                     if DEBUG_ENABLED then Turbine.Shell.WriteLine("   not seen for "..tostring(Turbine.Engine.GetGameTime() - v.lastSeen).." seconds ago.") end
@@ -500,13 +504,13 @@ function TargetFrame:Resize()
     self.Power.Title:SetVisible(ShowPower)
 
     for k, v in ipairs (EffectsSet) do
-        self.SingleEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight
+        self.EnabledEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight
                 + (k - 1) * ControlHeight)
     end
 
     -- title bar, morale bar, power bar + all effects
     local frameSize = self.TitleBar:GetHeight() + MoralePowerHeight
-                + #self.SingleEffects * ControlHeight
+                + #self.EnabledEffects * ControlHeight
     
     self:SetSize(FrameWidth, frameSize)
     self.TargetSelection:SetPosition(0,ControlHeight)

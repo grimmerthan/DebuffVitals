@@ -100,7 +100,6 @@ end
 TargetFrames = {}
 TrackedEffects = {}
 EffectsSet = {}
-GroupedEffectsSet = {}
 FrameID = 0
 FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
@@ -116,22 +115,21 @@ LoadSettings{}
 
 GenerateEnabledSet()
 
---GenerateGroupedSet()
-
 AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 
 MenuItems = CreateMenu()
 
---for i = 1, PreLoadedCount do
-for i = 1, 1 do
-
-    target = AddNewTarget()
-
-    if FramePositions[i] then
+if #FramePositions > 0 then
+    for i = 1, #FramePositions do
+        target = AddNewTarget()
+        -- Set positions
         if FramePositions[i][1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
            FramePositions[i][2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
             target:SetPosition(FramePositions[i][1],FramePositions[i][2])
         end
-    end
+        -- Set effects
+        
+    end    
+else
+    AddNewTarget()
 end
-

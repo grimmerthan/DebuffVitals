@@ -38,7 +38,11 @@ function CreateMenu()
         end
     end
     
-    --showItems:Add(Turbine.UI.MenuItem("Effects"))
+    showItems:Add(Turbine.UI.MenuItem("Effects"))
+    showItems:Get(3).Click = function(sender, args)
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Effects") end
+    end
+    
     menu:Add(show, true)
 
     local options = Turbine.UI.MenuItem("Options", true)

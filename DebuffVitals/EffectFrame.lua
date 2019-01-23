@@ -12,7 +12,7 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self.duration = 0
     self.endTime = 0
     self.lastSeen = nil
-    self.toggle = EffectDefinition[4]
+    self.timedType = EffectDefinition[4]
 
     self:SetParent(CurrentFrame)
     self:SetVisible(true)
@@ -109,7 +109,7 @@ end
 -- Updates timers
 -- ------------------------------------------------------------------------
 function EffectFrame:Update(args)
-    if self.toggle == 1 then
+    if self.timedType == 1 then
         self.timer:SetText("T")
     else
         local gameTime = Turbine.Engine.GetGameTime()
