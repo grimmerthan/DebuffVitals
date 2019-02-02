@@ -26,6 +26,8 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self.effectDisplay:SetSize(ControlHeight, ControlHeight)
     self.effectDisplay:SetPosition(0, 0)
     self.effectDisplay:SetZOrder(200)
+    
+    self.effects = self.GenerateFrameEffects()
 
     self.name = Turbine.UI.Label()
     self.name:SetVisible(true)
@@ -125,3 +127,12 @@ function EffectFrame:Update(args)
         end
     end
 end
+
+-- ------------------------------------------------------------------------
+-- Generates frame-specific effects, handling enabled or disabled states as effects are updated
+-- ------------------------------------------------------------------------
+function EffectFrame:GenerateFrameEffects()
+
+end
+
+

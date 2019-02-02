@@ -117,7 +117,7 @@ GenerateEnabledSet()
 
 AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 
-MenuItems = CreateMenu()
+FrameMenu = TargetFrameMenu()
 
 if #FramePositions > 0 then
     for i = 1, #FramePositions do
@@ -133,3 +133,5 @@ if #FramePositions > 0 then
 else
     AddNewTarget()
 end
+
+FrameMenu:CreateEffectsMenu()

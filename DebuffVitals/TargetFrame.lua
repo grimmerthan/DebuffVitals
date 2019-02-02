@@ -106,11 +106,13 @@ function TargetFrame:Constructor(num)
     self.Morale.Title:SetFont (Turbine.UI.Lotro.Font.Verdana12)
     self.Morale.Title:SetVisible (ShowMorale)
 
+    self.ShowMorale = true
+
     -- ------------------------------------------------------------------------
     -- Power
     -- ------------------------------------------------------------------------
     local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
-    
+
     self.Power.Bar = Turbine.UI.Control()
     self.Power.Bar:SetParent (self)
     self.Power.Bar:SetBackColor (Turbine.UI.Color.RoyalBlue)
@@ -137,12 +139,16 @@ function TargetFrame:Constructor(num)
     self.Power.Title:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleRight)
     self.Power.Title:SetFont (Turbine.UI.Lotro.Font.Verdana12)
     self.Power.Title:SetVisible (ShowPower)
-  
+
+    self.ShowPower = true
+
     -- ------------------------------------------------------------------------
     -- Effect Display
     -- ------------------------------------------------------------------------
+    self.ShowEffects = true
     self.EffectList = nil
     self.EnabledEffects = {}
+    self.EnabledEffectsMenu = nil
     self.EffectToggles = {}
 
     self:SetEnabledEffects()
@@ -210,19 +216,20 @@ function TargetFrame:Constructor(num)
             end
 
             -- Set checked states
-            MenuItems:GetItems():Get(3):GetItems():Get(1):SetChecked(ShowMorale)
-            MenuItems:GetItems():Get(3):GetItems():Get(2):SetChecked(ShowPower)
-            MenuItems:GetItems():Get(4):GetItems():Get(1):SetChecked(LockedPosition)
-            MenuItems:GetItems():Get(4):GetItems():Get(2):SetChecked(SaveFramePositions)
+            FrameMenu:GetItems():Get(4):GetItems():Get(1):SetChecked(self.ShowEffects)
+            FrameMenu:GetItems():Get(4):GetItems():Get(2):SetChecked(self.ShowMorale)
+            FrameMenu:GetItems():Get(4):GetItems():Get(3):SetChecked(self.ShowPower)
+            FrameMenu:GetItems():Get(5):GetItems():Get(2):SetChecked(LockedPosition)
+            FrameMenu:GetItems():Get(5):GetItems():Get(3):SetChecked(SaveFramePositions)
 
             if count == 1 or self.Locked then
-                MenuItems:GetItems():Get(2):SetEnabled(false)
+                FrameMenu:GetItems():Get(2):SetEnabled(false)
             else
-                MenuItems:GetItems():Get(2):SetEnabled(true)
+                FrameMenu:GetItems():Get(2):SetEnabled(true)
             end
 
-            MenuItems.invokerID = self.ID
-            MenuItems:ShowMenu()
+            FrameMenu.invokerID = self.ID
+            FrameMenu:ShowMenu()
         end
     end
 
@@ -244,13 +251,16 @@ function TargetFrame:SetEnabledEffects()
     end
 
     self.EnabledEffects = {}
-    
-    -- generate new effects
-    for k, v in ipairs (EffectsSet) do
-        self.EnabledEffects[k] = EffectFrame(self, v)
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("self.ShowEffects "..tostring(self.ShowEffects)) end
+    if self.ShowEffects then
+        -- generate new effects
+        for k, v in ipairs (EffectsSet) do
+            self.EnabledEffects[k] = EffectFrame(self, v)
+        end
     end     
     
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SetEnabledEffects") end  
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SetEnabledEffects") end
+
 end
 
 -- ------------------------------------------------------------------------
@@ -323,7 +333,7 @@ function TargetFrame:UpdateTarget()
                 self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
                 self.Target.self = self
                 
-                if ShowMorale then
+                if self.ShowMorale then
                     AddCallback(self.Target, "MoraleChanged", MoraleChangedHandler)
                     AddCallback(self.Target, "BaseMaxMoraleChanged", MoraleChangedHandler)
                     AddCallback(self.Target, "MaxMoraleChanged", MoraleChangedHandler)
@@ -333,7 +343,7 @@ function TargetFrame:UpdateTarget()
                     MoraleChangedHandler(self.Target)
                 end
 
-                if ShowPower then
+                if self.ShowPower then
                     AddCallback(self.Target, "PowerChanged", PowerChangedHandler)
                     AddCallback(self.Target, "BaseMaxPowerChanged", PowerChangedHandler)
                     AddCallback(self.Target, "MaxPowerChanged", PowerChangedHandler)
@@ -343,7 +353,7 @@ function TargetFrame:UpdateTarget()
                     PowerChangedHandler(self.Target)
                 end
 
-                if #EffectsSet > 0 then             
+                if self.ShowEffects then             
                     self.EffectList = self.Target:GetEffects()
                     self.EffectList.self = self
     
@@ -473,7 +483,7 @@ function TargetFrame:Resize()
 
     local MoralePowerHeight = 0
     -- morale/power
-    if ShowMorale then
+    if self.ShowMorale then
         local moralePosition = self.TitleBar:GetHeight()
         self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
         self.Morale.Bar:SetPosition (0, moralePosition)
@@ -488,7 +498,7 @@ function TargetFrame:Resize()
     self.Morale.Percent:SetVisible(ShowMorale)
     self.Morale.Title:SetVisible(ShowMorale)
 
-    if ShowPower then
+    if self.ShowPower then
         local powerPosition = self.TitleBar:GetHeight() + MoralePowerHeight
         self.Power.Bar:SetSize(FrameWidth, ControlHeight)
         self.Power.Bar:SetPosition (0, powerPosition)
@@ -503,14 +513,12 @@ function TargetFrame:Resize()
     self.Power.Percent:SetVisible(ShowPower)
     self.Power.Title:SetVisible(ShowPower)
 
-    for k, v in ipairs (EffectsSet) do
-        self.EnabledEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight
-                + (k - 1) * ControlHeight)
+    for k, v in ipairs (self.EnabledEffects) do
+        v:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight + (k - 1) * ControlHeight)
     end
 
     -- title bar, morale bar, power bar + all effects
-    local frameSize = self.TitleBar:GetHeight() + MoralePowerHeight
-                + #self.EnabledEffects * ControlHeight
+    local frameSize = self.TitleBar:GetHeight() + MoralePowerHeight + #self.EnabledEffects * ControlHeight
     
     self:SetSize(FrameWidth, frameSize)
     self.TargetSelection:SetPosition(0,ControlHeight)

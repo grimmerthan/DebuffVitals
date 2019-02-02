@@ -109,6 +109,7 @@ function GenerateEnabledSet()
             count = count + 1
         end
     end
+
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting GenerateEnabledSet...") end
 end
 

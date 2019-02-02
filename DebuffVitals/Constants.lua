@@ -98,19 +98,21 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Lore-master", "Wind-lore",                                0, 0, "Wind%-lore"},
     {"Lore-master", "Winter Storm",                             0, 0},
     {"Minstrel",    "Anthem of the Wizards: Slowed",            0, 0},
-    {"Minstrel",    "Call of Oromë",                            0, 0},
+    {"Minstrel",    "Call of Orome",                            0, 0, 'Call of Orom'},
     {"Minstrel",    "Echoes of Battle",                         0, 1},
     {"Minstrel",    "Harsh Echoes",                             0, 0},
     {"Minstrel",    "Strike a Chord - Major Ballad",            0, 0},
     {"Minstrel",    "Strike a Chord - Minor Ballad",            0, 0},
     {"Minstrel",    "Strike a Chord - Perfect Ballad",          0, 0},
+    {"Minstrel",    "Timeless Echoes of Battle",                0, 1},    
     {"Runekeeper",  "Distracting Flame",                        0, 0},
     {"Runekeeper",  "Essay of Fire",                            0, 0},
     {"Runekeeper",  "Essence of Winter",                        0, 0},
     {"Runekeeper",  "Fiery Ridicule",                           0, 0, "Fiery Ridicule"},
     {"Runekeeper",  "Fiery Ridicule - Tier 2",                  0, 0, "Fiery Ridicule - Tier 2"},    
     {"Runekeeper",  "Fiery Ridicule - Tier 3",                  0, 0, "Fiery Ridicule - Tier 3"},    
-    {"Runekeeper",  "Flurry of Words",                          0, 0},
+    {"Runekeeper",  "Flurry of Words",                          0, 1},
+    {"Runekeeper",  "Icy Windstorm",                            0, 1},
     {"Runekeeper",  "Molten Flame",                             0, 0},
     {"Runekeeper",  "Mystifying Flames",                        0, 0},
     {"Runekeeper",  "Scathing Mockery",                         0, 0},
@@ -161,7 +163,7 @@ DEFAULT_EFFECTS = DEFAULT_FREEP_EFFECTS
 -- ------------------------------------------------------------------------
 -- Constants 
 -- ------------------------------------------------------------------------
-DEBUG_ENABLED = false
+DEBUG_ENABLED = true
 DEBUFF_AND_EFFECTS_OFFSET = 80
 DEFAULT_WIDTH = 200
 DEFAULT_HEIGHT = 20

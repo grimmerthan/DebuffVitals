@@ -85,15 +85,28 @@ function OptionsPanel:Constructor ()
     self.DebuffsTitle:SetText("Debuffs and Effects")
 
     local effects = TrackedEffects
+    local currentGroup = ''
     for k, v in ipairs (effects) do
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("OptionsPanel: Adding in "..tostring(v[2])) end
-        local checkbox = Turbine.UI.Lotro.CheckBox()    
+        local checkbox = Turbine.UI.Lotro.CheckBox()
+        local groupName = Turbine.UI.Label()
+        if currentGroup ~= v[1] then
+            currentGroup = v[1]
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("New group : "..tostring(currentGroup)) end            
+            groupName:SetVisible(true)
+            groupName:SetParent(self)
+            groupName:SetSize(140, 20)
+            groupName:SetPosition(40, DEBUFF_AND_EFFECTS_OFFSET + 20 + k * 20) 
+            groupName:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+            groupName:SetFont( Turbine.UI.Lotro.Font.Verdana18 )
+            groupName:SetText(currentGroup)         
+        end
         checkbox:SetParent(self)
-        checkbox:SetPosition(40, DEBUFF_AND_EFFECTS_OFFSET + 20 + k * 20)
+        checkbox:SetPosition(140, DEBUFF_AND_EFFECTS_OFFSET + 20 + k * 20)
         checkbox:SetSize(400, 20)
         checkbox:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
         checkbox:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
-        checkbox:SetText(" "..tostring(v[1]).." - "..tostring(v[2]))        
+        checkbox:SetText(" "..tostring(v[2]))        
         if v[3] == 1 then
             checkbox:SetChecked(true)
         else
