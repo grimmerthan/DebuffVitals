@@ -78,6 +78,8 @@ function TargetFrame:Constructor(num)
     -- Morale 
     -- ------------------------------------------------------------------------
     local moralePosition = self.TitleBar:GetHeight()
+
+    self.ShowMorale = DEFAULT_SHOW_MORALE
     
     self.Morale.Bar = Turbine.UI.Control()
     self.Morale.Bar:SetParent (self)
@@ -85,7 +87,7 @@ function TargetFrame:Constructor(num)
     self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
     self.Morale.Bar:SetPosition (0, moralePosition)
     self.Morale.Bar:SetMouseVisible (false)
-    self.Morale.Bar:SetVisible (ShowMorale)
+    self.Morale.Bar:SetVisible (self.ShowMorale)
 
     self.Morale.Percent = Turbine.UI.Label()
     self.Morale.Percent:SetParent (self)
@@ -94,7 +96,7 @@ function TargetFrame:Constructor(num)
     self.Morale.Percent:SetMouseVisible (false)
     self.Morale.Percent:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleLeft)
     self.Morale.Percent:SetFont (Turbine.UI.Lotro.Font.Verdana12 )
-    self.Morale.Percent:SetVisible (ShowMorale)    
+    self.Morale.Percent:SetVisible (self.ShowMorale)    
 
     self.Morale.Title = Turbine.UI.Label()
     self.Morale.Title:SetParent (self)
@@ -104,14 +106,14 @@ function TargetFrame:Constructor(num)
     self.Morale.Title:SetText ("")
     self.Morale.Title:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleRight)
     self.Morale.Title:SetFont (Turbine.UI.Lotro.Font.Verdana12)
-    self.Morale.Title:SetVisible (ShowMorale)
-
-    self.ShowMorale = true
+    self.Morale.Title:SetVisible (self.ShowMorale)
 
     -- ------------------------------------------------------------------------
     -- Power
     -- ------------------------------------------------------------------------
     local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
+
+    self.ShowPower = DEFAULT_SHOW_POWER
 
     self.Power.Bar = Turbine.UI.Control()
     self.Power.Bar:SetParent (self)
@@ -119,7 +121,7 @@ function TargetFrame:Constructor(num)
     self.Power.Bar:SetSize (FrameWidth, ControlHeight)
     self.Power.Bar:SetPosition (0, powerPosition)
     self.Power.Bar:SetMouseVisible (false)
-    self.Power.Bar:SetVisible (ShowPower)
+    self.Power.Bar:SetVisible (self.ShowPower)
 
     self.Power.Percent = Turbine.UI.Label()
     self.Power.Percent:SetParent (self)
@@ -128,7 +130,7 @@ function TargetFrame:Constructor(num)
     self.Power.Percent:SetMouseVisible (false)
     self.Power.Percent:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleLeft)
     self.Power.Percent:SetFont (Turbine.UI.Lotro.Font.Verdana12)
-    self.Power.Percent:SetVisible (ShowPower)
+    self.Power.Percent:SetVisible (self.ShowPower)
 
     self.Power.Title = Turbine.UI.Label()
     self.Power.Title:SetParent (self)
@@ -138,18 +140,27 @@ function TargetFrame:Constructor(num)
     self.Power.Title:SetText ("")
     self.Power.Title:SetTextAlignment (Turbine.UI.ContentAlignment.MiddleRight)
     self.Power.Title:SetFont (Turbine.UI.Lotro.Font.Verdana12)
-    self.Power.Title:SetVisible (ShowPower)
-
-    self.ShowPower = true
+    self.Power.Title:SetVisible (self.ShowPower)
 
     -- ------------------------------------------------------------------------
     -- Effect Display
     -- ------------------------------------------------------------------------
-    self.ShowEffects = true
-    self.EffectList = nil
+    -- Effects are filtered twice before being shown
+    --  1) globally, the entire list of effects in Constants.lua is filtered by selections in OptionsPanel.lua
+    --  2) local to each TargetFrame, this subset of effects are shown as an effects menu, and individually selectable
+    --  
+    
+    self.ShowEffects = DEFAULT_SHOW_EFFECTS
+    -- Turbine.Gameplay.EffectsList for a specific target
+    self.EffectsList = nil
+    -- The set of actual effects a target is looking for 
     self.EnabledEffects = {}
-    self.EnabledEffectsMenu = nil
-    self.EffectToggles = {}
+    -- A filter that defines which EnabledEffects are interesting out of the global EffectsList
+    self.EnabledEffectsToggles = {}
+    
+    for k, v in ipairs (EffectsSet) do
+        self.EnabledEffectsToggles[k] = {v[2], true}
+    end
 
     self:SetEnabledEffects()
     self:Resize()
@@ -219,8 +230,14 @@ function TargetFrame:Constructor(num)
             FrameMenu:GetItems():Get(4):GetItems():Get(1):SetChecked(self.ShowEffects)
             FrameMenu:GetItems():Get(4):GetItems():Get(2):SetChecked(self.ShowMorale)
             FrameMenu:GetItems():Get(4):GetItems():Get(3):SetChecked(self.ShowPower)
-            FrameMenu:GetItems():Get(5):GetItems():Get(2):SetChecked(LockedPosition)
-            FrameMenu:GetItems():Get(5):GetItems():Get(3):SetChecked(SaveFramePositions)
+            FrameMenu:GetItems():Get(5):GetItems():Get(1):SetChecked(LockedPosition)
+            FrameMenu:GetItems():Get(5):GetItems():Get(2):SetChecked(SaveFramePositions)
+
+            local items = FrameMenu:GetItems():Get(3):GetItems()
+            for k,v in ipairs (self.EnabledEffectsToggles) do
+                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Settings "..tostring(items:Get(k):GetText()).." to "..tostring(v[1])) end
+                items:Get(k):SetChecked(v[2])
+            end 
 
             if count == 1 or self.Locked then
                 FrameMenu:GetItems():Get(2):SetEnabled(false)
@@ -228,7 +245,7 @@ function TargetFrame:Constructor(num)
                 FrameMenu:GetItems():Get(2):SetEnabled(true)
             end
 
-            FrameMenu.invokerID = self.ID
+            FrameMenu.invoker = self
             FrameMenu:ShowMenu()
         end
     end
@@ -236,6 +253,34 @@ function TargetFrame:Constructor(num)
     self.TitleBar.MouseDown = self.TargetSelection.MouseDown
     self.TitleBar.MouseUp = self.TargetSelection.MouseUp
     self.TitleBar.MouseMove = self.TargetSelection.MouseMove
+
+end
+
+-- ------------------------------------------------------------------------
+-- Merge any changes to effects to the current list 
+-- ------------------------------------------------------------------------
+function TargetFrame:ReconcileEffectsLists()
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering ReconcileEffectsLists") end
+    
+    local newEnabledEffectsToggles = {}
+    for k, v in ipairs (EffectsSet) do
+        newEnabledEffectsToggles[k] = {v[2], true}
+    end
+
+    for k,v in ipairs (self.EnabledEffectsToggles) do
+        for kk, vv in ipairs (newEnabledEffectsToggles) do
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("compare: "..tostring(v[1]).." "..tostring(vv[1])) end
+            if v[1] == vv[1] then
+                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Effect '"..tostring(v[1]).."' found in list, setting state to "..tostring(v[2])) end
+                vv[2] = v[2]
+                break
+            end
+        end
+    end
+
+    self.EnabledEffectsToggles = newEnabledEffectsToggles
+
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting ReconcileEffectsLists") end
 
 end
 
@@ -251,11 +296,13 @@ function TargetFrame:SetEnabledEffects()
     end
 
     self.EnabledEffects = {}
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("self.ShowEffects "..tostring(self.ShowEffects)) end
     if self.ShowEffects then
         -- generate new effects
         for k, v in ipairs (EffectsSet) do
-            self.EnabledEffects[k] = EffectFrame(self, v)
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>> "..tostring(v[2]).." "..tostring(self.EnabledEffectsToggles[k][1])) end
+            if self.EnabledEffectsToggles[k][2] then
+                table.insert (self.EnabledEffects, EffectFrame(self, v))
+            end
         end
     end     
     
@@ -308,11 +355,11 @@ function TargetFrame:UpdateTarget()
             v:ClearCurrentEffect()
         end
 
-        if self.EffectList then
-            RemoveCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
-            RemoveCallback(self.EffectList, "EffectRemoved", EffectsChangedHandler)
-            RemoveCallback(self.EffectList, "EffectsCleared", EffectsChangedHandler)
-            self.EffectList = nil   
+        if self.EffectsList then
+            RemoveCallback(self.EffectsList, "EffectAdded", EffectsChangedHandler)
+            RemoveCallback(self.EffectsList, "EffectRemoved", EffectsChangedHandler)
+            RemoveCallback(self.EffectsList, "EffectsCleared", EffectsChangedHandler)
+            self.EffectsList = nil   
         end
 
         self.Target = LocalUser:GetTarget()
@@ -353,13 +400,13 @@ function TargetFrame:UpdateTarget()
                     PowerChangedHandler(self.Target)
                 end
 
-                if self.ShowEffects then             
-                    self.EffectList = self.Target:GetEffects()
-                    self.EffectList.self = self
+                if self.ShowEffects and #self.EnabledEffectsToggles then
+                    self.EffectsList = self.Target:GetEffects()
+                    self.EffectsList.self = self
     
-                    AddCallback(self.EffectList, "EffectAdded", EffectsChangedHandler)
-                    AddCallback(self.EffectList, "EffectRemoved", EffectsChangedHandler)
-                    AddCallback(self.EffectList, "EffectsCleared", EffectsChangedHandler)
+                    AddCallback(self.EffectsList, "EffectAdded", EffectsChangedHandler)
+                    AddCallback(self.EffectsList, "EffectRemoved", EffectsChangedHandler)
+                    AddCallback(self.EffectsList, "EffectsCleared", EffectsChangedHandler)
     
                     EffectsChangedHandler(self.Target)
                 end
@@ -385,11 +432,11 @@ function TargetFrame:Update()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>>>>>>>Entering TargetFrame:Update") end
 
     if self.Target then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectList:GetCount()).." effects.") end
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectsList:GetCount()).." effects.") end
 
         -- in this loop, 'v' is the list of EffectFrames
         local trackedEffects = self.EnabledEffects
-        local targetEffects = self.EffectList
+        local targetEffects = self.EffectsList
 
         for k, v in ipairs (trackedEffects) do
             for i = 1, targetEffects:GetCount() do
@@ -400,7 +447,7 @@ function TargetFrame:Update()
                     matchPattern = v.patternMatch
                 end                
 
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(matchPattern).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'") end                                                
+                if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(matchPattern).."' to '"..tostring(self.EffectsList:Get(i):GetName())..tostring"'") end                                                
 
                 if type (matchPattern) == "string" then                  
                     if string.find (targetEffects:Get(i):GetName(), matchPattern) then
@@ -412,10 +459,10 @@ function TargetFrame:Update()
                 else
                     local found = false
                     for key, pattern in pairs (matchPattern) do
-                        if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(pattern).."' to '"..tostring(self.EffectList:Get(i):GetName())..tostring"'") end                    
-                        if string.find (self.EffectList:Get(i):GetName(), pattern) then
+                        if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(pattern).."' to '"..tostring(self.EffectsList:Get(i):GetName())..tostring"'") end                    
+                        if string.find (self.EffectsList:Get(i):GetName(), pattern) then
                             if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>> FOUND") end
-                            v:SetCurrentEffect(self.EffectList:Get(i))
+                            v:SetCurrentEffect(self.EffectsList:Get(i))
                             v.lastSeen = Turbine.Engine.GetGameTime()
                             found = true
                             break
@@ -494,9 +541,9 @@ function TargetFrame:Resize()
 
         MoralePowerHeight = MoralePowerHeight + ControlHeight
     end
-    self.Morale.Bar:SetVisible(ShowMorale)
-    self.Morale.Percent:SetVisible(ShowMorale)
-    self.Morale.Title:SetVisible(ShowMorale)
+    self.Morale.Bar:SetVisible(self.ShowMorale)
+    self.Morale.Percent:SetVisible(self.ShowMorale)
+    self.Morale.Title:SetVisible(self.ShowMorale)
 
     if self.ShowPower then
         local powerPosition = self.TitleBar:GetHeight() + MoralePowerHeight
@@ -509,12 +556,14 @@ function TargetFrame:Resize()
         
         MoralePowerHeight = MoralePowerHeight + ControlHeight
     end
-    self.Power.Bar:SetVisible(ShowPower)
-    self.Power.Percent:SetVisible(ShowPower)
-    self.Power.Title:SetVisible(ShowPower)
+    self.Power.Bar:SetVisible(self.ShowPower)
+    self.Power.Percent:SetVisible(self.ShowPower)
+    self.Power.Title:SetVisible(self.ShowPower)
 
-    for k, v in ipairs (self.EnabledEffects) do
-        v:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight + (k - 1) * ControlHeight)
+    local effects = self. EnabledEffects  
+    for k, v in ipairs (effects) do
+        local pos = self.TitleBar:GetHeight() + MoralePowerHeight + (k - 1) * ControlHeight
+        v:SetPosition (0, pos)
     end
 
     -- title bar, morale bar, power bar + all effects

@@ -6,8 +6,6 @@ TargetFrameMenu = class (Turbine.UI.ContextMenu)
 function TargetFrameMenu:Constructor() 
     Turbine.UI.ContextMenu.Constructor(self)
 
-    self.invokerID = -1
-
     local menuItems=self:GetItems()
 
     menuItems:Add(Turbine.UI.MenuItem("New Target"))
@@ -19,7 +17,7 @@ function TargetFrameMenu:Constructor()
     menuItems:Add(Turbine.UI.MenuItem("Remove Target"))
     menuItems:Get(2).Click = function(sender, args)
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Remove Target") end
-        RemoveTarget(self.invokerID)
+        RemoveTarget(self.invoker.ID)
     end
 
     menuItems:Add(Turbine.UI.MenuItem("Effects"))
@@ -30,23 +28,23 @@ function TargetFrameMenu:Constructor()
     showItems:Add(Turbine.UI.MenuItem("Effects"))
     showItems:Get(1).Click = function(sender, args)
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Effects.Click") end
-        TargetFrames[self.invokerID].ShowEffects = not TargetFrames[self.invokerID].ShowEffects
-        TargetFrames[self.invokerID]:SetEnabledEffects()
-        TargetFrames[self.invokerID]:Resize()
+        self.invoker.ShowEffects = not self.invoker.ShowEffects
+        self.invoker:SetEnabledEffects()
+        self.invoker:Resize()
     end
 
     showItems:Add(Turbine.UI.MenuItem("Morale"))
     showItems:Get(2).Click = function(sender, args)
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Morale.Click") end
-        TargetFrames[self.invokerID].ShowMorale = not TargetFrames[self.invokerID].ShowMorale
-        TargetFrames[self.invokerID]:Resize()
+        self.invoker.ShowMorale = not self.invoker.ShowMorale
+        self.invoker:Resize()
     end
 
     showItems:Add(Turbine.UI.MenuItem("Power"))    
     showItems:Get(3).Click = function(sender, args)
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Power.Click") end
-        TargetFrames[self.invokerID].ShowPower = not TargetFrames[self.invokerID].ShowPower 
-        TargetFrames[self.invokerID]:Resize()
+        self.invoker.ShowPower = not self.invoker.ShowPower 
+        self.invoker:Resize()
     end
 
     menuItems:Add(Turbine.UI.MenuItem("Options", true))
@@ -76,20 +74,15 @@ function TargetFrameMenu:CreateEffectsMenu()
     effectsGroups:Clear()
 
     local effects = EffectsSet
-    local currentGroup = ''
     for k, v in ipairs (effects) do
-        if currentGroup ~= v[1] then
-            currentGroup = v[1]
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("New group : "..tostring(currentGroup)) end            
-            effectsGroups:Add(Turbine.UI.MenuItem(currentGroup))
-        end
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("New item : "..tostring(v[2])) end
         effect = Turbine.UI.MenuItem(v[2], true, true)
         effect.id = k
         effect.Click = function(sender, args)
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine(tostring(sender.id)) end
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine(tostring(self.invoker.EnabledEffectsToggles[k][1])) end        
+            self.invoker.EnabledEffectsToggles[k][2] = not self.invoker.EnabledEffectsToggles[k][2]
+            self.invoker:SetEnabledEffects()
+            self.invoker:Resize()
         end
-        effectsGroups:Get(effectsGroups:GetCount()):GetItems():Add(effect)
-        
+        effectsGroups:Add(effect)
     end
 end

@@ -191,9 +191,13 @@ function OptionsPanel:Accept()
     ControlHeight = self.HeightScrollBar:GetValue()
 
     for k, v in pairs (TargetFrames) do
+        v:ReconcileEffectsLists()
         v:SetEnabledEffects()
         v:Resize()
     end
+
+    FrameMenu:CreateEffectsMenu()
+
 end
 
 -- ------------------------------------------------------------------------

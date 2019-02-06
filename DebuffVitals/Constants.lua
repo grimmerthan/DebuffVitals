@@ -163,7 +163,7 @@ DEFAULT_EFFECTS = DEFAULT_FREEP_EFFECTS
 -- ------------------------------------------------------------------------
 -- Constants 
 -- ------------------------------------------------------------------------
-DEBUG_ENABLED = true
+DEBUG_ENABLED = false
 DEBUFF_AND_EFFECTS_OFFSET = 80
 DEFAULT_WIDTH = 200
 DEFAULT_HEIGHT = 20
@@ -171,5 +171,6 @@ DEFAULT_SAVE_FRAME_POSITIONS = false
 DEFAULT_LOCKED_POSITION = false
 DEFAULT_SHOW_MORALE = true
 DEFAULT_SHOW_POWER = true
+DEFAULT_SHOW_EFFECTS = true
 
 

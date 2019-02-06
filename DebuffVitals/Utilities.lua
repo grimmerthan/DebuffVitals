@@ -4,7 +4,7 @@
 function LoadSettings()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering LoadEffects...") end
     local count = 1
-    
+    local loadedFrames = {}    
     local settings = PatchDataLoad(Turbine.DataScope.Character, "DebuffVitals", nil);
 
     for k, v in ipairs (DEFAULT_EFFECTS) do
@@ -28,18 +28,6 @@ function LoadSettings()
         if settings.SaveFramePositions ~= nil then
             SaveFramePositions = settings.SaveFramePositions
         end
-        
-        if settings.FramePositions then
-            FramePositions = settings.FramePositions
-        end
-        
-        if settings.ShowMorale ~= nil then
-            ShowMorale = settings.ShowMorale
-        end
-
-        if settings.ShowPower ~= nil then
-            ShowPower = settings.ShowPower
-        end
 
         if settings.TrackedEffects ~=nil then
             for k, v in ipairs (settings.TrackedEffects) do
@@ -58,10 +46,16 @@ function LoadSettings()
                     count = count + 1        
                 end
             end
-        end 
+        end
+
+        if settings.Frames ~= nil then
+            loadedFrames = settings.Frames
+        end
     end
 
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting LoadEffects...") end   
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting LoadEffects...") end
+
+    return loadedFrames    
 end    
 
 -- ------------------------------------------------------------------------
@@ -76,16 +70,16 @@ function SaveSettings()
     settings.ControlHeight = ControlHeight
     settings.LockedPosition = LockedPosition
     settings.SaveFramePositions = SaveFramePositions
-    if settings.SaveFramePositions then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("{v:GetPosition()}") end
-        for k, v in pairs (TargetFrames) do
-            settings.FramePositions[k] = {v:GetPosition()}
-        end
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("{v:GetPosition()}") end
+    settings.Frames = {}
+    for k,v in pairs (TargetFrames) do
+        local frame = {}
+        frame.ShowMorale = v.ShowMorale
+        frame.ShowPower = v.ShowPower
+        frame.ShowEffects = v.ShowEffects
+        frame.Position = {v:GetPosition()}
+        frame.EnabledEffectsToggles = v.EnabledEffectsToggles        
+        table.insert (settings.Frames, frame)
     end
-    settings.ShowMorale = ShowMorale
-    settings.ShowPower = ShowPower
-    
     PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", settings, nil);
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SaveSettings...") end
 end

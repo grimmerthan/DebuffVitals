@@ -97,6 +97,7 @@ end
 -- 3) generate intial effect frames
 -- ------------------------------------------------------------------------
 
+local loadedFrames = {}
 TargetFrames = {}
 TrackedEffects = {}
 EffectsSet = {}
@@ -106,12 +107,10 @@ ControlHeight = DEFAULT_HEIGHT
 LockedPosition = DEFAULT_LOCKED_POSITION
 SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
 FramePositions = {}
-ShowMorale = DEFAULT_SHOW_MORALE
-ShowPower = DEFAULT_SHOW_POWER
 
 LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
-
-LoadSettings{}
+ 
+loadedFrames = LoadSettings{}
 
 GenerateEnabledSet()
 
@@ -119,17 +118,20 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 
 FrameMenu = TargetFrameMenu()
 
-if #FramePositions > 0 then
-    for i = 1, #FramePositions do
-        target = AddNewTarget()
-        -- Set positions
-        if FramePositions[i][1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
-           FramePositions[i][2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
-            target:SetPosition(FramePositions[i][1],FramePositions[i][2])
+if #loadedFrames > 0 then
+    for k,v in ipairs (loadedFrames) do
+        local target = AddNewTarget()
+        target.ShowMorale = v.ShowMorale
+        target.ShowPower = v.ShowPower
+        target.ShowEffects = v.ShowEffects
+        if v.Position[1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
+           v.Position[2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
+            target:SetPosition(v.Position[1], v.Position[2])
         end
-        -- Set effects
-        
-    end    
+        target.EnabledEffectsToggles = v.EnabledEffectsToggles
+        target:SetEnabledEffects()
+        target:Resize()
+    end
 else
     AddNewTarget()
 end
