@@ -91,9 +91,9 @@ function GenerateEnabledSet()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering GenerateEnabledSet...") end
     local count = 1    
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("TrackedEffects count "..tostring(#TrackedEffects)) end
-    
+
     EffectsSet = {}
-    
+
     local effects = TrackedEffects
     for k, v in ipairs (effects) do   
         if v[3] == 1 then 

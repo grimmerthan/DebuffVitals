@@ -153,11 +153,11 @@ function TargetFrame:Constructor(num)
     self.ShowEffects = DEFAULT_SHOW_EFFECTS
     -- Turbine.Gameplay.EffectsList for a specific target
     self.EffectsList = nil
-    -- The set of actual effects a target is looking for 
-    self.EnabledEffects = {}
     -- A filter that defines which EnabledEffects are interesting out of the global EffectsList
     self.EnabledEffectsToggles = {}
-    
+    -- The set of actual effects a target is looking for 
+    self.EnabledEffects = {}
+
     for k, v in ipairs (EffectsSet) do
         self.EnabledEffectsToggles[k] = {v[2], true}
     end
