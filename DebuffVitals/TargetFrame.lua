@@ -69,7 +69,7 @@ function TargetFrame:Constructor(num)
             self.Lock:SetBackground( 0x410001D1 )
         else
             self.Lock:SetBackground( 0x410001D3 )
-            TargetChangeHandler()
+            self:UpdateTarget()
         end
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Lock for ID "..tostring(self.ID).." is "..tostring(self.Locked)) end
     end
@@ -431,7 +431,9 @@ end
 function TargetFrame:Update()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>>>>>>>Entering TargetFrame:Update") end
 
-    if self.Target then
+    self:SetWantsUpdates(false)
+
+    if self.Target and self.EffectsList and #self.EffectsList then
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectsList:GetCount()).." effects.") end
 
         -- in this loop, 'v' is the list of EffectFrames
@@ -508,8 +510,7 @@ function TargetFrame:Update()
         end
         
     end
-    
-    self:SetWantsUpdates(false)
+
     if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>>>>>>>Exiting TargetFrame:Update") end
 end
 

@@ -59,28 +59,28 @@ function MoraleChangedHandler(sender, args)
        
     local TargetMorale = CurrentFrame.Target:GetMorale()
 
-    if TargetMorale <= 0 and CurrentFrame.Locked then
-        CurrentFrame.Lock.MouseClick()
-     end
-
-    local TargetMaxMorale = CurrentFrame.Target:GetMaxMorale()
-    local TargetTempMorale = CurrentFrame.Target:GetTemporaryMorale()
-    local TargetMaxTempMorale = CurrentFrame.Target:GetMaxTemporaryMorale()
-
-    CurrentFrame.Morale.Title:SetText(string.format("%s", FormatBigNumbers(TargetMorale))
-                    .." / "..string.format("%s", FormatBigNumbers(TargetMaxMorale)).." ")
-
-    if TargetMorale <= 1 then
-        CurrentFrame.Morale.Percent:SetText(string.format("0.0%%"))
+    if TargetMorale <= 0 then 
+        if CurrentFrame.Locked then CurrentFrame.Lock.MouseClick() end
     else
-        CurrentFrame.Morale.Percent:SetText(string.format("%.1f", 100 * TargetMorale / TargetMaxMorale).."%")
+        local TargetMaxMorale = CurrentFrame.Target:GetMaxMorale()
+        local TargetTempMorale = CurrentFrame.Target:GetTemporaryMorale()
+        local TargetMaxTempMorale = CurrentFrame.Target:GetMaxTemporaryMorale()
+    
+        CurrentFrame.Morale.Title:SetText(string.format("%s", FormatBigNumbers(TargetMorale))
+                        .." / "..string.format("%s", FormatBigNumbers(TargetMaxMorale)).." ")
+    
+        if TargetMorale <= 1 then
+            CurrentFrame.Morale.Percent:SetText(string.format("0.0%%"))
+        else
+            CurrentFrame.Morale.Percent:SetText(string.format("%.1f", 100 * TargetMorale / TargetMaxMorale).."%")
+        end
+    
+        local BarSize = math.floor(TargetMorale/TargetMaxMorale * FrameWidth)
+        CurrentFrame.Morale.Bar:SetSize(BarSize, ControlHeight)
+        CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Morale.Bar:GetTop())
     end
 
-    local BarSize = math.floor(TargetMorale/TargetMaxMorale * FrameWidth)
-    CurrentFrame.Morale.Bar:SetSize(BarSize, ControlHeight)
-    CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Morale.Bar:GetTop())
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting EffectsChangedHandler") end
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting MoraleChangedHandler") end
 end
 
 -- ------------------------------------------------------------------------
@@ -113,7 +113,7 @@ function PowerChangedHandler(sender, args)
     CurrentFrame.Power.Bar:SetSize(BarSize, ControlHeight)
     CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Power.Bar:GetTop())
 
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting EffectsChangedHandler") end
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting PowerChangedHandler") end
 end
 
 -- ------------------------------------------------------------------------
