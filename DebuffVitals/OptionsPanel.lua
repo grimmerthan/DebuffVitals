@@ -1,3 +1,5 @@
+local DEBUG_ENABLED = DEBUG_ENABLED
+local DEFAULT_EFFECTS = DEFAULT_EFFECTS
 -- ------------------------------------------------------------------------
 -- Plugin Manager Options Panel
 -- ------------------------------------------------------------------------
@@ -86,13 +88,12 @@ function OptionsPanel:Constructor ()
 
     local effects = TrackedEffects
     local currentGroup = ''
-    for k, v in ipairs (effects) do
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("OptionsPanel: Adding in "..tostring(v[2])) end
+
+    for k = 1, #effects do
         local checkbox = Turbine.UI.Lotro.CheckBox()
         local groupName = Turbine.UI.Label()
-        if currentGroup ~= v[1] then
-            currentGroup = v[1]
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("New group : "..tostring(currentGroup)) end            
+        if currentGroup ~= effects[k][1] then
+            currentGroup = effects[k][1]           
             groupName:SetVisible(true)
             groupName:SetParent(self)
             groupName:SetSize(140, 20)
@@ -106,8 +107,8 @@ function OptionsPanel:Constructor ()
         checkbox:SetSize(400, 20)
         checkbox:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
         checkbox:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
-        checkbox:SetText(" "..tostring(v[2]))        
-        if v[3] == 1 then
+        checkbox:SetText(" "..tostring(effects[k][2]))        
+        if effects[k][3] == 1 then
             checkbox:SetChecked(true)
         else
             checkbox:SetChecked(false)
@@ -163,8 +164,8 @@ function OptionsPanel:Defaults()
     self.WidthScrollBar:SetValue(DEFAULT_WIDTH)
     self.HeightScrollBar:SetValue(DEFAULT_HEIGHT)  
 
-    for k, v in ipairs (DEFAULT_EFFECTS) do
-        if v[3] == 1 then
+    for k = 1, #DEFAULT_EFFECTS do
+        if DEFAULT_EFFECTS[k][3] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else
             self.checkboxes[k]:SetChecked(false)
@@ -176,9 +177,8 @@ end
 -- Pressing the Accept Button
 -- ------------------------------------------------------------------------
 function OptionsPanel:Accept()
-    local checkBoxes = self.checkboxes
-    for k, v in ipairs (checkBoxes) do
-        if v:IsChecked() then
+    for k = 1, #self.checkboxes do 
+        if self.checkboxes[k]:IsChecked() then
             TrackedEffects[k][3] = 1
         else
             TrackedEffects[k][3] = 0
@@ -190,10 +190,10 @@ function OptionsPanel:Accept()
     FrameWidth = self.WidthScrollBar:GetValue()
     ControlHeight = self.HeightScrollBar:GetValue()
 
-    for k, v in pairs (TargetFrames) do
-        v:ReconcileEffectsLists()
-        v:SetEnabledEffects()
-        v:Resize()
+    for k = 1, #TargetFrames do 
+        TargetFrames[k]:ReconcileEffectsLists()
+        TargetFrames[k]:SetEnabledEffects()
+        TargetFrames[k]:Resize()
     end
 
     FrameMenu:CreateEffectsMenu()
@@ -209,8 +209,8 @@ function OptionsPanel:Revert()
     self.HeightScrollBar:SetValue(ControlHeight)  
 
     local effects = TrackedEffects
-    for k, v in ipairs (effects) do
-        if v[3] == 1 then
+    for k = 1, #effects do
+        if effects[k][3] == 1 then
             self.checkboxes[k]:SetChecked(true)
         else
             self.checkboxes[k]:SetChecked(false)

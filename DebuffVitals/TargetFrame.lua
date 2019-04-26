@@ -1,3 +1,4 @@
+local DEBUG_ENABLED = DEBUG_ENABLED
 -- ------------------------------------------------------------------------
 -- TargetFrame - the base panel that tracks morale/power and effects 
 -- ------------------------------------------------------------------------
@@ -6,7 +7,7 @@ TargetFrame = class (Turbine.UI.Window)
 function TargetFrame:Constructor(num) 
     Turbine.UI.Window.Constructor(self)
 
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Creating TargetFrame") end
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering TargetFrame:Constructor") end
 
     self.ID = num
     self.Target = nil
@@ -63,7 +64,6 @@ function TargetFrame:Constructor(num)
     self.Lock:SetBlendMode (Turbine.UI.BlendMode.Overlay)
 
     self.Lock.MouseClick = function ()
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Lock for ID "..tostring(self.ID).." was "..tostring(self.Locked)) end
         self.Locked = not self.Locked
         if self.Locked then
             self.Lock:SetBackground( 0x410001D1 )
@@ -71,7 +71,6 @@ function TargetFrame:Constructor(num)
             self.Lock:SetBackground( 0x410001D3 )
             self:UpdateTarget()
         end
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Lock for ID "..tostring(self.ID).." is "..tostring(self.Locked)) end
     end
 
     -- ------------------------------------------------------------------------
@@ -157,9 +156,11 @@ function TargetFrame:Constructor(num)
     self.EnabledEffectsToggles = {}
     -- The set of actual effects a target is looking for 
     self.EnabledEffects = {}
+    -- The last time an effect callback occurred
+    self.LastEffectCallback = nil
 
-    for k, v in ipairs (EffectsSet) do
-        self.EnabledEffectsToggles[k] = {v[2], true}
+    for k = 1, #EffectsSet do
+        self.EnabledEffectsToggles[k] = {EffectsSet[k][2], true}
     end
 
     self:SetEnabledEffects()
@@ -219,12 +220,6 @@ function TargetFrame:Constructor(num)
     self.TitleBar.MouseClick = function (sender, args)
         if args.Button == Turbine.UI.MouseButton.Right then
             self.IsDragging = false
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("Showing menu") end
-
-            local count = 0
-            for k, v in pairs (TargetFrames) do
-                count = count + 1
-            end
 
             -- Set checked states
             FrameMenu:GetItems():Get(4):GetItems():Get(1):SetChecked(self.ShowEffects)
@@ -234,12 +229,11 @@ function TargetFrame:Constructor(num)
             FrameMenu:GetItems():Get(5):GetItems():Get(2):SetChecked(SaveFramePositions)
 
             local items = FrameMenu:GetItems():Get(3):GetItems()
-            for k,v in ipairs (self.EnabledEffectsToggles) do
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Settings "..tostring(items:Get(k):GetText()).." to "..tostring(v[1])) end
-                items:Get(k):SetChecked(v[2])
+            for k = 1, #self.EnabledEffectsToggles do
+                items:Get(k):SetChecked(self.EnabledEffectsToggles[k][2])
             end 
 
-            if count == 1 or self.Locked then
+            if #TargetFrames == 1 or self.Locked then
                 FrameMenu:GetItems():Get(2):SetEnabled(false)
             else
                 FrameMenu:GetItems():Get(2):SetEnabled(true)
@@ -254,60 +248,53 @@ function TargetFrame:Constructor(num)
     self.TitleBar.MouseUp = self.TargetSelection.MouseUp
     self.TitleBar.MouseMove = self.TargetSelection.MouseMove
 
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting TargetFrame:Constructor") end
 end
 
 -- ------------------------------------------------------------------------
 -- Merge any changes to effects to the current list 
 -- ------------------------------------------------------------------------
 function TargetFrame:ReconcileEffectsLists()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering ReconcileEffectsLists") end
-    
+
     local newEnabledEffectsToggles = {}
-    for k, v in ipairs (EffectsSet) do
-        newEnabledEffectsToggles[k] = {v[2], true}
+    -- create the list of new toggles with default checked state
+    for k = 1, #EffectsSet do
+        newEnabledEffectsToggles[k] = {EffectsSet[k][2], true}
     end
 
-    for k,v in ipairs (self.EnabledEffectsToggles) do
-        for kk, vv in ipairs (newEnabledEffectsToggles) do
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("compare: "..tostring(v[1]).." "..tostring(vv[1])) end
-            if v[1] == vv[1] then
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Effect '"..tostring(v[1]).."' found in list, setting state to "..tostring(v[2])) end
-                vv[2] = v[2]
+    -- go through the existing toggles on a TargetFrame for a match, and update toggle state if found
+    for k = 1, #self.EnabledEffectsToggles do
+        for kk = 1, #newEnabledEffectsToggles do
+            if newEnabledEffectsToggles[kk][1] == self.EnabledEffectsToggles[k][1] then
+                newEnabledEffectsToggles[kk][2] = self.EnabledEffectsToggles[k][2]
                 break
             end
         end
     end
 
     self.EnabledEffectsToggles = newEnabledEffectsToggles
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting ReconcileEffectsLists") end
-
 end
 
 -- ------------------------------------------------------------------------
 -- Clears and sets up all enabled/tracked effects
 -- ------------------------------------------------------------------------
 function TargetFrame:SetEnabledEffects()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering SetEnabledEffects") end
     -- clear current effects
-    for k, v in ipairs (self.EnabledEffects) do
-        v:SetVisible(false)
-        v = nil
+    for k = 1, #self.EnabledEffects do
+        self.EnabledEffects[k]:SetVisible(false)
+        self.EnabledEffects[k] = nil
     end
 
     self.EnabledEffects = {}
+
     if self.ShowEffects then
-        -- generate new effects
-        for k, v in ipairs (EffectsSet) do
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>> "..tostring(v[2]).." "..tostring(self.EnabledEffectsToggles[k][1])) end
+        -- generate new effects when effects are toggled on
+        for k = 1, #EffectsSet do
             if self.EnabledEffectsToggles[k][2] then
-                table.insert (self.EnabledEffects, EffectFrame(self, v))
+                table.insert (self.EnabledEffects, EffectFrame(self, EffectsSet[k]))
             end
         end
     end     
-    
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SetEnabledEffects") end
-
 end
 
 -- ------------------------------------------------------------------------
@@ -351,8 +338,8 @@ function TargetFrame:UpdateTarget()
             self.Target = nil
         end
 
-        for k, v in ipairs (self.EnabledEffects) do
-            v:ClearCurrentEffect()
+        for k = 1, #self.EnabledEffects do
+            self.EnabledEffects[k]:ClearCurrentEffect()
         end
 
         if self.EffectsList then
@@ -372,11 +359,9 @@ function TargetFrame:UpdateTarget()
         local ThrowAwayGetTargetCall = LocalUser:GetTarget()
     
         if self.Target then
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("  New target's name : "..tostring(self.Target:GetName())) end
             self.TitleBar:SetText(self.TargetSelection:GetEntity():GetName())
     
             if self.Target.GetLevel ~= nil then            
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("  New target - got level") end
                 self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
                 self.Target.self = self
                 
@@ -407,7 +392,9 @@ function TargetFrame:UpdateTarget()
                     AddCallback(self.EffectsList, "EffectAdded", EffectsChangedHandler)
                     AddCallback(self.EffectsList, "EffectRemoved", EffectsChangedHandler)
                     AddCallback(self.EffectsList, "EffectsCleared", EffectsChangedHandler)
-    
+
+                    -- Set last callback well in the past, so that the first handler update fires
+                    self.LastCallback = Turbine.Engine.GetGameTime() - 10 
                     EffectsChangedHandler(self.Target)
                 end
             else
@@ -426,46 +413,38 @@ function TargetFrame:UpdateTarget()
 end
 
 -- ------------------------------------------------------------------------
--- Update triggered after an Effect handler triggers, cross-checking lists of effects
+-- Update enabled effects, after an Effect handler triggers, cross-checking lists of effects
 -- ------------------------------------------------------------------------
 function TargetFrame:Update()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>>>>>>>Entering TargetFrame:Update") end
 
     self:SetWantsUpdates(false)
 
+    -- update a frame only when there is at least one enabled effect and a target 
     if self.Target and self.EffectsList and #self.EffectsList then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Target name "..tostring(self.Target:GetName()).." with "..tostring(self.EffectsList:GetCount()).." effects.") end
-
-        -- in this loop, 'v' is the list of EffectFrames
         local trackedEffects = self.EnabledEffects
         local targetEffects = self.EffectsList
 
-        for k, v in ipairs (trackedEffects) do
-            for i = 1, targetEffects:GetCount() do
+        for k = 1, #trackedEffects do
+            for kk = 1, targetEffects:GetCount() do
                 local matchPattern = {}
-                if v.patternMatch == nil then
-                    matchPattern = v.effectName
+                if trackedEffects[k].patternMatch == nil then
+                    matchPattern = trackedEffects[k].effectName
                 else
-                    matchPattern = v.patternMatch
+                    matchPattern = trackedEffects[k].patternMatch
                 end                
 
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(matchPattern).."' to '"..tostring(self.EffectsList:Get(i):GetName())..tostring"'") end                                                
-
                 if type (matchPattern) == "string" then                  
-                    if string.find (targetEffects:Get(i):GetName(), matchPattern) then
-                        if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>> FOUND") end                 
-                        v:SetCurrentEffect(targetEffects:Get(i))
-                        v.lastSeen = Turbine.Engine.GetGameTime()
+                    if string.find (targetEffects:Get(kk):GetName(), matchPattern) then
+                        trackedEffects[k]:SetCurrentEffect(targetEffects:Get(kk))
+                        trackedEffects[k].lastSeen = Turbine.Engine.GetGameTime()
                         break
                     end
                 else
                     local found = false
-                    for key, pattern in pairs (matchPattern) do
-                        if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>Matching '"..tostring(pattern).."' to '"..tostring(self.EffectsList:Get(i):GetName())..tostring"'") end                    
-                        if string.find (self.EffectsList:Get(i):GetName(), pattern) then
-                            if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>> FOUND") end
-                            v:SetCurrentEffect(self.EffectsList:Get(i))
-                            v.lastSeen = Turbine.Engine.GetGameTime()
+                    for x = 1, #matchPattern do
+                        if string.find (self.EffectsList:Get(kk):GetName(), matchPattern[x]) then
+                            trackedEffects[k]:SetCurrentEffect(targetEffects:Get(kk))
+                            trackedEffects[k].lastSeen = Turbine.Engine.GetGameTime()
                             found = true
                             break
                         end                   
@@ -475,24 +454,20 @@ function TargetFrame:Update()
                     end
                 end
             end
-            if v.timedType > 0 and v.lastSeen then
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Checking last seen on "..tostring(v.name:GetText())) end
-                if (Turbine.Engine.GetGameTime() - v.lastSeen) > 5 then       
-                    if DEBUG_ENABLED then Turbine.Shell.WriteLine("   not seen for "..tostring(Turbine.Engine.GetGameTime() - v.lastSeen).." seconds ago.") end
-                    v:ClearCurrentEffect()
+            -- while going through the list, clear any toggle or expire-on-damage effects that have likely expired 
+            if trackedEffects[k].timedType > 0 and trackedEffects[k].lastSeen then
+                if (Turbine.Engine.GetGameTime() - trackedEffects[k].lastSeen) > 5 then       
+                    trackedEffects[k]:ClearCurrentEffect()
                 end
-            end                        
+            end   
+    
         end
         
         local number = nil
         local count = 0
         for i = 1, targetEffects:GetCount() do
             if targetEffects:Get(i):GetCategory() == Turbine.Gameplay.EffectCategory.Corruption then
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Corruption detected : "..tostring(targetEffects:Get(i):GetName())) end
                 number = string.match(targetEffects:Get(i):GetName(), "%d+")
-                if number then
-                    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Corruption count : "..tostring(number)) end
-                end
                 count = count + 1
                 self.lastCorruptionSeen = Turbine.Engine.GetGameTime() 
             end
@@ -507,20 +482,16 @@ function TargetFrame:Update()
                 self.TitleBar:SetText("["..self.Target:GetLevel().."] " ..self.Target:GetName())
                 self.lastCorruptionSeen = 0
             end
-        end
-        
+        end       
     end
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine(">>>>>>>>>>Exiting TargetFrame:Update") end
 end
 
 -- ------------------------------------------------------------------------
 --  Set size/visibility of all controls
 -- ------------------------------------------------------------------------
 function TargetFrame:Resize()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering TargetFrame:Resize ") end
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("FrameWidth : "..tostring(FrameWidth)) end
-    -- name 
+
+    -- namebar
     self.TitleBar:SetSize(FrameWidth - ControlHeight, ControlHeight)
 
     self.LockBackground:SetSize(ControlHeight, ControlHeight)
@@ -529,8 +500,8 @@ function TargetFrame:Resize()
     self.Lock:SetSize(ControlHeight, ControlHeight)
     self.Lock:SetPosition (FrameWidth - ControlHeight,0)
 
-    local MoralePowerHeight = 0
     -- morale/power
+    local MoralePowerHeight = 0
     if self.ShowMorale then
         local moralePosition = self.TitleBar:GetHeight()
         self.Morale.Bar:SetSize (FrameWidth, ControlHeight)
@@ -561,10 +532,8 @@ function TargetFrame:Resize()
     self.Power.Percent:SetVisible(self.ShowPower)
     self.Power.Title:SetVisible(self.ShowPower)
 
-    local effects = self. EnabledEffects  
-    for k, v in ipairs (effects) do
-        local pos = self.TitleBar:GetHeight() + MoralePowerHeight + (k - 1) * ControlHeight
-        v:SetPosition (0, pos)
+    for k = 1, #self.EnabledEffects do
+        self.EnabledEffects[k]:SetPosition (0, self.TitleBar:GetHeight() + MoralePowerHeight + (k - 1) * ControlHeight)
     end
 
     -- title bar, morale bar, power bar + all effects
@@ -575,6 +544,4 @@ function TargetFrame:Resize()
     self.TargetSelection:SetSize(FrameWidth, frameSize)
     
     self:UpdateTarget()
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting TargetFrame:Resize") end
 end

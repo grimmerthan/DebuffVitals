@@ -24,15 +24,18 @@ Future works include:
 import "Turbine.Gameplay"
 import "Turbine.UI" 
 import "Turbine.UI.Lotro"
+import "Grimmerthan.DebuffVitals.CommandLine"
 import "Grimmerthan.DebuffVitals.Constants"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 import "Grimmerthan.DebuffVitals.Handlers"
+import "Grimmerthan.DebuffVitals.LoadSave"
 import "Grimmerthan.DebuffVitals.Menu"
 import "Grimmerthan.DebuffVitals.OptionsPanel"
 import "Grimmerthan.DebuffVitals.TargetFrame"
 import "Grimmerthan.DebuffVitals.Utilities"
 import "Grimmerthan.DebuffVitals.VindarPatch"
 
+local DEBUG_ENABLED = DEBUG_ENABLED
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
 -- ------------------------------------------------------------------------
@@ -40,7 +43,8 @@ function Turbine.Plugin.Unload()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Plugin unload") end
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
-    for key, frame in pairs (TargetFrames) do
+    for k = 1, #TargetFrames do
+        local frame = TargetFrames[k]
         if frame.Target then 
             RemoveCallback(frame.Target, "MoraleChanged", MoraleChangedHandler);
             RemoveCallback(frame.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
@@ -67,22 +71,25 @@ end
 function AddNewTarget()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering AddNewTargetFrame...") end
     FrameID = FrameID + 1
-    TargetFrames[FrameID] = TargetFrame(FrameID)
-    TargetChangeHandler ()
+
+    local NewFrame = TargetFrame(FrameID)
+
+    TargetFrame.UpdateTarget(NewFrame)
+
+    table.insert(TargetFrames, NewFrame)
+
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting AddNewTargetFrame...") end
     return TargetFrames[FrameID]
 end
 
 function RemoveTarget(ID)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering RemoveTargetFrame...") end
-    for key, frame in pairs (TargetFrames) do 
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("frame.GetID(frame) == ID //"..tostring (frame.ID).." == "..tostring(ID)) end
-        if frame.ID == ID then
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("Removing : "..tostring (ID)) end
-            if not frame.Locked then
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Processing Removal...") end
-                frame:SetVisible(false)
-                TargetFrames[key] = nil
+
+    for k = 1, #TargetFrames do
+        if TargetFrames[k].ID == ID then
+            if not TargetFrames[k].Locked then
+                TargetFrames[k]:SetVisible(false)
+                table.remove(TargetFrames, k)
             end
             break
         end
@@ -119,16 +126,16 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 FrameMenu = TargetFrameMenu()
 
 if #loadedFrames > 0 then
-    for k,v in ipairs (loadedFrames) do
+    for k = 1, #loadedFrames do
         local target = AddNewTarget()
-        target.ShowMorale = v.ShowMorale
-        target.ShowPower = v.ShowPower
-        target.ShowEffects = v.ShowEffects
-        if v.Position[1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
-           v.Position[2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
-            target:SetPosition(v.Position[1], v.Position[2])
+        target.ShowMorale = loadedFrames[k].ShowMorale
+        target.ShowPower = loadedFrames[k].ShowPower
+        target.ShowEffects = loadedFrames[k].ShowEffects
+        if loadedFrames[k].Position[1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
+           loadedFrames[k].Position[2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
+            target:SetPosition(loadedFrames[k].Position[1], loadedFrames[k].Position[2])
         end
-        target.EnabledEffectsToggles = v.EnabledEffectsToggles
+        target.EnabledEffectsToggles = loadedFrames[k].EnabledEffectsToggles
         target:SetEnabledEffects()
         target:Resize()
     end

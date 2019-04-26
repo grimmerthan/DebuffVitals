@@ -1,3 +1,4 @@
+local DEBUG_ENABLED = DEBUG_ENABLED
 -- ------------------------------------------------------------------------
 -- Callbacks
 -- ------------------------------------------------------------------------
@@ -34,26 +35,18 @@ end
 -- Target Change Handler
 -- ------------------------------------------------------------------------
 function TargetChangeHandler(sender, args)
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering TargetChangeHandler...") end
-
-    for key, frame in pairs (TargetFrames) do
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("ID : "..tostring(key).." value : "..tostring(frame)) end
-        TargetFrame.UpdateTarget(frame)
+    for k=1, #TargetFrames do
+        TargetFrame.UpdateTarget(TargetFrames[k])
     end
-    
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting TargetChangeHandler...") end
 end
 
 -- ------------------------------------------------------------------------
 -- Morale Change Handler
 -- ------------------------------------------------------------------------
 function MoraleChangedHandler(sender, args)
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering MoraleChangedHandler") end
-    
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Skip MoraleChangedHandler.  No target.") end
         return
     end
        
@@ -79,16 +72,12 @@ function MoraleChangedHandler(sender, args)
         CurrentFrame.Morale.Bar:SetSize(BarSize, ControlHeight)
         CurrentFrame.Morale.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Morale.Bar:GetTop())
     end
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting MoraleChangedHandler") end
 end
 
 -- ------------------------------------------------------------------------
 -- Power Change Handler
 -- ------------------------------------------------------------------------
 function PowerChangedHandler(sender, args)
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering PowerChangedHandler") end
-
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
@@ -112,24 +101,18 @@ function PowerChangedHandler(sender, args)
     local BarSize = math.floor(TargetPower/TargetMaxPower * FrameWidth)
     CurrentFrame.Power.Bar:SetSize(BarSize, ControlHeight)
     CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Power.Bar:GetTop())
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting PowerChangedHandler") end
 end
 
 -- ------------------------------------------------------------------------
 -- Effect Change Handler
 -- ------------------------------------------------------------------------
 function EffectsChangedHandler(sender, args)
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering EffectsChangedHandler") end
-
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("Skip... no target....") end
         return
     end
-   
-    CurrentFrame:SetWantsUpdates(true)
-    
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting EffectsChangedHandler") end
+
+    CurrentFrame:SetWantsUpdates(true)    
 end

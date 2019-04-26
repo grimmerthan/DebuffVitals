@@ -1,3 +1,5 @@
+local DEBUG_ENABLED = DEBUG_ENABLED
+
 -- ------------------------------------------------------------------------
 -- EffectFrame - base UI control
 -- ------------------------------------------------------------------------
@@ -6,7 +8,8 @@ EffectFrame = class (Turbine.UI.Control)
 function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     Turbine.UI.Control.Constructor(self)
     
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine ("Creating EffectFrame : "..tostring(EffectDefinition[2]).." ("..tostring(EffectDefinition[5])..")") end
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine (
+            table.concat({"Creating EffectFrame : ", tostring(EffectDefinition[2]), " (", tostring(EffectDefinition[5]), ")"})) end
 
     self.startTime = 0
     self.duration = 0
@@ -26,8 +29,6 @@ function EffectFrame:Constructor (CurrentFrame, EffectDefinition)
     self.effectDisplay:SetSize(ControlHeight, ControlHeight)
     self.effectDisplay:SetPosition(0, 0)
     self.effectDisplay:SetZOrder(200)
-    
-    self.effects = self.GenerateFrameEffects()
 
     self.name = Turbine.UI.Label()
     self.name:SetVisible(true)
@@ -127,12 +128,3 @@ function EffectFrame:Update(args)
         end
     end
 end
-
--- ------------------------------------------------------------------------
--- Generates frame-specific effects, handling enabled or disabled states as effects are updated
--- ------------------------------------------------------------------------
-function EffectFrame:GenerateFrameEffects()
-
-end
-
-

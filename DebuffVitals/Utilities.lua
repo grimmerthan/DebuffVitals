@@ -1,89 +1,4 @@
--- ------------------------------------------------------------------------
--- Loads any saved settings
--- ------------------------------------------------------------------------
-function LoadSettings()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering LoadEffects...") end
-    local count = 1
-    local loadedFrames = {}    
-    local settings = PatchDataLoad(Turbine.DataScope.Character, "DebuffVitals", nil);
-
-    for k, v in ipairs (DEFAULT_EFFECTS) do
-        TrackedEffects[count] = {v[1], v[2], v[3], v[4], v[5]}
-        count = count + 1
-    end
-
-    if settings then
-        if settings.FrameWidth then
-            FrameWidth = settings.FrameWidth
-        end
-
-        if settings.ControlHeight then
-            ControlHeight = settings.ControlHeight
-        end
-
-        if settings.LockedPosition ~= nil then
-            LockedPosition = settings.LockedPosition
-        end 
-
-        if settings.SaveFramePositions ~= nil then
-            SaveFramePositions = settings.SaveFramePositions
-        end
-
-        if settings.TrackedEffects ~=nil then
-            for k, v in ipairs (settings.TrackedEffects) do
-                local found = false
-                if DEBUG_ENABLED then Turbine.Shell.WriteLine("Loading  in "..tostring(v[1]).." / "..tostring(v[2])..
-                                " / "..tostring(v[3]).." / "..tostring(v[4]).." / "..tostring(v[5])) end
-                for key, value in ipairs (TrackedEffects) do
-                    if value[2] == v[2] then
-                        value[3] = v[3]
-                        found = true
-                        break
-                    end
-                end
-                if not found then
-                    TrackedEffects[count] = {v[1], v[2], v[3], v[4], v[5]}
-                    count = count + 1        
-                end
-            end
-        end
-
-        if settings.Frames ~= nil then
-            loadedFrames = settings.Frames
-        end
-    end
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting LoadEffects...") end
-
-    return loadedFrames    
-end    
-
--- ------------------------------------------------------------------------
--- Save settings / character
--- ------------------------------------------------------------------------
-function SaveSettings()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering SaveSettings...") end
-    settings = {}
-    settings.FramePositions = {}
-    settings.TrackedEffects = TrackedEffects
-    settings.FrameWidth = FrameWidth
-    settings.ControlHeight = ControlHeight
-    settings.LockedPosition = LockedPosition
-    settings.SaveFramePositions = SaveFramePositions
-    settings.Frames = {}
-    for k,v in pairs (TargetFrames) do
-        local frame = {}
-        frame.ShowMorale = v.ShowMorale
-        frame.ShowPower = v.ShowPower
-        frame.ShowEffects = v.ShowEffects
-        frame.Position = {v:GetPosition()}
-        frame.EnabledEffectsToggles = v.EnabledEffectsToggles        
-        table.insert (settings.Frames, frame)
-    end
-    PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", settings, nil);
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SaveSettings...") end
-end
-
+local DEBUG_ENABLED = DEBUG_ENABLED
 -- ------------------------------------------------------------------------
 -- Creates the subset of effects that will be monitored
 -- ------------------------------------------------------------------------
@@ -94,12 +9,10 @@ function GenerateEnabledSet()
 
     EffectsSet = {}
 
-    local effects = TrackedEffects
-    for k, v in ipairs (effects) do   
-        if v[3] == 1 then 
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("Adding in "..tostring(v[1]).." / "..tostring(v[2])..
-                        " / "..tostring(v[3]).." / "..tostring(v[4]).." / "..tostring(v[5])) end
-            EffectsSet[count] = {v[1], v[2], v[3], v[4], v[5]}
+    for k = 1, #TrackedEffects do   
+        if TrackedEffects[k][3] == 1 then 
+            EffectsSet[count] = {TrackedEffects[k][1], TrackedEffects[k][2], TrackedEffects[k][3], 
+                                 TrackedEffects[k][4], TrackedEffects[k][5]}
             count = count + 1
         end
     end
