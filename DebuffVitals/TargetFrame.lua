@@ -204,7 +204,11 @@ function TargetFrame:Constructor(num)
                 if self:GetTop() < 0 then
                     self:SetTop(0)
                 elseif self:GetTop() + self:GetHeight() > Turbine.UI.Display:GetHeight() then
-                    self:SetTop(Turbine.UI.Display:GetHeight()-self:GetHeight())
+                    if (Turbine.UI.Display:GetHeight()-self:GetHeight()) < 0 then
+                        self:SetTop(0)
+                    else
+                        self:SetTop(Turbine.UI.Display:GetHeight()-self:GetHeight())
+                    end
                 end
             end
         end

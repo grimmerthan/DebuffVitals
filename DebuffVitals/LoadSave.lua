@@ -32,17 +32,11 @@ function LoadSettings(name)
 
         if settings.TrackedEffects ~=nil then
             for k = 1, #settings.TrackedEffects do
-                local found = false
                 for kk = 1, #TrackedEffects do
                     if TrackedEffects[kk][2] == settings.TrackedEffects[k][2] then
                         TrackedEffects[kk][3] = settings.TrackedEffects[k][3]
-                        found = true
                         break
                     end
-                end
-                if not found then
-                    table.insert (TrackedEffects, {settings.TrackedEffects[k][1], settings.TrackedEffects[k][2], settings.TrackedEffects[k][3], 
-                                                   settings.TrackedEffects[k][4], settings.TrackedEffects[k][5]} )
                 end
             end
         end
@@ -76,7 +70,7 @@ function SaveSettings(name)
         frame.ShowPower = TargetFrames[k].ShowPower
         frame.ShowEffects = TargetFrames[k].ShowEffects
         frame.Position = {TargetFrames[k]:GetPosition()}
-        frame.EnabledEffectsToggles = TargetFrames[k].EnabledEffectsToggles        
+        frame.EnabledEffectsToggles = TargetFrames[k].EnabledEffectsToggles
         table.insert (settings.Frames, frame)
     end
     PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", settings, name);

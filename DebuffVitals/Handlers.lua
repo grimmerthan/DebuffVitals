@@ -47,6 +47,7 @@ function MoraleChangedHandler(sender, args)
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Skip MoraleChangedHandler.  No target.") end
         return
     end
        
@@ -110,7 +111,7 @@ function EffectsChangedHandler(sender, args)
     local CurrentFrame = sender.self
 
     if not CurrentFrame.Target then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Skip... no target....") end
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Skip EffectsChangedHandler.  No target.") end
         return
     end
 

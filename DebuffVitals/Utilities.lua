@@ -3,17 +3,14 @@ local DEBUG_ENABLED = DEBUG_ENABLED
 -- Creates the subset of effects that will be monitored
 -- ------------------------------------------------------------------------
 function GenerateEnabledSet()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering GenerateEnabledSet...") end
-    local count = 1    
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("TrackedEffects count "..tostring(#TrackedEffects)) end
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering GenerateEnabledSet...") end  
 
     EffectsSet = {}
 
     for k = 1, #TrackedEffects do   
         if TrackedEffects[k][3] == 1 then 
-            EffectsSet[count] = {TrackedEffects[k][1], TrackedEffects[k][2], TrackedEffects[k][3], 
-                                 TrackedEffects[k][4], TrackedEffects[k][5]}
-            count = count + 1
+            table.insert(EffectsSet, {TrackedEffects[k][1], TrackedEffects[k][2], TrackedEffects[k][3], 
+                                 TrackedEffects[k][4], TrackedEffects[k][5]})
         end
     end
 
