@@ -76,7 +76,7 @@ function AddNewTarget()
 
     TargetFrame.UpdateTarget(NewFrame)
 
-    table.insert(TargetFrames, NewFrame)
+    TargetFrames[#TargetFrames + 1] = NewFrame
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting AddNewTargetFrame...") end
     return TargetFrames[FrameID]

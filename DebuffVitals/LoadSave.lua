@@ -9,8 +9,8 @@ function LoadSettings(name)
     local settings = PatchDataLoad(Turbine.DataScope.Character, "DebuffVitals", name);
 
     for k = 1, #DEFAULT_EFFECTS do
-        table.insert(TrackedEffects, {DEFAULT_EFFECTS[k][1], DEFAULT_EFFECTS[k][2], DEFAULT_EFFECTS[k][3], 
-                                      DEFAULT_EFFECTS[k][4], DEFAULT_EFFECTS[k][5]} )
+        TrackedEffects[#TrackedEffects +1 ] = {DEFAULT_EFFECTS[k][1], DEFAULT_EFFECTS[k][2], DEFAULT_EFFECTS[k][3], 
+                                               DEFAULT_EFFECTS[k][4], DEFAULT_EFFECTS[k][5]}
     end
 
     if settings then
@@ -71,7 +71,7 @@ function SaveSettings(name)
         frame.ShowEffects = TargetFrames[k].ShowEffects
         frame.Position = {TargetFrames[k]:GetPosition()}
         frame.EnabledEffectsToggles = TargetFrames[k].EnabledEffectsToggles
-        table.insert (settings.Frames, frame)
+        settings.Frames[#settings.Frames + 1] = frame
     end
     PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", settings, name);
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting SaveSettings...") end

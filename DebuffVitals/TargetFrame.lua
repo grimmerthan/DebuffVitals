@@ -295,7 +295,7 @@ function TargetFrame:SetEnabledEffects()
         -- generate new effects when effects are toggled on
         for k = 1, #EffectsSet do
             if self.EnabledEffectsToggles[k][2] then
-                table.insert (self.EnabledEffects, EffectFrame(self, EffectsSet[k]))
+                self.EnabledEffects[#self.EnabledEffects + 1] = EffectFrame(self, EffectsSet[k])
             end
         end
     end     

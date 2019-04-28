@@ -9,8 +9,8 @@ function GenerateEnabledSet()
 
     for k = 1, #TrackedEffects do   
         if TrackedEffects[k][3] == 1 then 
-            table.insert(EffectsSet, {TrackedEffects[k][1], TrackedEffects[k][2], TrackedEffects[k][3], 
-                                 TrackedEffects[k][4], TrackedEffects[k][5]})
+            EffectsSet[#EffectsSet + 1] = {TrackedEffects[k][1], TrackedEffects[k][2], TrackedEffects[k][3], 
+                                           TrackedEffects[k][4], TrackedEffects[k][5]}
         end
     end
 
