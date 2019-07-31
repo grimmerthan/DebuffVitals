@@ -147,18 +147,9 @@ function OptionsPanel:Constructor ()
     end
     
 end
-
-function OptionsPanel:Update()
-    self:Resize()
-end
-
-function OptionsPanel:Resize()
-
-
-end
     
 -- ------------------------------------------------------------------------
--- Pressing the Defaults Button
+-- Reverts the effects to default values
 -- ------------------------------------------------------------------------
 function OptionsPanel:Defaults()
     self.WidthScrollBar:SetValue(DEFAULT_WIDTH)
@@ -170,11 +161,14 @@ function OptionsPanel:Defaults()
         else
             self.checkboxes[k]:SetChecked(false)
         end                       
-    end   
+    end
+
+    collectgarbage()
+    
 end
 
 -- ------------------------------------------------------------------------
--- Pressing the Accept Button
+-- Sets all effects to current values
 -- ------------------------------------------------------------------------
 function OptionsPanel:Accept()
     for k = 1, #self.checkboxes do 
@@ -197,11 +191,13 @@ function OptionsPanel:Accept()
     end
 
     FrameMenu:CreateEffectsMenu()
+    
+    collectgarbage()
 
 end
 
 -- ------------------------------------------------------------------------
--- Pressing the Revert Button
+-- Undos any unapplied changes made to settings
 -- ------------------------------------------------------------------------
 function OptionsPanel:Revert()
 

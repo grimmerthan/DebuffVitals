@@ -1,15 +1,16 @@
 local DEBUG_ENABLED = DEBUG_ENABLED
+
 -- ------------------------------------------------------------------------
 -- TargetFrame - the base panel that tracks morale/power and effects 
 -- ------------------------------------------------------------------------
 TargetFrame = class (Turbine.UI.Window)
 
-function TargetFrame:Constructor(num) 
+function TargetFrame:Constructor(FrameID, LoadedFrame) 
     Turbine.UI.Window.Constructor(self)
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering TargetFrame:Constructor") end
 
-    self.ID = num
+    self.ID = FrameID
     self.Target = nil
     self.Morale = {}
     self.Morale.visible = true
@@ -19,8 +20,7 @@ function TargetFrame:Constructor(num)
     self.lastCorruptionSeen = 0
 
     self:SetVisible(true) 
-    self:SetMouseVisible (false)
-    self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (FrameID % 20) * 40, Turbine.UI.Display:GetHeight()/5 + (FrameID % 20) * 40)
+    self:SetMouseVisible (false)      
 
     -- ------------------------------------------------------------------------
     -- Target Title Bar
@@ -79,6 +79,7 @@ function TargetFrame:Constructor(num)
     local moralePosition = self.TitleBar:GetHeight()
 
     self.ShowMorale = DEFAULT_SHOW_MORALE
+    if LoadedFrame ~= nil and LoadedFrame.ShowMorale ~= nil then self.ShowMorale = LoadedFrame.ShowMorale end
     
     self.Morale.Bar = Turbine.UI.Control()
     self.Morale.Bar:SetParent (self)
@@ -113,6 +114,7 @@ function TargetFrame:Constructor(num)
     local powerPosition = self.TitleBar:GetHeight() + self.Morale.Bar:GetHeight()
 
     self.ShowPower = DEFAULT_SHOW_POWER
+    if LoadedFrame ~= nil and LoadedFrame.ShowPower ~= nil then self.ShowPower = LoadedFrame.ShowPower end 
 
     self.Power.Bar = Turbine.UI.Control()
     self.Power.Bar:SetParent (self)
@@ -147,9 +149,10 @@ function TargetFrame:Constructor(num)
     -- Effects are filtered twice before being shown
     --  1) globally, the entire list of effects in Constants.lua is filtered by selections in OptionsPanel.lua
     --  2) local to each TargetFrame, this subset of effects are shown as an effects menu, and individually selectable
-    --  
     
     self.ShowEffects = DEFAULT_SHOW_EFFECTS
+    if LoadedFrame ~= nil and LoadedFrame.ShowEffects ~= nil then self.ShowEffects = LoadedFrame.ShowEffects end    
+    
     -- Turbine.Gameplay.EffectsList for a specific target
     self.EffectsList = nil
     -- A filter that defines which EnabledEffects are interesting out of the global EffectsList
@@ -158,13 +161,38 @@ function TargetFrame:Constructor(num)
     self.EnabledEffects = {}
     -- The last time an effect callback occurred
     self.LastEffectCallback = nil
-
-    for k = 1, #EffectsSet do
-        self.EnabledEffectsToggles[k] = {EffectsSet[k][2], true}
+  
+    if LoadedFrame ~= nil then
+        if LoadedFrame.EnabledEffectsToggles ~= nil then
+            for k = 1, #LoadedFrame.EnabledEffectsToggles do
+                if DEBUG_ENABLED then Turbine.Shell.WriteLine("EffectToggle: "..tostring(LoadedFrame.EnabledEffectsToggles[k][1]).." "..tostring(LoadedFrame.EnabledEffectsToggles[k][2])) end        
+            end
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("EffectToggleEffectToggleEffectToggleEffectToggle") end        
+            self.EnabledEffectsToggles = LoadedFrame.EnabledEffectsToggles
+        else
+            for k = 1, #EffectsSet do
+                self.EnabledEffectsToggles[k] = {EffectsSet[k][2], false}
+            end           
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("ToggleToggleToggleToggleToggle") end
+        end       
+    else
+        for k = 1, #EffectsSet do
+            self.EnabledEffectsToggles[k] = {EffectsSet[k][2], true}
+        end
     end
 
-    self:SetEnabledEffects()
+    self:SetEnabledEffects()   
     self:Resize()
+
+    if LoadedFrame ~= nil and LoadedFrame.Position ~= nil 
+        and LoadedFrame.Position[1] + FrameWidth < Turbine.UI.Display:GetWidth() 
+        and LoadedFrame.Position[2] + self:GetHeight() < Turbine.UI.Display:GetHeight() then
+            self:SetPosition(LoadedFrame.Position[1], LoadedFrame.Position[2]) 
+    else    
+        self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (self.ID % 20) * 40, 
+                         Turbine.UI.Display:GetHeight()/5 + (self.ID % 20) * 40)
+    end
+
     -- ------------------------------------------------------------------------
     -- Mouse and key interactions
     -- ------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 local DEBUG_ENABLED = DEBUG_ENABLED
+
 -- ------------------------------------------------------------------------
 -- Creates the subset of effects that will be monitored
 -- ------------------------------------------------------------------------

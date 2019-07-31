@@ -1,23 +1,7 @@
 --[[
 
-This plugin is a tool to help players track mobs and specific effects on mobs.  This plugins :
-- shows current level, name, morale, and power
-- shows presence and timers of specific and selected effects
-- resizable
-- position lockable
-- track corruption counts, for specific boss fights
-
-Future works include:   
-(up next) - re-order effects
-(up next) - right click context menu for effect selection
-(up next) - allow different effects for each frame
-- morale/power bar at bottom
-- add more effects as requested or apparent
-- fix issues (please find some)
-- localization
-- player buff tracking, eg, stun immunity
-- creep-side versions
-- look into garbage collection for possible memory concerns
+This plugin is a tool to help players track mobs and specific effects on mobs.  Reference page is :
+    https://www.lotrointerface.com/downloads/fileinfo.php?id=1015
 
 ]]
 
@@ -68,24 +52,26 @@ end
 -- ------------------------------------------------------------------------
 -- Target Utilities
 -- ------------------------------------------------------------------------
-function AddNewTarget()
+function AddNewTarget(LoadedFrame)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering AddNewTargetFrame...") end
     FrameID = FrameID + 1
 
-    local NewFrame = TargetFrame(FrameID)
+    local NewFrame = TargetFrame(FrameID, LoadedFrame)
 
     TargetFrame.UpdateTarget(NewFrame)
 
     TargetFrames[#TargetFrames + 1] = NewFrame
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting AddNewTargetFrame...") end
-    return TargetFrames[FrameID]
+
+    return NewFrame
 end
 
 function RemoveTarget(ID)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering RemoveTargetFrame...") end
 
     for k = 1, #TargetFrames do
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("TargetFrames[k].ID: "..tostring(TargetFrames[k].ID).. " | ID: "..tostring(ID)) end
         if TargetFrames[k].ID == ID then
             if not TargetFrames[k].Locked then
                 TargetFrames[k]:SetVisible(false)
@@ -94,9 +80,37 @@ function RemoveTarget(ID)
             break
         end
     end
+    collectgarbage()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting RemoveTargetFrame...") end
 end
 
+function CreateFrames()
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering CreateFrames...") end
+
+    FrameID = 0
+    GenerateEnabledSet()
+
+    FrameMenu = TargetFrameMenu()
+ 
+    for k,v in pairs (TargetFrames) do
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("deleting k: "..tostring(k)) end        
+        v:SetVisible(false)
+        k = nil
+    end
+    collectgarbage()
+
+    if #loadedFrames > 0 then
+        for k = 1, #loadedFrames do
+            local target = AddNewTarget(loadedFrames[k]) 
+        end
+    else
+        AddNewTarget()
+    end
+
+    FrameMenu:CreateEffectsMenu()
+
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting CreateFrames...") end
+end
 -- ------------------------------------------------------------------------
 -- Doing Stuff!
 -- 1) loads any stored configuration
@@ -104,8 +118,9 @@ end
 -- 3) generate intial effect frames
 -- ------------------------------------------------------------------------
 
-local loadedFrames = {}
+loadedFrames = {}
 TargetFrames = {}
+TargetFrameSets = {}
 TrackedEffects = {}
 EffectsSet = {}
 FrameID = 0
@@ -113,34 +128,10 @@ FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
 LockedPosition = DEFAULT_LOCKED_POSITION
 SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
-FramePositions = {}
 
 LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
- 
-loadedFrames = LoadSettings{}
+AddCallback(LocalUser, "TargetChanged", TargetChangeHandler); 
 
-GenerateEnabledSet()
+LoadSettings{}
 
-AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
-
-FrameMenu = TargetFrameMenu()
-
-if #loadedFrames > 0 then
-    for k = 1, #loadedFrames do
-        local target = AddNewTarget()
-        target.ShowMorale = loadedFrames[k].ShowMorale
-        target.ShowPower = loadedFrames[k].ShowPower
-        target.ShowEffects = loadedFrames[k].ShowEffects
-        if loadedFrames[k].Position[1] + target:GetWidth() < Turbine.UI.Display:GetWidth() and 
-           loadedFrames[k].Position[2] + target:GetHeight() < Turbine.UI.Display:GetHeight() then      
-            target:SetPosition(loadedFrames[k].Position[1], loadedFrames[k].Position[2])
-        end
-        target.EnabledEffectsToggles = loadedFrames[k].EnabledEffectsToggles
-        target:SetEnabledEffects()
-        target:Resize()
-    end
-else
-    AddNewTarget()
-end
-
-FrameMenu:CreateEffectsMenu()
+CreateFrames()
