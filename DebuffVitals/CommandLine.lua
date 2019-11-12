@@ -26,6 +26,8 @@ function dvCommand:Execute(cmd, args)
             self:Record(arguments[2])
         elseif arguments[1] == "remove" then
             self:Remove(arguments[2])
+        elseif arguments[1] == "save" and arguments[2] == "settings" then
+            SaveSettings()
         else
             self:GetHelp()
         end
@@ -35,38 +37,41 @@ function dvCommand:Execute(cmd, args)
 end
 
 function dvCommand:List()
-    Turbine.Shell.WriteLine("ListListListListList");
     local SettingsNames = {}
     for k, v in pairs (TargetFrameSets) do              
-        SettingsNames[#SettingsNames+1] = k
+        SettingsNames[#SettingsNames+1] = k      
     end
     table.sort(SettingsNames) 
+    Turbine.Shell.WriteLine("dbv - saved configurations: "..tostring(#SettingsNames));
     for k, v in pairs (SettingsNames) do
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("name: "..tostring(v)); end
+        Turbine.Shell.WriteLine("  "..tostring(v));
     end
 end
 
 function dvCommand:GetHelp()
-    Turbine.Shell.WriteLine("GetHelpGetHelpGetHelp");
+    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [help | save settings | list | activate <name> | record <name> | remove <name>]");
 end
 
 function dvCommand:Activate(SetName)
-    Turbine.Shell.WriteLine("ActivateActivateActivate");
     if TargetFrameSets[SetName] ~= nil then
         ActivateSettings (TargetFrameSets[SetName])
-        CreateFramesFromLoad()        
+        CreateFrames()
+    else
+        Turbine.Shell.WriteLine("dbv - no configuration matches '"..tostring(SetName).."'");
     end
 end
 
 function dvCommand:Record(SetName)
-    Turbine.Shell.WriteLine("RecordRecordRecord");
     TargetFrameSets[SetName] = CaptureSettings()
+    Turbine.Shell.WriteLine("dbv - recorded configuration as '"..tostring(SetName).."'");
+    Turbine.Shell.WriteLine("dbv - to persist changes, use 'dbv save settings'");    
 end
 
 function dvCommand:Remove(SetName)
-    Turbine.Shell.WriteLine("RemoveRemoveRemove");
     if TargetFrameSets[SetName] ~= nil then
         TargetFrameSets[SetName] = nil
+        Turbine.Shell.WriteLine("dbv - removed configuration named '"..tostring(SetName).."'");
+    Turbine.Shell.WriteLine("dbv - to persist changes, use 'dbv save settings'");
     end
 end
 

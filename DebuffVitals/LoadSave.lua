@@ -15,10 +15,9 @@ function LoadSettings(name)
 
     if settings then 
         ActivateSettings(settings)
-    end
-
-    if settings.TargetFrameSets ~= nil then
-        TargetFrameSets = settings.TargetFrameSets
+        if settings.TargetFrameSets ~= nil then  
+            TargetFrameSets = settings.TargetFrameSets
+        end   
     end
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting LoadEffects...") end

@@ -8,8 +8,8 @@ This plugin is a tool to help players track mobs and specific effects on mobs.  
 import "Turbine.Gameplay"
 import "Turbine.UI" 
 import "Turbine.UI.Lotro"
-import "Grimmerthan.DebuffVitals.CommandLine"
 import "Grimmerthan.DebuffVitals.Constants"
+import "Grimmerthan.DebuffVitals.CommandLine"
 import "Grimmerthan.DebuffVitals.EffectFrame"
 import "Grimmerthan.DebuffVitals.Handlers"
 import "Grimmerthan.DebuffVitals.LoadSave"
@@ -63,8 +63,6 @@ function AddNewTarget(LoadedFrame)
     TargetFrames[#TargetFrames + 1] = NewFrame
 
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting AddNewTargetFrame...") end
-
-    return NewFrame
 end
 
 function RemoveTarget(ID)
@@ -92,16 +90,16 @@ function CreateFrames()
 
     FrameMenu = TargetFrameMenu()
  
-    for k,v in pairs (TargetFrames) do
+    for k = 1, #TargetFrames do
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("deleting k: "..tostring(k)) end        
-        v:SetVisible(false)
-        k = nil
+        TargetFrames[k]:SetVisible(false)
+        TargetFrames[k] = nil
     end
     collectgarbage()
 
     if #loadedFrames > 0 then
         for k = 1, #loadedFrames do
-            local target = AddNewTarget(loadedFrames[k]) 
+            AddNewTarget(loadedFrames[k]) 
         end
     else
         AddNewTarget()
@@ -135,3 +133,8 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 LoadSettings{}
 
 CreateFrames()
+
+
+for k, v in pairs (TargetFrameSets) do              
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("name: "..tostring(k)); end        
+end

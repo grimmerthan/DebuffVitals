@@ -167,13 +167,11 @@ function TargetFrame:Constructor(FrameID, LoadedFrame)
             for k = 1, #LoadedFrame.EnabledEffectsToggles do
                 if DEBUG_ENABLED then Turbine.Shell.WriteLine("EffectToggle: "..tostring(LoadedFrame.EnabledEffectsToggles[k][1]).." "..tostring(LoadedFrame.EnabledEffectsToggles[k][2])) end        
             end
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("EffectToggleEffectToggleEffectToggleEffectToggle") end        
-            self.EnabledEffectsToggles = LoadedFrame.EnabledEffectsToggles
+            self.EnabledEffectsToggles = LoadedFrame.EnabledEffectsToggles                  
         else
             for k = 1, #EffectsSet do
                 self.EnabledEffectsToggles[k] = {EffectsSet[k][2], false}
             end           
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("ToggleToggleToggleToggleToggle") end
         end       
     else
         for k = 1, #EffectsSet do
@@ -185,8 +183,8 @@ function TargetFrame:Constructor(FrameID, LoadedFrame)
     self:Resize()
 
     if LoadedFrame ~= nil and LoadedFrame.Position ~= nil 
-        and LoadedFrame.Position[1] + FrameWidth < Turbine.UI.Display:GetWidth() 
-        and LoadedFrame.Position[2] + self:GetHeight() < Turbine.UI.Display:GetHeight() then
+        and LoadedFrame.Position[1] + FrameWidth <= Turbine.UI.Display:GetWidth() 
+        and LoadedFrame.Position[2] + self:GetHeight() <= Turbine.UI.Display:GetHeight() then
             self:SetPosition(LoadedFrame.Position[1], LoadedFrame.Position[2]) 
     else    
         self:SetPosition(Turbine.UI.Display:GetWidth()/5 + (self.ID % 20) * 40, 

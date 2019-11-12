@@ -109,8 +109,8 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Runekeeper",  "Essay of Fire",                            0, 0},
     {"Runekeeper",  "Essence of Winter",                        0, 0},
     {"Runekeeper",  "Fiery Ridicule",                           0, 0, "Fiery Ridicule"},
-    {"Runekeeper",  "Fiery Ridicule - Tier 2",                  0, 0, "Fiery Ridicule - Tier 2"},    
-    {"Runekeeper",  "Fiery Ridicule - Tier 3",                  0, 0, "Fiery Ridicule - Tier 3"},    
+    {"Runekeeper",  "Fiery Ridicule - Tier 2",                  0, 0, "Fiery Ridicule %- Tier 2"},    
+    {"Runekeeper",  "Fiery Ridicule - Tier 3",                  0, 0, "Fiery Ridicule %- Tier 3"},    
     {"Runekeeper",  "Flurry of Words",                          0, 1},
     {"Runekeeper",  "Icy Windstorm",                            0, 1},
     {"Runekeeper",  "Molten Flame",                             0, 0},
@@ -143,58 +143,14 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Warden",      "LDoT - Tier 3",                            0, 0, "Light Damage over Time %- Tier 3"},
     {"Warden",      "LDoT - Tier 4",                            0, 0, "Light Damage over Time %- Tier 4"},
     {"Warden",      "Low Bleed",                                0, 0, "Low Bleed"}, -- Out of alphabetical order!!!
-    {"Warden",      "Moderate Bleed",                           0, 0, "Moderate Bleed"},
-    {"Warden",      "Major Bleed",                              0, 0, "Major Bleed"},
-    {"Warden",      "Severe Bleed",                             0, 0, "Severe Bleed"},
+    {"Warden",      "Medium Bleed",                             0, 0, "Medium Bleed"},
+    {"Warden",      "Big Bleed",                                0, 0, "Big Bleed"},
+    {"Warden",      "Low Bleed - Barbed Javelins",              0, 0, "Low Bleed %- Barbed Javelins"}, -- Out of alphabetical order!!!
+    {"Warden",      "Moderate Bleed - Barbed Javelins",         0, 0, "Moderate Bleed %- Barbed Javelins"},
+    {"Warden",      "Major Bleed - Barbed Javelins",            0, 0, "Major Bleed %- Barbed Javelins"},
+    {"Warden",      "Severe Bleed - Barbed Javelins",           0, 0, "Severe Bleed %- Barbed Javelins"},
+
 }
-
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
--- FIX BLEEDS FROM LIGHTFORGE
-
 
 DEFAULT_FREEP_PLAYER_EFFECTS = {
     {"Common", "Temporary State Immunity",                      0, 0},
@@ -211,7 +167,7 @@ DEFAULT_EFFECTS = DEFAULT_FREEP_EFFECTS
 -- ------------------------------------------------------------------------
 -- Constants 
 -- ------------------------------------------------------------------------
-DEBUG_ENABLED = true
+DEBUG_ENABLED = false
 DEBUFF_AND_EFFECTS_OFFSET = 80
 DEFAULT_WIDTH = 200
 DEFAULT_HEIGHT = 20
