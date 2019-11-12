@@ -134,7 +134,4 @@ LoadSettings{}
 
 CreateFrames()
 
-
-for k, v in pairs (TargetFrameSets) do              
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("name: "..tostring(k)); end        
-end
+Turbine.Shell.WriteLine("Debuffvitals v1.2.0.test by Grimmerthan");

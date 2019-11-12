@@ -4,7 +4,7 @@
     <Name>DebuffVitals</Name>
     <Author>Grimmerthan</Author>
     <Version>1.2.0.test</Version>
-    <Description>DebuffVitals provides multiple target monitoring of morale, power, and specific effects.</Description>
+    <Description>DebuffVitals provides tracking of multiple targets and monitoring of morale, power, corruptions, and specific effects.</Description>
   </Information>
   <Package>Grimmerthan.DebuffVitals.Main</Package>
   <Configuration Apartment="DebuffVitals" />
