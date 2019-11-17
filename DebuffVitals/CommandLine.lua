@@ -17,7 +17,7 @@ function dvCommand:Execute(cmd, args)
         if arguments[1] == "list" then
             self:List()
         elseif arguments[1] == "save" then
-            self:Save()            
+            SaveSettings()            
         else
             self:GetHelp()
         end
@@ -29,7 +29,7 @@ function dvCommand:Execute(cmd, args)
         elseif arguments[1] == "remove" then
             self:Remove(arguments[2])
         elseif arguments[1] == "save" and arguments[2] == "settings" then
-            self:Save()
+            SaveSettings()
         else
             self:GetHelp()
         end
@@ -66,14 +66,14 @@ end
 function dvCommand:Record(SetName)
     TargetFrameSets[SetName] = CaptureSettings()
     Turbine.Shell.WriteLine("dbv - recorded configuration as '"..tostring(SetName).."'");
-    self:Save()    
+    SaveSettings()    
 end
 
 function dvCommand:Remove(SetName)
     if TargetFrameSets[SetName] ~= nil then
         TargetFrameSets[SetName] = nil
         Turbine.Shell.WriteLine("dbv - removed configuration named '"..tostring(SetName).."'");
-        self:Save()
+        SaveSettings()
     end
 end
 
