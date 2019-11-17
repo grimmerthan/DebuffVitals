@@ -16,6 +16,8 @@ function dvCommand:Execute(cmd, args)
     if #arguments == 1 then
         if arguments[1] == "list" then
             self:List()
+        elseif arguments[1] == "save" then
+            self:Save()            
         else
             self:GetHelp()
         end
@@ -27,7 +29,7 @@ function dvCommand:Execute(cmd, args)
         elseif arguments[1] == "remove" then
             self:Remove(arguments[2])
         elseif arguments[1] == "save" and arguments[2] == "settings" then
-            SaveSettings()
+            self:Save()
         else
             self:GetHelp()
         end
@@ -42,14 +44,14 @@ function dvCommand:List()
         SettingsNames[#SettingsNames+1] = k      
     end
     table.sort(SettingsNames) 
-    Turbine.Shell.WriteLine("dbv - saved configurations: "..tostring(#SettingsNames));
+    Turbine.Shell.WriteLine("dbv - stored configurations: "..tostring(#SettingsNames));
     for k, v in pairs (SettingsNames) do
         Turbine.Shell.WriteLine("  "..tostring(v));
     end
 end
 
 function dvCommand:GetHelp()
-    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [help | save settings | list | activate <name> | record <name> | remove <name>]");
+    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [help | save [settings] | list | activate <name> | record <name> | remove <name>]");
 end
 
 function dvCommand:Activate(SetName)
@@ -64,14 +66,14 @@ end
 function dvCommand:Record(SetName)
     TargetFrameSets[SetName] = CaptureSettings()
     Turbine.Shell.WriteLine("dbv - recorded configuration as '"..tostring(SetName).."'");
-    Turbine.Shell.WriteLine("dbv - to persist changes, use 'dbv save settings'");    
+    self:Save()    
 end
 
 function dvCommand:Remove(SetName)
     if TargetFrameSets[SetName] ~= nil then
         TargetFrameSets[SetName] = nil
         Turbine.Shell.WriteLine("dbv - removed configuration named '"..tostring(SetName).."'");
-    Turbine.Shell.WriteLine("dbv - to persist changes, use 'dbv save settings'");
+        self:Save()
     end
 end
 
