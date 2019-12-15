@@ -41,11 +41,6 @@ function Turbine.Plugin.Unload()
             RemoveCallback(frame.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
             RemoveCallback(frame.Target, "TemporaryPowerChanged", PowerChangedHandler);
         end
-        if frame.Effects then
-            RemoveCallback(frame.Effects, "EffectAdded", EffectsChangedHandler);
-            RemoveCallback(frame.Effects, "EffectRemoved", EffectsChangedHandler);
-            RemoveCallback(frame.Effects, "EffectsCleared", EffectsChangedHandler);   
-        end
     end    
 end
 
@@ -124,6 +119,7 @@ EffectsSet = {}
 FrameID = 0
 FrameWidth = DEFAULT_WIDTH
 ControlHeight = DEFAULT_HEIGHT
+EffectsModulus = DEFAULT_EFFECTS_MODULUS
 LockedPosition = DEFAULT_LOCKED_POSITION
 SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
 

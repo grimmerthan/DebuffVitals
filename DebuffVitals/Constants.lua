@@ -28,7 +28,8 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Burglar",     "Cunning Attack",                           0, 0},
     {"Burglar",     "Damaging Gamble",                          0, 0, "Damaging Gamble"},
     {"Burglar",     "Debuffing Gamble",                         0, 0, "Debuffing Gamble"},
-    {"Burglar",     "Gambler's Advantage",                      0, 0, "Gambler's Advantage"},    
+    {"Burglar",     "Gambler's Advantage",                      0, 0, "Gambler's Advantage"},
+    {"Burglar",     "Hedged Bet",                               0, 0, "Hedged Bet"},        
     {"Burglar",     "Provoke",                                  0, 0},    
     {"Burglar",     "Quite A Snag",                             0, 0, {"A Small Snag", "Quite A Snag"}},    
     {"Burglar",     "Reveal Weakness",                          0, 1},
@@ -168,7 +169,7 @@ DEFAULT_EFFECTS = DEFAULT_FREEP_EFFECTS
 -- Constants 
 -- ------------------------------------------------------------------------
 DEBUG_ENABLED = false
-DEBUFF_AND_EFFECTS_OFFSET = 80
+DEBUFF_AND_EFFECTS_OFFSET = 100
 DEFAULT_WIDTH = 200
 DEFAULT_HEIGHT = 20
 DEFAULT_SAVE_FRAME_POSITIONS = false
@@ -176,3 +177,4 @@ DEFAULT_LOCKED_POSITION = false
 DEFAULT_SHOW_MORALE = true
 DEFAULT_SHOW_POWER = true
 DEFAULT_SHOW_EFFECTS = true
+DEFAULT_EFFECTS_MODULUS = 20

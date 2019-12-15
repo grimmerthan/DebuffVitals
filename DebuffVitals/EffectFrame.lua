@@ -64,10 +64,7 @@ function EffectFrame:SetCurrentEffect(effect)
     self.startTime = effect:GetStartTime()
     self.duration = effect:GetDuration()
     self.endTime = (self.startTime + self.duration)
-    if (Turbine.Engine.GetGameTime() < self.endTime) then
-        self:SetWantsUpdates(true)
-    end
-    
+    self:SetWantsUpdates(true)  
     self.name:SetForeColor (Turbine.UI.Color.White)
     self.timer:SetForeColor (Turbine.UI.Color.White)
     if self.patternMatch then
@@ -106,6 +103,8 @@ function EffectFrame:ClearCurrentEffect()
     self.timer:SetForeColor (Turbine.UI.Color.Gray)  
 
     self:SetWantsUpdates(false)
+    
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Current effect cleared") end    
 end
 
 -- ------------------------------------------------------------------------
@@ -122,9 +121,10 @@ function EffectFrame:Update(args)
         local remaining = self.duration - math.ceil(elapsedTime)
         local time = FormatTime(remaining)
         self.timer:SetText(time)
-    
-        if (gameTime >= self.endTime) then
+
+        if (gameTime >= self.endTime) then      
             self:ClearCurrentEffect()
         end
+        
     end
 end

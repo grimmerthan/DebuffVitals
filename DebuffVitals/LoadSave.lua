@@ -34,6 +34,10 @@ function ActivateSettings(settings)
     if settings.ControlHeight then
         ControlHeight = settings.ControlHeight
     end
+    
+    if settings.EffectsModulus then
+        EffectsModulus = settings.EffectsModulus
+    end   
 
     if settings.LockedPosition ~= nil then
         LockedPosition = settings.LockedPosition
@@ -83,6 +87,7 @@ function CaptureSettings()
     currentsettings.FrameWidth = FrameWidth
     currentsettings.ControlHeight = ControlHeight
     currentsettings.LockedPosition = LockedPosition
+    currentsettings.EffectsModulus = EffectsModulus
     currentsettings.SaveFramePositions = SaveFramePositions
     currentsettings.Frames = {}
     for k = 1, #TargetFrames do

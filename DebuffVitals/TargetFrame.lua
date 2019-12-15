@@ -1,4 +1,5 @@
 local DEBUG_ENABLED = DEBUG_ENABLED
+local DEFAULT_EFFECTS_MODULUS = DEFAULT_EFFECTS_MODULUS
 
 -- ------------------------------------------------------------------------
 -- TargetFrame - the base panel that tracks morale/power and effects 
@@ -18,6 +19,7 @@ function TargetFrame:Constructor(FrameID, LoadedFrame)
     self.Power.visible = true 
     self.Locked = false
     self.lastCorruptionSeen = 0
+    self.effectsCounter = 0
 
     self:SetVisible(true) 
     self:SetMouseVisible (false)      
@@ -335,13 +337,13 @@ function TargetFrame:UpdateTarget()
     if self.Locked then
         if self.TargetSelection:GetEntity() then
             if DEBUG_ENABLED then Turbine.Shell.WriteLine("  No change - locked on target : "..tostring(self.TargetSelection:GetEntity():GetName())) end
-            self:SetWantsUpdates(true)
         else
             if DEBUG_ENABLED then Turbine.Shell.WriteLine("  No change - locked on NO TARGET") end
         end
     else
         if DEBUG_ENABLED then Turbine.Shell.WriteLine("  Changing target") end
 
+        self:SetWantsUpdates(false)
         self.TitleBar:SetText("No target")
 
         self.Morale.Title:SetText("")
@@ -368,14 +370,12 @@ function TargetFrame:UpdateTarget()
             self.Target = nil
         end
 
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("CLEARING CURRENT EFFECTS") end
         for k = 1, #self.EnabledEffects do
             self.EnabledEffects[k]:ClearCurrentEffect()
         end
 
         if self.EffectsList then
-            RemoveCallback(self.EffectsList, "EffectAdded", EffectsChangedHandler)
-            RemoveCallback(self.EffectsList, "EffectRemoved", EffectsChangedHandler)
-            RemoveCallback(self.EffectsList, "EffectsCleared", EffectsChangedHandler)
             self.EffectsList = nil   
         end
 
@@ -419,23 +419,17 @@ function TargetFrame:UpdateTarget()
                     self.EffectsList = self.Target:GetEffects()
                     self.EffectsList.self = self
     
-                    AddCallback(self.EffectsList, "EffectAdded", EffectsChangedHandler)
-                    AddCallback(self.EffectsList, "EffectRemoved", EffectsChangedHandler)
-                    AddCallback(self.EffectsList, "EffectsCleared", EffectsChangedHandler)
-
                     -- Set last callback well in the past, so that the first handler update fires
                     self.LastCallback = Turbine.Engine.GetGameTime() - 10 
-                    EffectsChangedHandler(self.Target)
                 end
+                self:SetWantsUpdates(true)
+
             else
                 if DEBUG_ENABLED then Turbine.Shell.WriteLine("  Changing on target - no level found") end
-                self.TitleBar:SetText(self.Target:GetName())
-
-                self:SetWantsUpdates(false)                    
+                self.TitleBar:SetText(self.Target:GetName())                    
             end
         else
-            if DEBUG_ENABLED then Turbine.Shell.WriteLine("NO TARGET") end      
-            self:SetWantsUpdates(false)        
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine("NO TARGET") end              
         end
     end
 
@@ -446,8 +440,17 @@ end
 -- Update enabled effects, after an Effect handler triggers, cross-checking lists of effects
 -- ------------------------------------------------------------------------
 function TargetFrame:Update()
+    self.effectsCounter = self.effectsCounter + 1 
+    
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("TargetFrame:Update") end
+    if self.effectsCounter % EffectsModulus == 0 then
+        if DEBUG_ENABLED then Turbine.Shell.WriteLine("TargetFrame:UpdateFrame") end
+        self.effectsCounter = 0
+        self:UpdateFrame()
+    end
+end
 
-    self:SetWantsUpdates(false)
+function TargetFrame:UpdateFrame()
 
     -- update a frame only when there is at least one enabled effect and a target 
     if self.Target and self.EffectsList and #self.EffectsList then
@@ -484,13 +487,15 @@ function TargetFrame:Update()
                     end
                 end
             end
-            -- while going through the list, clear any toggle or expire-on-damage effects that have likely expired 
-            if trackedEffects[k].timedType > 0 and trackedEffects[k].lastSeen then
-                if (Turbine.Engine.GetGameTime() - trackedEffects[k].lastSeen) > 5 then       
-                    trackedEffects[k]:ClearCurrentEffect()
+            -- While going through the list, clear any toggle or expire-on-damage effects that have likely expired.
+            -- This should happen only on the focused target, and not affect targets without focus.
+            if self.Target == LocalUser:GetTarget() then
+                if trackedEffects[k].timedType > 0 and trackedEffects[k].lastSeen then
+                    if (Turbine.Engine.GetGameTime() - trackedEffects[k].lastSeen) > 5 then       
+                        trackedEffects[k]:ClearCurrentEffect()
+                    end
                 end
-            end   
-    
+            end    
         end
         
         local number = nil

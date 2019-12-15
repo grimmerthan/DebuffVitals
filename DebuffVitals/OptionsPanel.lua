@@ -30,11 +30,12 @@ function OptionsPanel:Constructor ()
     self.OptionsTitle:SetFont( Turbine.UI.Lotro.Font.Verdana20 )
     self.OptionsTitle:SetText("Options")
 
+    -- Width
     self.WidthScrollBar = Turbine.UI.Lotro.ScrollBar()
     self.WidthScrollBar:SetVisible(true)
     self.WidthScrollBar:SetParent(self)
     self.WidthScrollBar:SetSize(200, 10)
-    self.WidthScrollBar:SetPosition(200, 45) 
+    self.WidthScrollBar:SetPosition(220, 45) 
     self.WidthScrollBar:SetMinimum(150)
     self.WidthScrollBar:SetMaximum(250)
     self.WidthScrollBar:SetValue(FrameWidth)    
@@ -53,11 +54,12 @@ function OptionsPanel:Constructor ()
     self.WidthTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
     self.WidthScrollBar.ValueChanged()
 
+    -- Height
     self.HeightScrollBar = Turbine.UI.Lotro.ScrollBar()
     self.HeightScrollBar:SetVisible(true)
     self.HeightScrollBar:SetParent(self)
     self.HeightScrollBar:SetSize(200, 10)
-    self.HeightScrollBar:SetPosition(200, 65) 
+    self.HeightScrollBar:SetPosition(220, 65) 
     self.HeightScrollBar:SetMinimum(10)
     self.HeightScrollBar:SetMaximum(30)
     self.HeightScrollBar:SetValue(ControlHeight)    
@@ -65,7 +67,7 @@ function OptionsPanel:Constructor ()
     self.HeightScrollBar:SetBackColor (Turbine.UI.Color.White)
     self.HeightScrollBar.ValueChanged = function() 
         self.HeightTitle:SetText("Effect height : "..tostring(self.HeightScrollBar:GetValue()))    
-    end  
+    end
 
     self.HeightTitle = Turbine.UI.Label()
     self.HeightTitle:SetVisible(true)
@@ -75,6 +77,30 @@ function OptionsPanel:Constructor ()
     self.HeightTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
     self.HeightTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
     self.HeightScrollBar.ValueChanged()
+
+    -- Modulus
+    self.ModulusScrollBar = Turbine.UI.Lotro.ScrollBar()
+    self.ModulusScrollBar:SetVisible(true)
+    self.ModulusScrollBar:SetParent(self)
+    self.ModulusScrollBar:SetSize(200, 10)
+    self.ModulusScrollBar:SetPosition(220, 85) 
+    self.ModulusScrollBar:SetMinimum(10)
+    self.ModulusScrollBar:SetMaximum(120)
+    self.ModulusScrollBar:SetValue(EffectsModulus)
+    self.ModulusScrollBar:SetOrientation( Turbine.UI.Orientation.Horizontal )
+    self.ModulusScrollBar:SetBackColor (Turbine.UI.Color.White)
+    self.ModulusScrollBar.ValueChanged = function() 
+        self.ModulusTitle:SetText("Refresh Throttling : "..tostring(self.ModulusScrollBar:GetValue()))    
+    end
+
+    self.ModulusTitle = Turbine.UI.Label()
+    self.ModulusTitle:SetVisible(true)
+    self.ModulusTitle:SetParent(self)
+    self.ModulusTitle:SetSize(160, 20)
+    self.ModulusTitle:SetPosition(40, 80) 
+    self.ModulusTitle:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+    self.ModulusTitle:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
+    self.ModulusScrollBar.ValueChanged()    
 
     -- DEBUFFS AND EFFECTS
     self.DebuffsTitle = Turbine.UI.Label()
@@ -154,6 +180,7 @@ end
 function OptionsPanel:Defaults()
     self.WidthScrollBar:SetValue(DEFAULT_WIDTH)
     self.HeightScrollBar:SetValue(DEFAULT_HEIGHT)  
+    self.ModulusScrollBar:SetValue(DEFAULT_EFFECTS_MODULUS)
 
     for k = 1, #DEFAULT_EFFECTS do
         if DEFAULT_EFFECTS[k][3] == 1 then
@@ -183,6 +210,7 @@ function OptionsPanel:Accept()
 
     FrameWidth = self.WidthScrollBar:GetValue()
     ControlHeight = self.HeightScrollBar:GetValue()
+    EffectsModulus = self.ModulusScrollBar:GetValue()
 
     for k = 1, #TargetFrames do 
         TargetFrames[k]:ReconcileEffectsLists()
@@ -202,7 +230,8 @@ end
 function OptionsPanel:Revert()
 
     self.WidthScrollBar:SetValue(FrameWidth)
-    self.HeightScrollBar:SetValue(ControlHeight)  
+    self.HeightScrollBar:SetValue(ControlHeight)
+    self.ModulusScrollBar:SetValue(EffectsModulus)
 
     local effects = TrackedEffects
     for k = 1, #effects do

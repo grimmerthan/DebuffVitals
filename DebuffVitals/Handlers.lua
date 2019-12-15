@@ -104,17 +104,3 @@ function PowerChangedHandler(sender, args)
     CurrentFrame.Power.Bar:SetSize(BarSize, ControlHeight)
     CurrentFrame.Power.Bar:SetPosition(FrameWidth - BarSize, CurrentFrame.Power.Bar:GetTop())
 end
-
--- ------------------------------------------------------------------------
--- Effect Change Handler
--- ------------------------------------------------------------------------
-function EffectsChangedHandler(sender, args)
-    local CurrentFrame = sender.self
-
-    if not CurrentFrame.Target then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("Skip EffectsChangedHandler.  No target.") end
-        return
-    end
-
-    CurrentFrame:SetWantsUpdates(true)    
-end
