@@ -122,6 +122,7 @@ ControlHeight = DEFAULT_HEIGHT
 EffectsModulus = DEFAULT_EFFECTS_MODULUS
 LockedPosition = DEFAULT_LOCKED_POSITION
 SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
+CurrentTarget = nil
 
 LocalUser = Turbine.Gameplay.LocalPlayer.GetInstance()
 AddCallback(LocalUser, "TargetChanged", TargetChangeHandler); 

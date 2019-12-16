@@ -336,6 +336,8 @@ function TargetFrame:UpdateTarget()
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering UpdateTarget") end
     if self.Locked then
         if self.TargetSelection:GetEntity() then
+            -- There was a previous locked target, and info/handlers are already setup.  As an active target, fresh updates are 
+            --   now available      
             if DEBUG_ENABLED then Turbine.Shell.WriteLine("  No change - locked on target : "..tostring(self.TargetSelection:GetEntity():GetName())) end
         else
             if DEBUG_ENABLED then Turbine.Shell.WriteLine("  No change - locked on NO TARGET") end
@@ -345,6 +347,7 @@ function TargetFrame:UpdateTarget()
 
         self:SetWantsUpdates(false)
         self.TitleBar:SetText("No target")
+        CurrentTarget = nil
 
         self.Morale.Title:SetText("")
         self.Morale.Percent:SetText("")
@@ -386,7 +389,7 @@ function TargetFrame:UpdateTarget()
         -- This one command is currently critical for EntityControl to work as expected.
         -- Deleting or re-ordering this command impacts target locks. 
         -- ------------------------------------------------------------------------
-        local ThrowAwayGetTargetCall = LocalUser:GetTarget()
+        CurrentTarget = LocalUser:GetTarget()
     
         if self.Target then
             self.TitleBar:SetText(self.TargetSelection:GetEntity():GetName())
@@ -442,12 +445,18 @@ end
 function TargetFrame:Update()
     self.effectsCounter = self.effectsCounter + 1 
     
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("TargetFrame:Update") end
+    -- This gets the effect list from the target and checks list against tracked effects.
     if self.effectsCounter % EffectsModulus == 0 then
-        if DEBUG_ENABLED then Turbine.Shell.WriteLine("TargetFrame:UpdateFrame") end
         self.effectsCounter = 0
         self:UpdateFrame()
     end
+
+    -- This updates timers and possible effect removals.
+    local trackedEffects = self.EnabledEffects
+    for x = 1, #trackedEffects do
+        trackedEffects[x]:Update()
+    end
+    
 end
 
 function TargetFrame:UpdateFrame()
@@ -489,7 +498,7 @@ function TargetFrame:UpdateFrame()
             end
             -- While going through the list, clear any toggle or expire-on-damage effects that have likely expired.
             -- This should happen only on the focused target, and not affect targets without focus.
-            if self.Target == LocalUser:GetTarget() then
+            if self.Target == CurrentTarget then
                 if trackedEffects[k].timedType > 0 and trackedEffects[k].lastSeen then
                     if (Turbine.Engine.GetGameTime() - trackedEffects[k].lastSeen) > 5 then       
                         trackedEffects[k]:ClearCurrentEffect()
