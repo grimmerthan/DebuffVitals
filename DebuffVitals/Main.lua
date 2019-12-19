@@ -23,7 +23,7 @@ local DEBUG_ENABLED = DEBUG_ENABLED
 -- ------------------------------------------------------------------------
 -- Unloading Plugin
 -- ------------------------------------------------------------------------
-function Turbine.Plugin.Unload()
+function Turbine.Plugin.Unload(sender, args)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Plugin unload") end
     RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
     
@@ -42,6 +42,15 @@ function Turbine.Plugin.Unload()
             RemoveCallback(frame.Target, "TemporaryPowerChanged", PowerChangedHandler);
         end
     end    
+end
+
+
+local DEBUG_ENABLED = DEBUG_ENABLED
+-- ------------------------------------------------------------------------
+-- Unloading Plugin
+-- ------------------------------------------------------------------------
+function Turbine.Plugin.Load(sender, args)
+    Turbine.Shell.WriteLine(tostring(sender:GetName()).." v"..tostring(sender:GetVersion()).." by "..tostring(sender:GetAuthor()))
 end
 
 -- ------------------------------------------------------------------------
@@ -130,5 +139,3 @@ AddCallback(LocalUser, "TargetChanged", TargetChangeHandler);
 LoadSettings{}
 
 CreateFrames()
-
-Turbine.Shell.WriteLine("Debuffvitals v1.2.0.test by Grimmerthan");

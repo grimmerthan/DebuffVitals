@@ -48,11 +48,14 @@ function ActivateSettings(settings)
     end
 
     if settings.TrackedEffects ~=nil then
-        for k = 1, #settings.TrackedEffects do
-            for kk = 1, #TrackedEffects do
-                if TrackedEffects[kk][2] == settings.TrackedEffects[k][2] then
-                    TrackedEffects[kk][3] = settings.TrackedEffects[k][3]
-                    break
+        -- Only load TrackedEffects once 
+        if #TrackedEffects == 0 then
+            for k = 1, #settings.TrackedEffects do
+                for kk = 1, #TrackedEffects do
+                    if TrackedEffects[kk][2] == settings.TrackedEffects[k][2] then
+                        TrackedEffects[kk][3] = settings.TrackedEffects[k][3]
+                        break
+                    end
                 end
             end
         end
@@ -61,7 +64,6 @@ function ActivateSettings(settings)
     if settings.Frames ~= nil then
         loadedFrames = settings.Frames
     end
-
 end
 
 -- ------------------------------------------------------------------------
@@ -71,6 +73,7 @@ function SaveSettings(name)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering SaveSettings...") end
 
     local currentSettings = CaptureSettings()
+    currentSettings.TrackedEffects = TrackedEffects
     currentSettings.TargetFrameSets = TargetFrameSets
     
     PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", currentSettings, name);
@@ -83,7 +86,6 @@ end
 -- ------------------------------------------------------------------------
 function CaptureSettings()
     local currentsettings = {}
-    currentsettings.TrackedEffects = TrackedEffects
     currentsettings.FrameWidth = FrameWidth
     currentsettings.ControlHeight = ControlHeight
     currentsettings.LockedPosition = LockedPosition
@@ -96,8 +98,12 @@ function CaptureSettings()
         frame.ShowPower = TargetFrames[k].ShowPower
         frame.ShowEffects = TargetFrames[k].ShowEffects
         frame.Position = {TargetFrames[k]:GetPosition()}
-        frame.EnabledEffectsToggles = TargetFrames[k].EnabledEffectsToggles
+        frame.EnabledEffectsToggles = {}
+        for kk = 1, #TargetFrames[k].EnabledEffectsToggles do
+            toggle = {TargetFrames[k].EnabledEffectsToggles[kk][1], TargetFrames[k].EnabledEffectsToggles[kk][2]}
+            frame.EnabledEffectsToggles[#frame.EnabledEffectsToggles + 1] = toggle
+        end
         currentsettings.Frames[#currentsettings.Frames + 1] = frame
-    end
+    end    
     return currentsettings
 end

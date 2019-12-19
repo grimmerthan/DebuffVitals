@@ -161,8 +161,6 @@ function TargetFrame:Constructor(FrameID, LoadedFrame)
     self.EnabledEffectsToggles = {}
     -- The set of actual effects a target is looking for 
     self.EnabledEffects = {}
-    -- The last time an effect callback occurred
-    self.LastEffectCallback = nil
   
     if LoadedFrame ~= nil then
         if LoadedFrame.EnabledEffectsToggles ~= nil then

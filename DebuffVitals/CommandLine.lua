@@ -22,14 +22,14 @@ function dvCommand:Execute(cmd, args)
             self:GetHelp()
         end
     elseif #arguments == 2 then
-        if arguments[1] == "activate" then
-            self:Activate(arguments[2])
-        elseif arguments[1] == "record" then
-            self:Record(arguments[2])
-        elseif arguments[1] == "remove" then
-            self:Remove(arguments[2])
+        if arguments[1] == "load" then
+            self:Load(arguments[2])
+        elseif arguments[1] == "delete" then
+            self:Delete(arguments[2])
         elseif arguments[1] == "save" and arguments[2] == "settings" then
             SaveSettings()
+        elseif arguments[1] == "save" then
+            self:SaveConfig(arguments[2])
         else
             self:GetHelp()
         end
@@ -51,10 +51,10 @@ function dvCommand:List()
 end
 
 function dvCommand:GetHelp()
-    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [help | save [settings] | list | activate <name> | record <name> | remove <name>]");
+    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [save <name> | list | load <name> | delete <name>] | help | save <settings>");
 end
 
-function dvCommand:Activate(SetName)
+function dvCommand:Load(SetName)
     if TargetFrameSets[SetName] ~= nil then
         ActivateSettings (TargetFrameSets[SetName])
         CreateFrames()
@@ -63,13 +63,13 @@ function dvCommand:Activate(SetName)
     end
 end
 
-function dvCommand:Record(SetName)
+function dvCommand:SaveConfig(SetName)
     TargetFrameSets[SetName] = CaptureSettings()
-    Turbine.Shell.WriteLine("dbv - recorded configuration as '"..tostring(SetName).."'");
+    Turbine.Shell.WriteLine("dbv - saved configuration as '"..tostring(SetName).."'");
     SaveSettings()    
 end
 
-function dvCommand:Remove(SetName)
+function dvCommand:Delete(SetName)
     if TargetFrameSets[SetName] ~= nil then
         TargetFrameSets[SetName] = nil
         Turbine.Shell.WriteLine("dbv - removed configuration named '"..tostring(SetName).."'");
