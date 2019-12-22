@@ -1,24 +1,6 @@
 local DEBUG_ENABLED = DEBUG_ENABLED
 
 -- ------------------------------------------------------------------------
--- Creates the subset of effects that will be monitored
--- ------------------------------------------------------------------------
-function GenerateEnabledSet()
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering GenerateEnabledSet...") end  
-
-    EffectsSet = {}
-
-    for k = 1, #TrackedEffects do   
-        if TrackedEffects[k][3] == 1 then 
-            EffectsSet[#EffectsSet + 1] = {TrackedEffects[k][1], TrackedEffects[k][2], TrackedEffects[k][3], 
-                                           TrackedEffects[k][4], TrackedEffects[k][5]}
-        end
-    end
-
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Exiting GenerateEnabledSet...") end
-end
-
--- ------------------------------------------------------------------------
 -- Returns formatted time values
 -- ------------------------------------------------------------------------
 function FormatTime (value)
@@ -48,4 +30,22 @@ function FormatBigNumbers(num)
     end
 
     return numString
+end
+
+-- ------------------------------------------------------------------------
+-- Simple recursive table print.  This does not handle circular tables.   
+-- ------------------------------------------------------------------------
+function tablePrint (tbl, indent)
+    if not indent then 
+        indent = 0
+    end
+    for k, v in pairs(tbl) do
+        formatting = string.rep("  ", indent) .. k .. ": "
+        if type(v) == "table" then
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine (tostring(formatting)) end
+            tablePrint(v, indent + 2)
+        else
+            if DEBUG_ENABLED then Turbine.Shell.WriteLine (tostring(formatting) .. tostring(v)) end
+        end
+    end
 end

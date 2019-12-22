@@ -1,6 +1,37 @@
 local DEBUG_ENABLED = DEBUG_ENABLED
 
 -- ------------------------------------------------------------------------
+-- Plugin unload handler
+-- ------------------------------------------------------------------------
+function Turbine.Plugin.Unload(sender, args)
+    if DEBUG_ENABLED then Turbine.Shell.WriteLine("Plugin unload") end
+    RemoveCallback(LocalUser, "TargetChanged", TargetHandler)
+    
+    for k = 1, #TargetFrames do
+        local frame = TargetFrames[k]
+        if frame.Target then 
+            RemoveCallback(frame.Target, "MoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "BaseMaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "MaxMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "MaxTemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "TemporaryMoraleChanged", MoraleChangedHandler);
+            RemoveCallback(frame.Target, "PowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "BaseMaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "MaxPowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "MaxTemporaryPowerChanged", PowerChangedHandler);
+            RemoveCallback(frame.Target, "TemporaryPowerChanged", PowerChangedHandler);
+        end
+    end    
+end
+
+-- ------------------------------------------------------------------------
+-- Plugin load handler.
+-- ------------------------------------------------------------------------
+function Turbine.Plugin.Load(sender, args)
+    Turbine.Shell.WriteLine(tostring(sender:GetName()).." v"..tostring(sender:GetVersion()).." by "..tostring(sender:GetAuthor()))
+end
+
+-- ------------------------------------------------------------------------
 -- Callbacks
 -- ------------------------------------------------------------------------
 function AddCallback(object, event, callback)

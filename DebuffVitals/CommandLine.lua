@@ -2,6 +2,9 @@ local DEBUG_ENABLED = DEBUG_ENABLED
 
 dvCommand = Turbine.ShellCommand();
 
+-- ------------------------------------------------------------------------
+-- Command line structure and handling
+-- ------------------------------------------------------------------------
 function dvCommand:Execute(cmd, args)
     local arguments = {}
 
@@ -38,6 +41,9 @@ function dvCommand:Execute(cmd, args)
     end
 end
 
+-- ------------------------------------------------------------------------
+-- List any stored sets of frames
+-- ------------------------------------------------------------------------
 function dvCommand:List()
     local SettingsNames = {}
     for k, v in pairs (TargetFrameSets) do              
@@ -50,10 +56,16 @@ function dvCommand:List()
     end
 end
 
+-- ------------------------------------------------------------------------
+-- Show help 
+-- ------------------------------------------------------------------------
 function dvCommand:GetHelp()
-    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [save <name> | list | load <name> | delete <name>] | help | save <settings>");
+    Turbine.Shell.WriteLine("usage: /debuffvitals|dbv [save <name> | list | load <name> | delete <name>] | help | save settings");
 end
 
+-- ------------------------------------------------------------------------
+-- Load a specific stored set of frames
+-- ------------------------------------------------------------------------
 function dvCommand:Load(SetName)
     if TargetFrameSets[SetName] ~= nil then
         ActivateSettings (TargetFrameSets[SetName])
@@ -63,12 +75,18 @@ function dvCommand:Load(SetName)
     end
 end
 
+-- ------------------------------------------------------------------------
+-- Save a specific set of frames
+-- ------------------------------------------------------------------------
 function dvCommand:SaveConfig(SetName)
     TargetFrameSets[SetName] = CaptureSettings()
     Turbine.Shell.WriteLine("dbv - saved configuration as '"..tostring(SetName).."'");
     SaveSettings()    
 end
 
+-- ------------------------------------------------------------------------
+-- Delete a specific set of frames
+-- ------------------------------------------------------------------------
 function dvCommand:Delete(SetName)
     if TargetFrameSets[SetName] ~= nil then
         TargetFrameSets[SetName] = nil

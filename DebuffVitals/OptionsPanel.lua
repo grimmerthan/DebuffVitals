@@ -4,8 +4,6 @@ local DEFAULT_EFFECTS = DEFAULT_EFFECTS
 -- Plugin Manager Options Panel
 -- ------------------------------------------------------------------------
 function plugin.GetOptionsPanel (self)
-    if DEBUG_ENABLED then Turbine.Shell.WriteLine("GetOptionsPanel") end
-    OP = OptionsPanel()   
     return OP
 end
 
@@ -133,14 +131,11 @@ function OptionsPanel:Constructor ()
         checkbox:SetSize(400, 20)
         checkbox:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
         checkbox:SetFont( Turbine.UI.Lotro.Font.Verdana16 )
-        checkbox:SetText(" "..tostring(effects[k][2]))        
-        if effects[k][3] == 1 then
-            checkbox:SetChecked(true)
-        else
-            checkbox:SetChecked(false)
-        end
-        self.checkboxes[k] = checkbox                       
+        checkbox:SetText(" "..tostring(effects[k][2]))
+        self.checkboxes[k] = checkbox    
     end
+    
+    self:SetCheckboxes()
 
     self:SetSize(0, DEBUFF_AND_EFFECTS_OFFSET + 100 + #self.checkboxes * 20)
     
@@ -189,9 +184,8 @@ function OptionsPanel:Defaults()
             self.checkboxes[k]:SetChecked(false)
         end                       
     end
-
-    collectgarbage()
     
+    collectgarbage()
 end
 
 -- ------------------------------------------------------------------------
@@ -206,7 +200,7 @@ function OptionsPanel:Accept()
         end
     end
 
-    GenerateEnabledSet()
+    GenerateEffectsSetFromTrackedEffects()
 
     FrameWidth = self.WidthScrollBar:GetValue()
     ControlHeight = self.HeightScrollBar:GetValue()
@@ -219,9 +213,8 @@ function OptionsPanel:Accept()
     end
 
     FrameMenu:CreateEffectsMenu()
-    
-    collectgarbage()
 
+    collectgarbage()
 end
 
 -- ------------------------------------------------------------------------
@@ -232,6 +225,21 @@ function OptionsPanel:Revert()
     self.WidthScrollBar:SetValue(FrameWidth)
     self.HeightScrollBar:SetValue(ControlHeight)
     self.ModulusScrollBar:SetValue(EffectsModulus)
+
+    local effects = TrackedEffects
+    for k = 1, #effects do
+        if effects[k][3] == 1 then
+            self.checkboxes[k]:SetChecked(true)
+        else
+            self.checkboxes[k]:SetChecked(false)
+        end                       
+    end
+end
+
+-- ------------------------------------------------------------------------
+-- Set checkboxes based on tracked effects
+-- ------------------------------------------------------------------------
+function OptionsPanel:SetCheckboxes()
 
     local effects = TrackedEffects
     for k = 1, #effects do

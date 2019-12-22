@@ -179,7 +179,7 @@ function TargetFrame:Constructor(FrameID, LoadedFrame)
         end
     end
 
-    self:SetEnabledEffects()   
+    self:SetEnabledEffects()
     self:Resize()
 
     if LoadedFrame ~= nil and LoadedFrame.Position ~= nil 

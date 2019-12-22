@@ -8,11 +8,6 @@ function LoadSettings(name)
 
     local settings = PatchDataLoad(Turbine.DataScope.Character, "DebuffVitals", name);
 
-    for k = 1, #DEFAULT_EFFECTS do
-        TrackedEffects[#TrackedEffects +1 ] = {DEFAULT_EFFECTS[k][1], DEFAULT_EFFECTS[k][2], DEFAULT_EFFECTS[k][3], 
-                                               DEFAULT_EFFECTS[k][4], DEFAULT_EFFECTS[k][5]}
-    end
-
     if settings then 
         ActivateSettings(settings)
         if settings.TargetFrameSets ~= nil then  
@@ -47,20 +42,6 @@ function ActivateSettings(settings)
         SaveFramePositions = settings.SaveFramePositions
     end
 
-    if settings.TrackedEffects ~=nil then
-        -- Only load TrackedEffects once 
-        if #TrackedEffects == 0 then
-            for k = 1, #settings.TrackedEffects do
-                for kk = 1, #TrackedEffects do
-                    if TrackedEffects[kk][2] == settings.TrackedEffects[k][2] then
-                        TrackedEffects[kk][3] = settings.TrackedEffects[k][3]
-                        break
-                    end
-                end
-            end
-        end
-    end
-
     if settings.Frames ~= nil then
         loadedFrames = settings.Frames
     end
@@ -73,7 +54,6 @@ function SaveSettings(name)
     if DEBUG_ENABLED then Turbine.Shell.WriteLine("Entering SaveSettings...") end
 
     local currentSettings = CaptureSettings()
-    currentSettings.TrackedEffects = TrackedEffects
     currentSettings.TargetFrameSets = TargetFrameSets
     
     PatchDataSave(Turbine.DataScope.Character, "DebuffVitals", currentSettings, name);
