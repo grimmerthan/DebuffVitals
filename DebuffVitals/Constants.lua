@@ -37,7 +37,7 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Burglar",     "Trick: Dust in the Eyes",                  0, 0},    
     {"Burglar",     "Trick: Enraged (Trick)",                   0, 0, "Trick: Enraged %(Trick%)"},
     {"Burglar",     "Trick: Disable",                           0, 0},    
-    {"Captain",     "Armour Rend",                              0, 0},
+    {"Captain",     "Armour Rend (Captain)",                    0, 0, "Armour Rend"},
     {"Captain",     "Cutting Attack",                           0, 0, "Cutting Attack"},    
     {"Captain",     "Grave Wound",                              0, 0, "Grave Wound"},    
     {"Captain",     "Lead the Charge",                          0, 0},
@@ -46,7 +46,7 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Captain",     "Revealing Mark",                           0, 1},
     {"Captain",     "Telling Mark",                             0, 1},
     {"Champion",    "Aggressive Exchange",                      0, 0},
-    {"Champion",    "Armour Rend",                              0, 0},    
+    {"Champion",    "Armour Rend (Champion)",                   0, 0, "Armour Rend"},    
     {"Champion",    "Coward's Fate",                            0, 1, "Coward's Fate"},
     {"Champion",    "Deep Strikes",                             0, 0},    
     {"Champion",    "Devastated",                               0, 0},
@@ -155,6 +155,15 @@ DEFAULT_FREEP_EFFECTS =  {
 
 DEFAULT_FREEP_PLAYER_EFFECTS = {
     {"Common", "Temporary State Immunity",                      0, 0},
+    {"Beorning", "Temporary State Immunity",                      0, 0},
+    {"Burglar", "Temporary State Immunity",                      0, 0},
+    {"Captain", "Temporary State Immunity",                      0, 0},
+    {"Champion", "Temporary State Immunity",                      0, 0},
+    {"Guardian", "Temporary State Immunity",                      0, 0},
+    {"Lore-master", "Temporary State Immunity",                      0, 0},
+    {"Minstrel", "Temporary State Immunity",                      0, 0},
+    {"Runekeeper", "Temporary State Immunity",                      0, 0},
+    {"Warden", "Temporary State Immunity",                      0, 0},   
 }
 
 DEFAULT_CREEP_EFFECTS = {

@@ -35,7 +35,7 @@ LockedPosition = DEFAULT_LOCKED_POSITION
 SaveFramePositions = DEFAULT_SAVE_FRAME_POSITIONS
 CurrentTarget = nil
 
--- Any frames loaded from the root of the same file
+-- Any frames loaded from the root of the save file
 loadedFrames = {}
 
 -- The current set of frames 
