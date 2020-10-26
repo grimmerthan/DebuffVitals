@@ -53,6 +53,7 @@ DEFAULT_FREEP_EFFECTS =  {
     {"Champion",    "Horn of Champions",                        0, 0},    
     {"Champion",    "Horn of Gondor Physical Mitigation",       0, 0},    
     {"Champion",    "Rend",                                     0, 0, "Rend Tier"},
+    {"Champion",    "Champion's Challenge",                     0, 0, "Furious Impotence"},
     {"Guardian",    "Take to Heart",                            0, 1},
     {"Guardian",    "Marked by Light",                          0, 1},
     {"Guardian",    "Slashing Wound",                           0, 0},
